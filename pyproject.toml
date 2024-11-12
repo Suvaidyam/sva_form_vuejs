@@ -1,9 +1,9 @@
 [project]
 name = "sva_form_vuejs"
 authors = [
-    { name = "Rahul Sah", email = "rahul.sah@suvaidyam.com"}
+    { name = "rahul", email = "rahul.sah@suvaidyam.com"}
 ]
-description = "sva_form"
+description = "sva"
 requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]
