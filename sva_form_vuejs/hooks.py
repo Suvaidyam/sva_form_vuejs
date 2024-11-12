@@ -1,6 +1,6 @@
 app_name = "sva_form_vuejs"
 app_title = "sva_form"
-app_publisher = "rahul"
+app_publisher = "Rahul Sah"
 app_description = "sva"
 app_email = "rahul.sah@suvaidyam.com"
 app_license = "mit"

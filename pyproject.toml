@@ -1,7 +1,7 @@
 [project]
 name = "sva_form_vuejs"
 authors = [
-    { name = "rahul", email = "rahul.sah@suvaidyam.com"}
+    { name = "Rahul Sah", email = "rahul.sah@suvaidyam.com"}
 ]
 description = "sva"
 requires-python = ">=3.10"
