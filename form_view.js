@@ -1,0 +1,1 @@
+export {default as FormView} from './frontend/src/components/FormView.vue';

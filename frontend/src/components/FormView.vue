@@ -1,4 +1,7 @@
 <template>
+  <div class="w-full h-full bg-white fixed z-20" v-if="loading">
+    <Loader />
+  </div>
   <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
     <div class="max-w-[1920px] min-h-screen mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden">
       <div :class="{ 'lg:flex min-h-screen': props.sidebar && !props.section }">
@@ -79,8 +82,10 @@ import Link from './Link.vue'
 import CheckBox from './CheckBox.vue'
 import Button from './Button.vue'
 import { useRouter } from 'vue-router'
+import Loader from './Loader.vue'
 
 const router = useRouter()
+const loading = ref(false)
 const props = defineProps({
   doctype: {
     type: String,
@@ -168,6 +173,7 @@ const getFieldComponent = (fieldtype) => {
 }
 
 const getMeta = async () => {
+  loading.value = true
   try {
     const res = await call('sva_form_vuejs.controllers.api.get_meta', {
       doctype: props.doctype,
@@ -176,6 +182,9 @@ const getMeta = async () => {
       docTypeMeta.value = res
       activeTab.value = tabFields.value[0]?.name || ''
       openSections.value = new Array(allSections.value.length).fill(true)
+      setTimeout(() => {
+        loading.value = false
+      }, 500);
     } else {
       console.error('Error fetching meta data: No document found')
     }
