@@ -1,12 +1,12 @@
 <template>
-  <div class="w-full h-full bg-white fixed z-20" v-if="loading">
+  <div class="w-full h-full bg-white z-10" v-if="loading">
     <Loader />
   </div>
   <div class="w-full h-full" v-else>
-    <div  class="w-full  h-full flex justify-center items-center text-h3 text-tatary" v-if="allSections?.length == 0">
+    <div class="w-full h-full flex justify-center items-center text-h3 text-tatary" v-if="allSections?.length == 0">
       Assessment Not Found
     </div>
-    <div v-else class="min-h-screen dark:bg-gray-900">
+    <div class="min-h-screen dark:bg-gray-900">
       <div class="max-w-[1920px] min-h-screen mx-auto overflow-hidden">
         <div :class="{ 'lg:flex min-h-screen': props.sidebar && !props.section }">
           <!-- Sidebar / Top Navigation -->
