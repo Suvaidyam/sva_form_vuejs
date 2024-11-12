@@ -2,72 +2,79 @@
   <div class="w-full h-full bg-white fixed z-20" v-if="loading">
     <Loader />
   </div>
-  <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-    <div class="max-w-[1920px] min-h-screen mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden">
-      <div :class="{ 'lg:flex min-h-screen': props.sidebar && !props.section }">
-        <!-- Sidebar / Top Navigation -->
-        <nav v-if="!props.section" :class="[
-          props.sidebar ? 'lg:w-1/6 bg-gray-50 dark:bg-gray-700 p-6' : 'w-full bg-gray-50 dark:bg-gray-700 p-4'
-        ]">
-          <ul :class="[
-            props.sidebar ? 'space-y-2' : 'flex space-x-2 overflow-x-auto'
+  <div class="w-full h-full" v-else>
+    <div  class="w-full  h-full flex justify-center items-center text-h3 text-tatary" v-if="allSections?.length == 0">
+      Assessment Not Found
+    </div>
+    <div v-else class="min-h-screen dark:bg-gray-900">
+      <div class="max-w-[1920px] min-h-screen mx-auto overflow-hidden">
+        <div :class="{ 'lg:flex min-h-screen': props.sidebar && !props.section }">
+          <!-- Sidebar / Top Navigation -->
+          <nav v-if="!props.section" :class="[
+            props.sidebar ? 'lg:w-1/6 bg-gray-50 dark:bg-gray-700 p-6' : 'w-full bg-gray-50 dark:bg-gray-700 p-4'
           ]">
-            <li v-for="tab in tabFields" :key="tab.name" :class="{ 'flex-shrink-0': !props.sidebar }">
-              <button @click="setActiveTab(tab.name)" :class="[
-                'text-left px-4 py-2 rounded-lg transition-colors duration-150 ease-in-out',
-                activeTab === tab.name
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600',
-                props.sidebar ? 'w-full' : 'whitespace-nowrap'
-              ]">
-                {{ tab.label }}
-              </button>
-            </li>
-          </ul>
-        </nav>
-        <!-- Main Content -->
-        <div :class="[props.sidebar && !props.section ? 'lg:w-5/6' : 'w-full', 'h-full overflow-y-auto']">
-          <form @submit.prevent="handleSubmit" class="p-6 flex flex-col h-full">
-            <div class="flex-grow">
-              <template v-if="props.section">
-                <div v-for="(section, index) in allSections" :key="index" class="mb-6">
-                  
-                  <div @click="toggleSection(index)" class="flex items-center justify-between cursor-pointer bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-2">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                      {{ section.label }}
-                    </h3>
-                    <ChevronDownIcon :class="['w-5 h-5 transition-transform', { 'transform rotate-180': openSections[index] }]" />
-                  </div>
-                  <div v-show="openSections[index]" class="pl-4">
-                    <div v-for="field in section.fields" :key="field.name" class="mb-4">
-                      <component :is="getFieldComponent(field.fieldtype)" :field="field"
-                        v-model="formData[field.fieldname]" />
+            <ul :class="[
+              props.sidebar ? 'space-y-2' : 'flex space-x-2 overflow-x-auto'
+            ]">
+              <li v-for="tab in tabFields" :key="tab.name" :class="{ 'flex-shrink-0': !props.sidebar }">
+                <button @click="setActiveTab(tab.name)" :class="[
+                  'text-left px-4 py-2 rounded-lg transition-colors duration-150 ease-in-out',
+                  activeTab === tab.name
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600',
+                  props.sidebar ? 'w-full' : 'whitespace-nowrap'
+                ]">
+                  {{ tab.label }}
+                </button>
+              </li>
+            </ul>
+          </nav>
+          <!-- Main Content -->
+          <div :class="[props.sidebar && !props.section ? 'lg:w-5/6' : 'w-full', 'h-full overflow-y-auto']">
+            <form @submit.prevent="handleSubmit" class="p-6 flex flex-col h-full">
+              <div class="flex-grow">
+                <template v-if="props.section">
+                  <div v-for="(section, index) in allSections" :key="index" class="mb-6">
+
+                    <div @click="toggleSection(index)"
+                      class="flex items-center justify-between cursor-pointer bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-2">
+                      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        {{ section.label }}
+                      </h3>
+                      <ChevronDownIcon
+                        :class="['w-5 h-5 transition-transform', { 'transform rotate-180': openSections[index] }]" />
+                    </div>
+                    <div v-show="openSections[index]" class="pl-4">
+                      <div v-for="field in section.fields" :key="field.name" class="mb-4">
+                        <component :is="getFieldComponent(field.fieldtype)" :field="field"
+                          v-model="formData[field.fieldname]" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </template>
-              <template v-else>
-                <div v-for="field in activeFields" :key="field.name" class="mb-6">
-                  <h3 v-if="field.fieldtype === 'Section Break'"
-                    class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    {{ field.label }}
-                  </h3>
-                  <component v-else :is="getFieldComponent(field.fieldtype)" :field="field"
-                    v-model="formData[field.fieldname]" />
-                </div>
-              </template>
-            </div>
-            <div class="mt-6 flex justify-end">
-              <button v-if="!props.section && !isLastTab" @click="nextTab" type="button"
-                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mr-2">
-                Next
-              </button>
-              <button v-if="props.section || isLastTab" type="submit"
-                class="px-4 py-2 bg-secondary text-white rounded-md hover:bg-primary focus:outline-none">
-                Submit
-              </button>
-            </div>
-          </form>
+                </template>
+                <template v-else>
+                  <div v-for="field in activeFields" :key="field.name" class="mb-6">
+                    <h3 v-if="field.fieldtype === 'Section Break'"
+                      class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                      {{ field.label }}
+                    </h3>
+                    <component v-else :is="getFieldComponent(field.fieldtype)" :field="field"
+                      v-model="formData[field.fieldname]" />
+                  </div>
+                </template>
+              </div>
+              <div class="mt-6 flex justify-end">
+                <button v-if="!props.section && !isLastTab" @click="nextTab" type="button"
+                  class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mr-2">
+                  Next
+                </button>
+                <button v-if="props.section || isLastTab" type="submit"
+                  class="px-4 py-2 bg-secondary text-white rounded-md hover:bg-primary focus:outline-none">
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -103,7 +110,7 @@ const props = defineProps({
   },
   section: {
     type: Boolean,
-    default: false ,
+    default: false,
     required: false
   }
 })
@@ -218,7 +225,7 @@ const handleSubmit = async () => {
       action: 'Save'
     })
     console.log('Saved:', res)
-    if(res && props.isRoute) {
+    if (res && props.isRoute) {
       router.push(props.isRoute)
     }
   } catch (err) {
