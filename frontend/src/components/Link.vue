@@ -1,8 +1,8 @@
 <template>
     <div class="flex flex-col gap-2">
       <label class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ field.label }}</label>
-      <div class="space-y-2">
-        <div v-for="option in options" :key="option.name" class="flex items-center">
+      <div class="flex flex-col gap-1">
+        <div v-for="option in options" :key="option.name" class="flex items-center gap-2">
           <input
             :id="`${field.name}-${option.name}`"
             :name="field.name"
