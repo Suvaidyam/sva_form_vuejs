@@ -86,6 +86,7 @@ import { ref, computed, onMounted, inject, watch } from 'vue'
 import { ChevronDownIcon } from 'lucide-vue-next'
 import Input from './Input.vue'
 import Link from './Link.vue'
+import LinkTable from './LinkTable.vue'
 import CheckBox from './CheckBox.vue'
 import Button from './Button.vue'
 import { useRouter } from 'vue-router'
@@ -106,6 +107,11 @@ const props = defineProps({
   isRoute: {
     type: String,
     default: '',
+    required: false
+  },
+  isTable: {
+    type: Boolean,
+    default: false,
     required: false
   },
   section: {
@@ -171,7 +177,7 @@ const isLastTab = computed(() => {
 
 const getFieldComponent = (fieldtype) => {
   switch (fieldtype) {
-    case 'Link': return Link
+    case 'Link': return props.isTable ? LinkTable : Link
     case 'Data': return Input
     case 'Table MultiSelect': return CheckBox
     case 'Button': return Button
