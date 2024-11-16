@@ -1,6 +1,6 @@
 <template>
   <transition name="fade" mode="in-out">
-    <div v-if="options.length > 0" class="flex flex-col gap-2">
+    <div  class="flex flex-col gap-2">
       <div class="">
         <div class="flex gap-2">
           <div class="w-5 h-5 rounded-full flex items-center justify-center text-xs text-white bg-slate-700">
