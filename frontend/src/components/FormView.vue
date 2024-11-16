@@ -45,9 +45,9 @@
                         :class="['w-5 h-5 transition-transform', { 'transform rotate-180': openSections[index] }]" />
                     </div>
                     <div v-show="openSections[index]" class="pl-4">
-                      <div v-for="(field, index) in section.fields" :key="field.name" class="mb-4">
-                        <component :is="getFieldComponent(field.fieldtype)" :field="field"
-                            v-model="formData[field.fieldname]" />
+                      <div v-for="field in section.fields" :key="field.name" class="mb-4">
+                        <component :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard"
+                          v-model="formData[field.fieldname]" />
                       </div>
                     </div>
                   </div>
@@ -58,19 +58,23 @@
                       class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                       {{ field.label }}
                     </h3>
-                    <component v-else :is="getFieldComponent(field.fieldtype)"  :matrix="field.matrix" :index="index" :field="field"
+                    <component v-else :is="getFieldComponent(field.fieldtype)" :isCard="true" :matrix="field.matrix" :index="index" :field="field"
                       v-model="formData[field.fieldname]" />
                   </div>
                 </template>
               </div>
-              <div class="mt-6 flex justify-end">
+              <div :class="isDraft?'':'justify-end'" class="mt-6 flex gap-2">
                 <button v-if="!props.section && !isLastTab" @click="nextTab" type="button"
-                  class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mr-2">
+                  class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ">
                   Next
                 </button>
                 <button v-if="props.section || isLastTab" type="submit"
                   class="px-4 py-2 bg-secondary text-white rounded-md hover:bg-primary focus:outline-none">
                   Submit
+                </button>
+                <button @click="props.save_as_draft" v-if="props.isDraft" type="button"
+                  class="px-4 py-2 border shadow-md rounded-md focus:outline-none">
+                  Save as Draft
                 </button>
               </div>
             </form>
@@ -104,6 +108,11 @@ const props = defineProps({
     default: false,
     required: false
   },
+  section: {
+    type: Boolean,
+    default: false,
+    required: false
+  },
   isRoute: {
     type: String,
     default: '',
@@ -114,14 +123,25 @@ const props = defineProps({
     default: false,
     required: false
   },
-  section: {
+  isCard: {
     type: Boolean,
     default: false,
     required: false
+  },
+  isDraft: {
+    type: Boolean,
+    default: false,
+    required: false
+  },
+  save_as_draft: {
+    type: Function,
+    default: () => {
+      console.log('save_as_draft...')
+    },
+    required: false
   }
 })
-
-const call = inject('$call')
+const call = inject('$call') 
 
 const docTypeMeta = ref(null)
 const activeTab = ref('')
@@ -246,7 +266,6 @@ const handleSubmit = async () => {
     console.error('Error saving form:', err)
   }
 }
-
 onMounted(getMeta)
 
 watch([docTypeMeta, activeTab], () => {

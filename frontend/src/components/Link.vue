@@ -56,7 +56,12 @@ const props = defineProps({
   matrix: {
     type: Boolean,
     required: false
+  },
+  isCard: {
+    type: Boolean,
+    required: false
   }
+
 })
 
 const emit = defineEmits(['update:modelValue'])
