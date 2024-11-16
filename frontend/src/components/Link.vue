@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-2">
     <label class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ field.label }}</label>
     <div class="flex flex-col gap-1">
-      <div v-for="option in options" :key="option.name" class="flex items-center gap-2">
+      <div v-for="option in options" :key="option.name" :class="isCard?'border rounded-md p-2':''" class="flex items-center gap-2">
         <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
           :checked="modelValue === option.name" @change="$emit('update:modelValue', option.name)"
           :disabled="field.read_only"
@@ -26,9 +26,13 @@ const props = defineProps({
   modelValue: {
     type: String,
     required: false
-  }
+  },
+  isCard: {
+    type: Boolean,
+    default: false,
+    required: false
+  },
 })
-
 const emit = defineEmits(['update:modelValue'])
 
 const call = inject('$call')

@@ -46,7 +46,7 @@
                     </div>
                     <div v-show="openSections[index]" class="pl-4">
                       <div v-for="field in section.fields" :key="field.name" class="mb-4">
-                        <component :is="getFieldComponent(field.fieldtype)" :field="field"
+                        <component :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard"
                           v-model="formData[field.fieldname]" />
                       </div>
                     </div>
@@ -58,7 +58,7 @@
                       class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                       {{ field.label }}
                     </h3>
-                    <component v-else :is="getFieldComponent(field.fieldtype)" :field="field"
+                    <component v-else :is="getFieldComponent(field.fieldtype)" :isCard="true" :field="field"
                       v-model="formData[field.fieldname]" />
                   </div>
                 </template>
@@ -114,13 +114,17 @@ const props = defineProps({
     default: false,
     required: false
   },
+  isCard: {
+    type: Boolean,
+    default: false,
+    required: false
+  },
   section: {
     type: Boolean,
     default: false,
     required: false
   }
 })
-
 const call = inject('$call')
 
 const docTypeMeta = ref(null)
