@@ -53,12 +53,12 @@
                   </div>
                 </template>
                 <template v-else>
-                  <div v-for="field in activeFields" :key="field.name" class="mb-6">
+                  <div v-for="(field, index) in activeFields" :key="field.name" class="mb-6">
                     <h3 v-if="field.fieldtype === 'Section Break'"
                       class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                       {{ field.label }}
                     </h3>
-                    <component v-else :is="getFieldComponent(field.fieldtype)" :isCard="true" :field="field"
+                    <component v-else :is="getFieldComponent(field.fieldtype)" :isCard="true" :matrix="field.matrix" :index="index" :field="field"
                       v-model="formData[field.fieldname]" />
                   </div>
                 </template>
@@ -225,7 +225,15 @@ const getMeta = async () => {
     console.error('Error fetching meta data:', error)
   }
 }
-
+// const getMatrixFields = (sectionIndex) => {
+//   let matrixFields = []
+//   const secttionFields = docTypeMeta?.value?.fields?.filter((f, i)=> i > sectionIndex && f.fieldtype === 'Section Break')
+//   if(secttionFields?.length){
+//     secttionFields.pop();
+//   }else{
+//     return = []
+//   }
+// }
 const setActiveTab = (tabName) => {
   activeTab.value = tabName
 }

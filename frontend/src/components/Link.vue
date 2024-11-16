@@ -1,15 +1,37 @@
 <template>
   <div class="flex flex-col gap-2">
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ field.label }}</label>
-    <div class="flex flex-col gap-1">
-      <div v-for="option in options" :key="option.name" :class="isCard?'border rounded-md p-2':''" class="flex items-center gap-2">
-        <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
-          :checked="modelValue === option.name" @change="$emit('update:modelValue', option.name)"
-          :disabled="field.read_only"
-          class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
-        <label :for="`${field.name}-${option.name}`" class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
-          {{ option.label }}
-        </label>
+    <div v-if="matrix">
+      <div class=" flex gap-4">
+        <div>
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ field.label }}</label>
+        </div>
+        <div class="flex">
+          <div v-for="option in options" :key="option.name">
+            <label :for="`${field.name}-${option.name}`"
+              class=" flex  text-sm text-gray-700 dark:text-gray-200">
+              <text v-if="index < 2">{{ option.label }}</text>
+            </label>
+            <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
+              :checked="modelValue === option.name" @change="$emit('update:modelValue', option.name)"
+              :disabled="field.read_only"
+              class="h-4 w-4  text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else>
+      <label class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ field.label }}</label>
+      <div class="flex flex-col gap-1">
+        <div v-for="option in options" :key="option.name" class="flex items-center gap-2">
+          <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
+            :checked="modelValue === option.name" @change="$emit('update:modelValue', option.name)"
+            :disabled="field.read_only"
+            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
+          <label :for="`${field.name}-${option.name}`"
+            class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
+            {{ option.label }}
+          </label>
+        </div>
       </div>
     </div>
   </div>
@@ -27,12 +49,21 @@ const props = defineProps({
     type: String,
     required: false
   },
-  isCard: {
-    type: Boolean,
-    default: false,
+  index: {
+    type: Number,
     required: false
   },
+  matrix: {
+    type: Boolean,
+    required: false
+  },
+  isCard: {
+    type: Boolean,
+    required: false
+  }
+
 })
+
 const emit = defineEmits(['update:modelValue'])
 
 const call = inject('$call')
@@ -51,8 +82,10 @@ const getOptions = async () => {
     } else {
       filters = { field: props.field.fieldname }
     }
-    const response = await call('sva_form_vuejs.controllers.api.get_option', {
-      filters: filters
+    const response = await call('frappe.client.get_list', {
+      doctype: 'Field Options',
+      filters: filters,
+      fields: ['name', 'label',],
     })
     options.value = response
   } catch (err) {
