@@ -63,14 +63,18 @@
                   </div>
                 </template>
               </div>
-              <div class="mt-6 flex justify-end">
+              <div :class="isDraft?'':'justify-end'" class="mt-6 flex gap-2">
                 <button v-if="!props.section && !isLastTab" @click="nextTab" type="button"
-                  class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mr-2">
+                  class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ">
                   Next
                 </button>
                 <button v-if="props.section || isLastTab" type="submit"
                   class="px-4 py-2 bg-secondary text-white rounded-md hover:bg-primary focus:outline-none">
                   Submit
+                </button>
+                <button @click="props.save_as_draft" v-if="props.isDraft" type="button"
+                  class="px-4 py-2 border shadow-md rounded-md focus:outline-none">
+                  Save as Draft
                 </button>
               </div>
             </form>
@@ -104,6 +108,11 @@ const props = defineProps({
     default: false,
     required: false
   },
+  section: {
+    type: Boolean,
+    default: false,
+    required: false
+  },
   isRoute: {
     type: String,
     default: '',
@@ -119,13 +128,20 @@ const props = defineProps({
     default: false,
     required: false
   },
-  section: {
+  isDraft: {
     type: Boolean,
     default: false,
     required: false
+  },
+  save_as_draft: {
+    type: Function,
+    default: () => {
+      console.log('save_as_draft...')
+    },
+    required: false
   }
 })
-const call = inject('$call')
+const call = inject('$call') 
 
 const docTypeMeta = ref(null)
 const activeTab = ref('')
@@ -242,7 +258,6 @@ const handleSubmit = async () => {
     console.error('Error saving form:', err)
   }
 }
-
 onMounted(getMeta)
 
 watch([docTypeMeta, activeTab], () => {
