@@ -69,11 +69,12 @@
                   class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                   Next
                 </button>
-                <button v-if="props.section || isLastTab" type="submit"
-                  class="px-4 py-2 bg-secondary text-white rounded-md hover:bg-primary focus:outline-none">
+                <button :disabled="isDisabled" :class="isDisabled?'bg-tatary':'bg-secondary hover:bg-primary text-white'" v-if="props.section || isLastTab" type="submit"
+                  class="px-4 py-2 border rounded-md focus:outline-none">
                   Submit
                 </button>
                 <button @click="props.save_as_draft" v-if="props.isDraft" type="button"
+                :disabled="isDisabled" :class="isDisabled?'bg-tatary':'bg-white'"
                   class="px-4 py-2 border shadow-md rounded-md focus:outline-none">
                   Save as Draft
                 </button>
@@ -96,9 +97,9 @@ import CheckBox from './CheckBox.vue'
 import Button from './Button.vue'
 import { useRouter } from 'vue-router'
 import Loader from './Loader.vue'
-
 const router = useRouter()
 const loading = ref(false)
+const isDisabled = ref(true)
 const props = defineProps({
   doctype: {
     type: String,
@@ -147,8 +148,11 @@ const call = inject('$call')
 const docTypeMeta = ref(null)
 const activeTab = ref('')
 const formData = ref({})
-const openSections = ref([])
+const openSections = ref([]) 
 
+watch(formData, (val) => {
+  isDisabled.value = Object.values(val).some(v => !v)
+}, { deep: true })
 const tabFields = computed(() =>
   docTypeMeta.value?.fields.filter(field => field.fieldtype === 'Tab Break') || []
 )
