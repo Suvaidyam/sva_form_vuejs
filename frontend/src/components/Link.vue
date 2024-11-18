@@ -1,35 +1,44 @@
 <template>
-  <div class="flex flex-col gap-2">
-    <div v-if="matrix">
-      <div class=" flex gap-4">
-        <div>
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ field.label }}</label>
-        </div>
-        <div class="flex">
-          <div v-for="option in options" :key="option.name">
-            <label :for="`${field.name}-${option.name}`"
-              class=" flex  text-sm text-gray-700 dark:text-gray-200">
-              <text v-if="index < 2">{{ option.label }}</text>
-            </label>
-            <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
-              :checked="modelValue === option.name" @change="$emit('update:modelValue', option.name)"
-              :disabled="field.read_only"
-              class="h-4 w-4  text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
-          </div>
-        </div>
-      </div>
+  <div class="w-full">
+    <div v-if="matrix" class="overflow-x-auto">
+      <table class="w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-800">
+          <tr v-if="index < 1">
+            <th scope="col"
+              class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              Question
+            </th>
+            <th v-for="option in options" :key="option.name" scope="col"
+              class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              {{ option.label }}
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
+          <tr>
+            <td class="px-4 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">
+             {{ field.label }}
+            </td>
+            <td v-for="option in options" :key="option.name" class="px-4 py-4 text-center">
+              <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
+                :checked="modelValue === option.name" @change="$emit('update:modelValue', option.name)"
+                :disabled="field.read_only"
+                class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-    <div v-else>
-      <label class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ field.label }}</label>
-      <div class="flex flex-col gap-1">
-        <div v-for="option in options" :key="option.name" class="flex items-center gap-2">
+    <div v-else class="space-y-2">
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ field.label }}</label>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div v-for="option in options" :key="option.name" class="flex items-center">
           <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
             :checked="modelValue === option.name" @change="$emit('update:modelValue', option.name)"
             :disabled="field.read_only"
             class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
-          <label :for="`${field.name}-${option.name}`"
-            class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
-            {{ option.label }}
+          <label :for="`${field.name}-${option.name}`" class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
+           {{ option.label }}
           </label>
         </div>
       </div>
@@ -49,10 +58,6 @@ const props = defineProps({
     type: String,
     required: false
   },
-  index: {
-    type: Number,
-    required: false
-  },
   matrix: {
     type: Boolean,
     required: false
@@ -60,8 +65,11 @@ const props = defineProps({
   isCard: {
     type: Boolean,
     required: false
+  },
+  index: {
+    type: Number,
+    required: false
   }
-
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -85,7 +93,7 @@ const getOptions = async () => {
     const response = await call('frappe.client.get_list', {
       doctype: 'Field Options',
       filters: filters,
-      fields: ['name', 'label',],
+      fields: ['name', 'label'],
     })
     options.value = response
   } catch (err) {

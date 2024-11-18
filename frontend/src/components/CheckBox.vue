@@ -64,7 +64,7 @@ const getOptions = async () => {
 }
 
 const isChecked = (option) => {
-  return props.modelValue.some(item => item.name === option.name)
+  return props?.modelValue?.some(item => item.name === option.name)
 }
 
 const updateValue = (option) => {
