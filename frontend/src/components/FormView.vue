@@ -159,11 +159,9 @@ const tabFields = computed(() =>
 
 const activeFieldSections = computed(() => {
   if (!docTypeMeta.value || !activeTab.value) return []
-
   const fields = docTypeMeta.value.fields
   const startIndex = fields.findIndex(f => f.name === activeTab.value)
   const endIndex = fields.findIndex((f, i) => i > startIndex && f.fieldtype === 'Tab Break')
-
   const relevantFields = fields.slice(startIndex + 1, endIndex === -1 ? undefined : endIndex)
   const sections = []
   let currentSection = null
