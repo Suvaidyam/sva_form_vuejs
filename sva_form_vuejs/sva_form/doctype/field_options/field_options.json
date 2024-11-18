@@ -18,6 +18,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Ref Doctype",
+   "link_filters": "[[\"DocType\",\"module\",\"in\",[\"Assessment\",\"pwit\"]]]",
    "options": "DocType",
    "reqd": 1
   },
@@ -51,7 +52,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-12 16:07:30.727436",
+ "modified": "2024-11-18 15:47:56.197251",
  "modified_by": "Administrator",
  "module": "sva_form",
  "name": "Field Options",

@@ -12,7 +12,7 @@ frappe.ui.form.on("Field Options", {
                     doctype: frm.doc.ref_doctype
                 },
             })
-            let options = data.message.fields?.filter(f=> ['Link'].includes(f.fieldtype))?.map((field) => { return {value:field.fieldname, label:field.label }});
+            let options = data.message.fields?.filter(f=> ['Link','Table MultiSelect'].includes(f.fieldtype))?.map((field) => { return {value:field.fieldname, label:field.label }});
             frm.fields_dict.field.set_data(options); 
         }
  
@@ -26,7 +26,7 @@ frappe.ui.form.on("Field Options", {
                     doctype: frm.doc.ref_doctype
                 },
             })
-            let options = data.message.fields?.filter(f=> ['Link'].includes(f.fieldtype))?.map((field) => { return {value:field.fieldname, label:field.label }});
+            let options = data.message.fields?.filter(f=> ['Link', 'Table MultiSelect'].includes(f.fieldtype))?.map((field) => { return {value:field.fieldname, label:field.label }});
             console.log("options",options);
             
             frm.fields_dict.field.set_data(options);
