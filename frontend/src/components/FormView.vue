@@ -3,15 +3,15 @@
     <Loader />
   </div>
   <div class="w-full h-full" v-else>
-    <div class="w-full h-full flex justify-center items-center text-h3 text-tatary" v-if="allSections?.length == 0">
+    <div class="w-full h-full flex justify-center items-center text-h3 text-gray-500" v-if="allSections?.length == 0">
       Assessment Not Found
     </div>
     <div class="min-h-screen dark:bg-gray-900">
       <div class="max-w-[1920px] min-h-screen mx-auto overflow-hidden">
-        <div :class="{ 'md:flex min-h-screen': props.sidebar && !props.section }">
+        <div :class="{ 'sm:flex min-h-screen': props.sidebar && !props.section }">
           <!-- Sidebar / Top Navigation -->
           <nav v-if="!props.section" :class="[
-            props.sidebar ? 'lg:w-1/3 xl:w-1/4 bg-gray-50 dark:bg-gray-700 p-6 overflow-y-auto' : 'w-full bg-gray-50 dark:bg-gray-700 p-4'
+            props.sidebar ? 'lg:w-[350px] bg-gray-50 dark:bg-gray-800 p-6 overflow-y-auto' : 'w-full bg-gray-50 dark:bg-gray-800 p-4'
           ]">
             <ul :class="[
               props.sidebar ? 'space-y-2' : 'flex space-x-2 overflow-x-auto'
@@ -30,8 +30,8 @@
             </ul>
           </nav>
           <!-- Main Content -->
-          <div :class="[props.sidebar && !props.section ? 'lg:w-2/3 xl:w-3/4' : 'w-full', 'h-full overflow-y-auto']">
-            <form @submit.prevent="handleSubmit" class="p-6 flex flex-col h-full">
+          <div :class="[props.sidebar && !props.section ? 'lg:flex-1' : 'w-full', 'h-full overflow-y-auto']">
+            <form @submit.prevent="handleSubmit" class="p-6  flex flex-col h-full">
               <div class="flex-grow">
                 <template v-if="props.section">
                   <div v-for="(section, index) in allSections" :key="index" class="mb-6">
@@ -53,11 +53,10 @@
                 </template>
                 <template v-else>
                   <div v-for="(section, index) in activeFieldSections" :key="section.name" class="mb-6">
-                    <h3
-                      class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                       {{ section.label }}
                     </h3>
-                    <div v-for="(field,fieldIndex) in section?.fields">
+                    <div v-for="(field,fieldIndex) in section?.fields" :key="field.name" class="mb-4">
                       <component :is="getFieldComponent(field.fieldtype)" :isCard="true" :matrix="section?.is_matrix"
                         :index="fieldIndex" :field="field" v-model="formData[field.fieldname]" />
                     </div>
@@ -69,12 +68,12 @@
                   class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                   Next
                 </button>
-                <button :disabled="isDisabled" :class="isDisabled?'bg-tatary':'bg-secondary hover:bg-primary text-white'" v-if="props.section || isLastTab" type="submit"
+                <button :disabled="isDisabled" :class="isDisabled ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700 text-white'" v-if="props.section || isLastTab" type="submit"
                   class="px-4 py-2 border rounded-md focus:outline-none">
                   Submit
                 </button>
                 <button @click="props.save_as_draft" v-if="props.isDraft" type="button"
-                :disabled="isDisabled" :class="isDisabled?'bg-tatary':'bg-white'"
+                :disabled="isDisabled" :class="isDisabled ? 'bg-gray-400' : 'bg-white hover:bg-gray-100'"
                   class="px-4 py-2 border shadow-md rounded-md focus:outline-none">
                   Save as Draft
                 </button>
@@ -97,6 +96,7 @@ import CheckBox from './CheckBox.vue'
 import Button from './Button.vue'
 import { useRouter } from 'vue-router'
 import Loader from './Loader.vue'
+
 const router = useRouter()
 const loading = ref(false)
 const isDisabled = ref(true)
@@ -143,6 +143,7 @@ const props = defineProps({
     required: false
   }
 })
+
 const call = inject('$call')
 
 const docTypeMeta = ref(null)
@@ -153,6 +154,7 @@ const openSections = ref([])
 watch(formData, (val) => {
   isDisabled.value = Object.values(val).some(v => !v)
 }, { deep: true })
+
 const tabFields = computed(() =>
   docTypeMeta.value?.fields.filter(field => field.fieldtype === 'Tab Break') || []
 )

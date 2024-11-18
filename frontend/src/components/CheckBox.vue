@@ -1,6 +1,17 @@
 <template>
-  <div class="flex flex-col gap-2">
-    <label class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ field.label }}</label>
+  <div v-if="!field.hidden" class="flex flex-col gap-2">
+    <div class="flex items-center">
+      <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
+        {{ field.label }}
+        <span v-if="field.reqd" class="text-red-500 ml-1">*</span>
+      </label>
+      <div v-if="field.description" class="ml-2 relative group">
+        <InfoIcon class="w-4 h-4 text-gray-400 cursor-help" />
+        <div class="absolute left-0 bottom-6 bg-black text-white text-xs rounded py-1 px-2 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+          {{ field.description }}
+        </div>
+      </div>
+    </div>
     <div class="space-y-2">
       <div v-for="option in options" :key="option.name" class="flex items-center">
         <input
@@ -9,6 +20,8 @@
           type="checkbox"
           :checked="isChecked(option)"
           @change="updateValue(option)"
+          :disabled="field.read_only"
+          :required="field.reqd && modelValue.length === 0"
           class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600"
         />
         <label :for="`${field.name}-${option.name}`" class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
@@ -21,6 +34,7 @@
 
 <script setup>
 import { ref, watch, inject } from 'vue'
+import { InfoIcon } from 'lucide-vue-next'
 
 const props = defineProps({
   field: {
@@ -29,9 +43,8 @@ const props = defineProps({
   },
   modelValue: {
     type: Array,
-    required: true
+    default: () => []
   }
-  
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -64,19 +77,37 @@ const getOptions = async () => {
 }
 
 const isChecked = (option) => {
-  return props?.modelValue?.some(item => item.name === option.name)
+  return Array.isArray(props.modelValue) && props.modelValue.some(item => item.field_options === option.name)
 }
 
 const updateValue = (option) => {
+  if (!Array.isArray(props.modelValue)) {
+    console.error('modelValue is not an array:', props.modelValue)
+    return
+  }
+
   const newValue = [...props.modelValue]
-  const index = newValue.findIndex(item => item.name === option.name)
+  const index = newValue.findIndex(item => item.field_options === option.name)
+  
   if (index === -1) {
-    newValue.push({doctype:"Options Child",parentfield:option?.field,parenttype:option?.ref_doctype,field_options:option?.name});
+    newValue.push({
+      doctype: "Options Child",
+      parentfield: props.field.fieldname,
+      parenttype: props.field.parent,
+      field_options: option.name
+    })
   } else {
     newValue.splice(index, 1)
   }
+  
   emit('update:modelValue', newValue)
 }
 
 watch(() => props.field, getOptions, { immediate: true })
 </script>
+
+<style scoped>
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
+</style>

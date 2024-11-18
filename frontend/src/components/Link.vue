@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full">
+  <div v-if="!field.hidden" class="w-full">
     <div v-if="matrix" class="overflow-x-auto">
       <table class="w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-800">
@@ -17,28 +17,62 @@
         <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
           <tr>
             <td class="px-4 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">
-             {{ field.label }}
+              <div class="flex items-center">
+                {{ field.label }}
+                <span v-if="field.reqd" class="text-red-500 ml-1">*</span>
+                <div v-if="field.description" class="ml-2 relative group">
+                  <InfoIcon class="w-4 h-4 text-gray-400 cursor-help" />
+                  <div class="absolute left-0 bottom-6 bg-black text-white text-xs rounded py-1 px-2 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                    {{ field.description }}
+                  </div>
+                </div>
+              </div>
             </td>
             <td v-for="option in options" :key="option.name" class="px-4 py-4 text-center">
-              <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
-                :checked="modelValue === option.name" @change="$emit('update:modelValue', option.name)"
+              <input 
+                :id="`${field.name}-${option.name}`" 
+                :name="field.name" 
+                type="radio" 
+                :value="option.name"
+                :checked="modelValue === option.name" 
+                @change="updateValue(option.name)"
                 :disabled="field.read_only"
-                class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
+                :required="field.reqd"
+                class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" 
+              />
             </td>
           </tr>
         </tbody>
       </table>
     </div>
     <div v-else class="space-y-2">
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ field.label }}</label>
+      <div class="flex items-center mb-2">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+          {{ field.label }}
+          <span v-if="field.reqd" class="text-red-500 ml-1">*</span>
+        </label>
+        <div v-if="field.description" class="ml-2 relative group">
+          <InfoIcon class="w-4 h-4 text-gray-400 cursor-help" />
+          <div class="absolute left-0 bottom-6 bg-black text-white text-xs rounded py-1 px-2 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+            {{ field.description }}
+          </div>
+        </div>
+      </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <div v-for="option in options" :key="option.name" class="flex items-center">
-          <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
-            :checked="modelValue === option.name" @change="$emit('update:modelValue', option.name)"
+          <input 
+            :id="`${field.name}-${option.name}`" 
+            :name="field.name" 
+            type="radio" 
+            :value="option.name"
+            :checked="modelValue === option.name" 
+            @change="updateValue(option.name)"
             :disabled="field.read_only"
-            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
+            :required="field.reqd"
+            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" 
+          />
           <label :for="`${field.name}-${option.name}`" class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
-           {{ option.label }}
+            {{ option.label }}
           </label>
         </div>
       </div>
@@ -48,6 +82,7 @@
 
 <script setup>
 import { ref, watch, inject } from 'vue'
+import { InfoIcon } from 'lucide-vue-next'
 
 const props = defineProps({
   field: {
@@ -56,19 +91,23 @@ const props = defineProps({
   },
   modelValue: {
     type: String,
-    required: false
+    required: false,
+    default: ''
   },
   matrix: {
     type: Boolean,
-    required: false
+    required: false,
+    default: false
   },
   isCard: {
     type: Boolean,
-    required: false
+    required: false,
+    default: false
   },
   index: {
     type: Number,
-    required: false
+    required: false,
+    default: 0
   }
 })
 
@@ -99,5 +138,15 @@ const getOptions = async () => {
   }
 }
 
+const updateValue = (value) => {
+  emit('update:modelValue', value)
+}
+
 watch(() => props.field, getOptions, { immediate: true })
 </script>
+
+<style scoped>
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
+</style>
