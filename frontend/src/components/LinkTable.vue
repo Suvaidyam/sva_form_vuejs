@@ -3,7 +3,7 @@
     <div  class="flex flex-col gap-2 pt-2">
         <div class="flex gap-2">
           <div class="w-5 h-5 rounded-full flex items-center justify-center text-xs text-white bg-slate-700">
-            {{ 1 }}
+            {{ index + 1 }}
           </div>
           <h2 class="text-sebase text-h5">{{ field.label }}</h2>
         </div>
@@ -42,6 +42,11 @@ const props = defineProps({
   modelValue: {
     type: String,
     required: false
+  },
+  index: {
+    type: Number,
+    required: false,
+    default: 0
   }
 })
 
