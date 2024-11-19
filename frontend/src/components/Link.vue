@@ -46,9 +46,10 @@
       </table>
     </div>
     <div v-else class="space-y-2">
-      <div class="flex items-center mb-2">
+      <div class="flex items-center" :class="props.isCard?'py-2 gap-2':'mb-2'">
+        <p v-if="props.isCard" class="w-6 h-6 text-sm flex items-center justify-center rounded-full bg-gray-500 text-white">{{ index+1 }}</p>
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">
-          {{ field.label }}
+          {{ field.label }} 
           <span v-if="field.reqd" class="text-red-500 ml-1">*</span>
         </label>
         <div v-if="field.description" class="ml-2 relative group">
@@ -59,7 +60,7 @@
         </div>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <div v-for="option in options" :key="option.name" class="flex items-center">
+        <div v-for="option in options" :key="option.name" :class="props.isCard?'border p-2 rounded-md gap-2':''" class="flex items-center">
           <input 
             :id="`${field.name}-${option.name}`" 
             :name="field.name" 

@@ -75,7 +75,7 @@
                         v-if="isFieldVisible(field)"
                         :is="getFieldComponent(field.fieldtype)"
                         :field="field"
-                        :isCard="true"
+                        :isCard="props.isCard"
                         :matrix="section.is_matrix"
                         :index="fieldIndex"
                         v-model="formData[field.fieldname]"
@@ -101,7 +101,7 @@
               </button>
               <button 
                 :disabled="isSubmitDisabled"
-                :class="isSubmitDisabled ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700 text-white'"
+                :class="isSubmitDisabled ? 'bg-gray-400' : 'bg-secondary hover:bg-primary text-white'"
                 v-if="props.section || isLastTab" 
                 type="submit"
                 class="px-4 py-2 border rounded-md focus:outline-none"
