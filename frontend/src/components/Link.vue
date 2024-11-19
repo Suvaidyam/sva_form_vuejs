@@ -60,7 +60,7 @@
         </div>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" :class="props.isCard?'px-6':''">
-        <label :for="`${field.name}-${option.name}`" v-for="option in options" :key="option.name" :class="props.isCard?'border p-2 rounded-md gap-1.5 shadow-sm':'gap-1.5'" class="flex text-sm items-center">
+        <label v-if="props.isCard" :for="`${field.name}-${option.name}`" v-for="option in options" :key="option.name" :class="props.isCard?'border p-2 rounded-md gap-1.5 shadow-sm':'gap-1.5'" class="flex text-sm items-center">
           <input 
             :id="`${field.name}-${option.name}`" 
             :name="field.name" 
@@ -74,6 +74,22 @@
           />
           {{ option.label }}
         </label>
+        <div v-if="!props.isCard" :for="`${field.name}-${option.name}`" v-for="option in options" :key="option.name" :class="props.isCard?'border p-2 rounded-md gap-2':''" class="flex items-center">
+          <input 
+            :id="`${field.name}-${option.name}`" 
+            :name="field.name" 
+            type="radio" 
+            :value="option.name"
+            :checked="modelValue === option.name" 
+            @change="updateValue(option.name)"
+            :disabled="field.read_only"
+            :required="field.reqd"
+            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" 
+          />
+          <label  class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
+            {{ option.label }}
+          </label>
+        </div>
       </div>
     </div>
   </div>
