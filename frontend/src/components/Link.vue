@@ -1,102 +1,87 @@
 <template>
   <div v-if="!field.hidden" class="w-full">
     <div v-if="matrix" class="overflow-x-auto">
-      <table class="w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead class="bg-gray-50 dark:bg-gray-800">
-          <tr v-if="index < 1">
-            <th scope="col"
-              class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+      <div class="inline-block min-w-full py-2 align-middle">
+        <div class="overflow-hidden  rounded-lg">
+          <span v-if="index < 1" class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-8" >
+            {{ section }}
+          </span>
+          <div class="grid" :style="gridTemplateColumns">
+            <div v-if="index < 1"
+              class="bg-gray-50 dark:bg-gray-800 p-4  text-gray-900 dark:text-gray-100">
               Question
-            </th>
-            <th v-for="option in options" :key="option.name" scope="col"
-              class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+            </div>
+            <div v-if="index < 1" v-for="option in options" :key="`header-${option.name}`"
+              class="bg-gray-50 dark:bg-gray-800 p-4  text-center text-gray-900 dark:text-gray-100">
               {{ option.label }}
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
-          <tr>
-            <td class="px-4 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">
-              <div class="flex items-center">
+            </div>
+
+            <div class="bg-white dark:bg-gray-900 p-4 flex items-center border-t border-gray-200 dark:border-gray-700">
+              <div class="text-sm text-gray-900 dark:text-gray-100">
                 {{ field.label }}
                 <span v-if="field.reqd" class="text-red-500 ml-1">*</span>
-                <div v-if="field.description" class="ml-2 relative group">
-                  <InfoIcon class="w-4 h-4 text-gray-400 cursor-help" />
-                  <div class="absolute left-0 bottom-6 bg-black text-white text-xs rounded py-1 px-2 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                    {{ field.description }}
-                  </div>
-                </div>
+                <InfoIcon v-if="field.description" class="inline-block w-4 h-4 ml-1 text-gray-400 cursor-help"
+                  v-tooltip="field.description" />
               </div>
-            </td>
-            <td v-for="option in options" :key="option.name" class="px-4 py-4 text-center">
-              <input 
-                :id="`${field.name}-${option.name}`" 
-                :name="field.name" 
-                type="radio" 
-                :value="option.name"
-                :checked="modelValue === option.name" 
-                @change="updateValue(option.name)"
-                :disabled="field.read_only"
+            </div>
+            <div v-for="option in options" :key="`radio-${option.name}`"
+              class="bg-white dark:bg-gray-900 p-4 flex justify-center items-center border-t border-l border-gray-200 dark:border-gray-700">
+              <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
+                :checked="modelValue === option.name" @change="updateValue(option.name)" :disabled="field.read_only"
                 :required="field.reqd"
-                class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" 
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                class="h-4 w-4 text-primary border-gray-300 focus:ring-primary dark:border-gray-600 dark:focus:ring-primary" />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div v-else class="space-y-2">
-      <div class="flex items-center" :class="props.isCard?'py-2 gap-2':'mb-2'">
-        <p v-if="props.isCard" class="w-6 h-6 text-sm flex items-center justify-center rounded-full bg-gray-500 text-white">{{ index+1 }}</p>
+    <div v-else>
+      <div class="flex items-center" :class="props.isCard ? 'py-2 gap-2' : 'mb-2'">
+        <p v-if="props.isCard"
+          class="w-6 h-6 text-sm flex items-center justify-center rounded-full bg-gray-500 text-white">{{ index + 1 }}
+        </p>
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">
-          {{ field.label }} 
+          {{ field.label }}
           <span v-if="field.reqd" class="text-red-500 ml-1">*</span>
         </label>
         <div v-if="field.description" class="ml-2 relative group">
           <InfoIcon class="w-4 h-4 text-gray-400 cursor-help" />
-          <div class="absolute left-0 bottom-6 bg-black text-white text-xs rounded py-1 px-2 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+          <div
+            class="absolute left-0 bottom-6 bg-black text-white text-xs rounded py-1 px-2 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
             {{ field.description }}
           </div>
         </div>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" :class="props.isCard?'px-6':''">
-        <label v-if="props.isCard" :for="`${field.name}-${option.name}`" v-for="option in options" :key="option.name" :class="props.isCard?'border p-2 rounded-md gap-1.5 shadow-sm':'gap-1.5'" class="flex text-sm items-center">
-          <input 
-            :id="`${field.name}-${option.name}`" 
-            :name="field.name" 
-            type="radio" 
-            :value="option.name"
-            :checked="modelValue === option.name" 
-            @change="updateValue(option.name)"
-            :disabled="field.read_only"
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+        :class="props.isCard ? 'px-6' : ''">
+        <label v-if="props.isCard" :for="`${field.name}-${option.name}`" v-for="option in options" :key="option.name"
+          :class="props.isCard ? 'border p-2 rounded-md gap-1.5 shadow-sm' : 'gap-1.5'"
+          class="flex text-sm items-center">
+          <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
+            :checked="modelValue === option.name" @change="updateValue(option.name)" :disabled="field.read_only"
             :required="field.reqd"
-            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" 
-          />
+            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
           {{ option.label }}
         </label>
-        <div v-if="!props.isCard" :for="`${field.name}-${option.name}`" v-for="option in options" :key="option.name" :class="props.isCard?'border p-2 rounded-md gap-2':''" class="flex items-center">
-          <input 
-            :id="`${field.name}-${option.name}`" 
-            :name="field.name" 
-            type="radio" 
-            :value="option.name"
-            :checked="modelValue === option.name" 
-            @change="updateValue(option.name)"
-            :disabled="field.read_only"
+        <div v-if="!props.isCard" :for="`${field.name}-${option.name}`" v-for="option in options" :key="option.name"
+          :class="props.isCard ? 'border p-2 rounded-md gap-2' : ''" class="flex items-center">
+          <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
+            :checked="modelValue === option.name" @change="updateValue(option.name)" :disabled="field.read_only"
             :required="field.reqd"
-            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" 
-          />
-          <label  class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
+            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
+          <label class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
             {{ option.label }}
           </label>
         </div>
       </div>
     </div>
   </div>
+
+
 </template>
 
 <script setup>
-import { ref, watch, inject } from 'vue'
+import { ref, computed, watch, inject } from 'vue'
 import { InfoIcon } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -123,14 +108,21 @@ const props = defineProps({
     type: Number,
     required: false,
     default: 0
+  },
+  section: {
+    type: String,
+    required: false,
   }
 })
 
 const emit = defineEmits(['update:modelValue'])
-
 const call = inject('$call')
-
 const options = ref([])
+
+const gridTemplateColumns = computed(() => {
+  const optionCount = options.value.length
+  return `grid-template-columns: minmax(200px, 2fr) repeat(${optionCount}, minmax(100px, 1fr))`
+})
 
 const getOptions = async () => {
   try {
@@ -161,7 +153,5 @@ watch(() => props.field, getOptions, { immediate: true })
 </script>
 
 <style scoped>
-.group:hover .group-hover\:opacity-100 {
-  opacity: 1;
-}
+/* Add any additional scoped styles here */
 </style>
