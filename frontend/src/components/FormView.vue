@@ -89,8 +89,8 @@
                 Next
               </button>
               <button 
-                :class="isSubmitDisabled ? 'bg-gray-400' : 'bg-secondary hover:bg-primary text-white'"
-                v-if="props.section || isLastTab" type="submit" class="px-4 py-2 border rounded-md focus:outline-none">
+                :class="isSubmitDisabled ? 'bg-gray-400' : 'bg-secondary hover:bg-primary bg-orange-600 text-white'"
+                v-if="props.section || isLastTab" type="submit" class="px-4 py-2 bg-orange-600 border rounded-md focus:outline-none">
                 Submit
               </button>
               <button @click="props.save_as_draft" v-if="props.isDraft" type="button" :disabled="isSubmitDisabled"
@@ -117,6 +117,8 @@ import Button from './Button.vue'
 import { useRouter } from 'vue-router'
 import Loader from './Loader.vue'
 import AttachmentUpload from './AttachmentUpload.vue'
+import DateInput from './DateInput.vue'
+import Textarea from './TextareaInput.vue'
 
 const router = useRouter()
 const loading = ref(true)
@@ -249,6 +251,8 @@ const getFieldComponent = (fieldtype) => {
     case 'Table MultiSelect': return CheckBox
     case 'Button': return Button
     case 'Attach': return AttachmentUpload
+    case 'Date': return DateInput
+    case 'Small Text': return Textarea
     default: return 'div'
   }
 }
