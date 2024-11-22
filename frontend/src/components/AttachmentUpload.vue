@@ -5,7 +5,7 @@
       <span v-if="field.reqd" class="text-red-500 ml-1">*</span>
     </label>
     <div
-      class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-gray-400 transition-colors duration-200"
+      class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300  rounded-md hover:border-gray-400 transition-colors duration-200"
       @dragover.prevent
       @drop.prevent="handleDrop"
     >
