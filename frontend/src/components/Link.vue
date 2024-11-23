@@ -69,8 +69,9 @@
             :required="field.reqd"
             class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
           <label class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
-            {{ field.fieldname == 'program_area_focus' ? option.development_areas : field.fieldname ==
-              'program_implementation_states' ? option.state_name : option.label}}
+            <!-- {{ field.fieldname == 'program_area_focus' ? option.development_areas : field.fieldname ==
+              'program_implementation_states' ? option.state_name : option.label}} -->
+            {{ option.label }}
           </label>
         </div>
       </div>
@@ -136,9 +137,19 @@ const getOptions = async () => {
     } else {
       filters = { field: props.field.fieldname, ref_doctype: props.field.parent }
     }
-    const response = await call('sva_form_vuejs.controllers.api.get_option', {
-      filters: filters
-    })
+    console.log(props.field,'fields')
+    let response = []
+    if(props.field.options === "Field Options"){
+      response = await call('sva_form_vuejs.controllers.api.get_option', {
+        filters: filters
+      })
+    }else{
+      response = await call('sva_form_vuejs.controllers.api.get_option_with_dt', {
+        dt: props.field.options,
+        filters: props.field.link_filters ? JSON.parse(props.field.link_filters) : []
+      })
+    }
+    // get_option_with_dt
     options.value = response
     // console.log(response,'response')
   } catch (err) {
@@ -146,47 +157,12 @@ const getOptions = async () => {
   }
 }
 
-const get_development_areas = async () => {
-  try {
-    const response = await call('british_asian_trust.api.get_development_areas')
-    options.value = response
-  } catch (err) {
-    console.error('Error fetching options:', err)
-  }
-}
-
-const get_State = async () => {
-  try {
-    const response = await call('british_asian_trust.api.get_State')
-    options.value = response
-  } catch (err) {
-    console.error('Error fetching options:', err)
-  }
-}
 
 const updateValue = (value) => {
   emit('update:modelValue', value)
 }
 
 watch(() => props.field, getOptions, { immediate: true })
-watch(
-  () => props.field, // Watch `props.field`
-  (newField, oldField) => {
-    if (newField.fieldname === 'program_area_focus') {
-      get_development_areas();
-    }
-    if (newField.fieldname === 'program_implementation_states') {
-      get_State();
-    }
-
-  },
-  { immediate: true } // Trigger the watcher immediately
-);
-
-
-// onMounted(() => {
-//   get_development_areas() 
-// })
 
 </script>
 <style scoped>
