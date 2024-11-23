@@ -78,7 +78,7 @@
               </template>
             </div>
             <div class="mt-6 flex justify-end gap-2">
-              <button v-if="!props.section && !isLastTab" @click="nextTab" type="button"
+              <button v-if="!props.section && !isLastTab" @click="saveAsDraftAndNext" type="button"
                 :disabled="isFirstTab && !isFirstTabCompletelyFilled" :class="[
                   'px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
                   isFirstTab && !isFirstTabCompletelyFilled
@@ -106,7 +106,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, inject, watch } from 'vue'
+import { ref, computed, onMounted, inject, watch,provide } from 'vue'
 import { ChevronDownIcon, LockIcon, UnlockIcon, CheckCircleIcon } from 'lucide-vue-next'
 import Input from './Input.vue'
 import Link from './Link.vue'
@@ -144,6 +144,10 @@ const props = defineProps({
     type: Function,
     default: () => console.log('save_as_draft...')
   },
+  initialData: {
+    type: Object,
+    default: () => ({})
+  },
   onSubmit: {
     type: Function,
     required: true
@@ -154,7 +158,7 @@ const call = inject('$call')
 
 const docTypeMeta = ref(null)
 const activeTab = ref('')
-const formData = ref({})
+const formData = ref({...props.initialData})
 const openSections = ref([])
 const allTabsUnlocked = ref(false)
 const tabCompletionStatus = ref({})
@@ -216,6 +220,10 @@ const allSections = computed(() => {
   return sections
 })
 
+const saveAsDraftAndNext = async () => {
+  await props.save_as_draft(formData.value)
+  nextTab()
+}
 const isLastTab = computed(() => {
   const currentTabIndex = tabFields.value.findIndex(tab => tab.name === activeTab.value)
   return currentTabIndex === tabFields.value.length - 1
@@ -339,8 +347,14 @@ const nextTab = () => {
 const toggleSection = (index) => {
   openSections.value[index] = !openSections.value[index]
 }
+provide('saveAsDraft', props.save_as_draft)
 
-onMounted(getMeta)
+onMounted(()=> {
+  getMeta()
+  if (Object.keys(props.initialData).length > 0) {
+    formData.value = {...props.initialData}
+  }
+})
 </script>
 
 <style scoped>

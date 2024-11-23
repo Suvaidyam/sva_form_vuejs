@@ -2,16 +2,16 @@
   <div v-if="!field.hidden" class="w-full">
     <div v-if="matrix" class="overflow-x-auto">
       <div class="inline-block min-w-full py-2 align-middle">
-        <div class="overflow-hidden  rounded-lg">
+        <div class="overflow-hidden rounded-lg">
           <span v-if="index < 1" class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-8">
             {{ section }}
           </span>
           <div class="grid" :style="gridTemplateColumns">
-            <div v-if="index < 1" class="bg-gray-50 dark:bg-gray-800 p-4  text-gray-900 dark:text-gray-100">
+            <div v-if="index < 1" class="bg-gray-50 dark:bg-gray-800 p-4 text-gray-900 dark:text-gray-100">
               Question
             </div>
             <div v-if="index < 1" v-for="option in options" :key="`header-${option.name}`"
-              class="bg-gray-50 dark:bg-gray-800 p-4  text-center text-gray-900 dark:text-gray-100">
+              class="bg-gray-50 dark:bg-gray-800 p-4 text-center text-gray-900 dark:text-gray-100">
               {{ option.label }}
             </div>
 
@@ -69,16 +69,12 @@
             :required="field.reqd"
             class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
           <label class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
-            <!-- {{ field.fieldname == 'program_area_focus' ? option.development_areas : field.fieldname ==
-              'program_implementation_states' ? option.state_name : option.label}} -->
             {{ option.label }}
           </label>
         </div>
       </div>
     </div>
   </div>
-
-
 </template>
 
 <script setup>
@@ -118,6 +114,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 const call = inject('$call')
+const saveAsDraft = inject('saveAsDraft')
 const options = ref([])
 
 const gridTemplateColumns = computed(() => {
@@ -137,34 +134,37 @@ const getOptions = async () => {
     } else {
       filters = { field: props.field.fieldname, ref_doctype: props.field.parent }
     }
-    console.log(props.field,'fields')
+    console.log(props.field, 'fields')
     let response = []
-    if(props.field.options === "Field Options"){
+    if (props.field.options === "Field Options") {
       response = await call('sva_form_vuejs.controllers.api.get_option', {
         filters: filters
       })
-    }else{
+    } else {
       response = await call('sva_form_vuejs.controllers.api.get_option_with_dt', {
         dt: props.field.options,
         filters: props.field.link_filters ? JSON.parse(props.field.link_filters) : []
       })
     }
-    // get_option_with_dt
     options.value = response
-    // console.log(response,'response')
   } catch (err) {
     console.error('Error fetching options:', err)
   }
 }
 
-
 const updateValue = (value) => {
   emit('update:modelValue', value)
+  // Save as draft after updating the value
+  saveAsDraft({ [props.field.name]: value })
 }
 
 watch(() => props.field, getOptions, { immediate: true })
 
+onMounted(() => {
+  getOptions()
+})
 </script>
+
 <style scoped>
 /* Add any additional scoped styles here */
 </style>

@@ -44,6 +44,7 @@
       :id="field.name"
       :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
+      @blur="handleBlur"
       :type="field.fieldtype === 'Password' ? 'password' : 'text'"
       :disabled="field.read_only"
       :required="field.reqd"
@@ -55,8 +56,9 @@
 <script setup>
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 import { InfoIcon } from 'lucide-vue-next'
+import { inject } from 'vue'
 
-defineProps({
+const props = defineProps({
   field: {
     type: Object,
     required: true
@@ -67,6 +69,14 @@ defineProps({
   }
 })
 
-defineEmits(['update:modelValue'])
-</script>
+const emit = defineEmits(['update:modelValue'])
+const saveAsDraft = inject('saveAsDraft')
 
+const handleInput = (event) => {
+  emit('update:modelValue', event.target.value)
+}
+
+const handleBlur = () => {
+  saveAsDraft({ [props.field.name]: props.modelValue })
+}
+</script>
