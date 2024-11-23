@@ -1,6 +1,7 @@
 <template>
   <div v-if="!field.hidden" class="flex flex-col gap-2">
-    <div class="flex items-center">
+    <div :class="props.isCard?'gap-2':''" class="flex items-center">
+      <p class="w-6 h-6 rounded-full bg-gray-500 text-white flex justify-center items-center text-sm" v-if="props.isCard">{{ 1 }}</p>
       <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
         {{ field.label }}
         <span v-if="field.reqd" class="text-red-500 ml-1">*</span>
@@ -12,7 +13,7 @@
         </div>
       </div>
     </div>
-    <div class="space-y-2">
+    <div class="space-y-2" v-if="!props.isCard">
       <div v-for="option in options" :key="option.name" class="flex items-center">
         <input
           :id="`${field.name}-${option.name}`"
@@ -29,6 +30,23 @@
         </label>
       </div>
     </div>
+    <div v-else class="flex flex-col gap-2 px-6">
+      <label :for="`${field.name}-${option.name}`" v-for="option in options" :key="option.name" class="flex items-center gap-2 border rounded-md p-2">
+        <input
+          :id="`${field.name}-${option.name}`"
+          :name="field.name"
+          type="checkbox"
+          :checked="isChecked(option)"
+          @change="updateValue(option)"
+          :disabled="field.read_only"
+          :required="field.reqd && modelValue.length === 0"
+          class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600"
+        />
+        <p class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
+          {{ option.label }}
+        </p>
+      </label>
+    </div>
   </div>
 </template>
 
@@ -40,6 +58,11 @@ const props = defineProps({
   field: {
     type: Object,
     required: true
+  },
+  isCard: {
+    type: Boolean,
+    required: false,
+    default: false
   },
   modelValue: {
     type: Array,
