@@ -5,11 +5,39 @@
         {{ field.label }}
         <span v-if="field.reqd === 1" class="text-red-500 ml-1">*</span>
       </label>
-      <div v-if="field.description" class="ml-2 relative group">
-        <InfoIcon class="w-4 h-4 text-gray-400 cursor-help" />
-        <div class="absolute left-0 bottom-6 bg-black text-white text-xs rounded py-1 px-2 w-48 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-          {{ field.description }}
-        </div>
+      <div v-if="field.description" class="ml-2 relative">
+        <Popover v-slot="{ open }" class="relative">
+          <PopoverButton
+            @mouseenter="open = true"
+            @mouseleave="open = false"
+            class="focus:outline-none"
+          >
+            <InfoIcon class="w-4 h-4 text-gray-400" />
+          </PopoverButton>
+
+          <transition
+            enter-active-class="transition duration-200 ease-out"
+            enter-from-class="opacity-0 translate-y-1"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition duration-150 ease-in"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 translate-y-1"
+          >
+            <PopoverPanel
+              class="absolute z-10 w-72 px-4 mt-3 transform -translate-x-1/2 left-1/2 sm:px-0 lg:max-w-3xl"
+              @mouseenter="open = true"
+              @mouseleave="open = false"
+            >
+              <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                <div class="p-4 bg-white dark:bg-gray-800">
+                  <p class="text-sm text-gray-700 dark:text-gray-300">
+                    {{ field.description }}
+                  </p>
+                </div>
+              </div>
+            </PopoverPanel>
+          </transition>
+        </Popover>
       </div>
     </div>
     <input
@@ -25,6 +53,7 @@
 </template>
 
 <script setup>
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 import { InfoIcon } from 'lucide-vue-next'
 
 defineProps({
@@ -41,8 +70,3 @@ defineProps({
 defineEmits(['update:modelValue'])
 </script>
 
-<style scoped>
-.group:hover .group-hover\:opacity-100 {
-  opacity: 1;
-}
-</style>

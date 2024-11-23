@@ -28,14 +28,13 @@
                   <UnlockIcon v-else-if="!tabCompletionStatus[tab.name]" class="w-4 h-4" />
                   <CheckCircleIcon v-else class="w-4 h-4 text-green-500" />
                 </span>
-
               </button>
             </li>
           </ul>
         </nav>
         <!-- Main Content -->
         <div class="flex-grow overflow-y-auto">
-          <form @submit.prevent="handleSubmit" class="p-6 flex flex-col h-full">
+          <form @submit.prevent="onSubmit(formData)" class="p-6 flex flex-col h-full">
             <div class="flex-grow">
               <template v-if="props.section">
                 <div v-for="(section, index) in allSections" :key="index" class="mb-6">
@@ -93,7 +92,7 @@
                 v-if="props.section || isLastTab" type="submit" class="px-4 py-2 bg-orange-600 border rounded-md focus:outline-none">
                 Submit
               </button>
-              <button @click="props.save_as_draft" v-if="props.isDraft" type="button" :disabled="isSubmitDisabled"
+              <button @click="save_as_draft(formData)" v-if="props.isDraft" type="button" :disabled="isSubmitDisabled"
                 :class="isSubmitDisabled ? 'bg-gray-400' : 'bg-white hover:bg-gray-100'"
                 class="px-4 py-2 border shadow-md rounded-md focus:outline-none">
                 Save as Draft
@@ -114,13 +113,11 @@ import Link from './Link.vue'
 import LinkTable from './LinkTable.vue'
 import CheckBox from './CheckBox.vue'
 import Button from './Button.vue'
-import { useRouter } from 'vue-router'
 import Loader from './Loader.vue'
 import AttachmentUpload from './AttachmentUpload.vue'
 import DateInput from './DateInput.vue'
 import Textarea from './TextareaInput.vue'
 
-const router = useRouter()
 const loading = ref(true)
 const props = defineProps({
   doctype: {
@@ -130,10 +127,6 @@ const props = defineProps({
   section: {
     type: Boolean,
     default: false
-  },
-  isRoute: {
-    type: String,
-    default: ''
   },
   isTable: {
     type: Boolean,
@@ -150,6 +143,10 @@ const props = defineProps({
   save_as_draft: {
     type: Function,
     default: () => console.log('save_as_draft...')
+  },
+  onSubmit: {
+    type: Function,
+    required: true
   }
 })
 
@@ -341,24 +338,6 @@ const nextTab = () => {
 
 const toggleSection = (index) => {
   openSections.value[index] = !openSections.value[index]
-}
-
-const handleSubmit = async () => {
-  try {
-    const res = await call('frappe.desk.form.save.savedocs', {
-      doc: JSON.stringify({
-        doctype: props.doctype,
-        ...formData.value
-      }),
-      action: 'Save'
-    })
-    console.log('Saved:', res)
-    if (res && props.isRoute) {
-      router.push(props.isRoute)
-    }
-  } catch (err) {
-    console.error('Error saving form:', err)
-  }
 }
 
 onMounted(getMeta)
