@@ -3,12 +3,11 @@
     <div v-if="matrix" class="overflow-x-auto">
       <div class="inline-block min-w-full py-2 align-middle">
         <div class="overflow-hidden  rounded-lg">
-          <span v-if="index < 1" class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-8" >
+          <span v-if="index < 1" class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-8">
             {{ section }}
           </span>
           <div class="grid" :style="gridTemplateColumns">
-            <div v-if="index < 1"
-              class="bg-gray-50 dark:bg-gray-800 p-4  text-gray-900 dark:text-gray-100">
+            <div v-if="index < 1" class="bg-gray-50 dark:bg-gray-800 p-4  text-gray-900 dark:text-gray-100">
               Question
             </div>
             <div v-if="index < 1" v-for="option in options" :key="`header-${option.name}`"
@@ -70,7 +69,8 @@
             :required="field.reqd"
             class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
           <label class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
-            {{ option.label }}
+            {{ field.fieldname == 'program_area_focus' ? option.development_areas : field.fieldname ==
+              'program_implementation_states' ? option.state_name : option.label}}
           </label>
         </div>
       </div>
@@ -81,7 +81,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, inject } from 'vue'
+import { ref, computed, watch, inject, onMounted } from 'vue'
 import { InfoIcon } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -140,6 +140,25 @@ const getOptions = async () => {
       filters: filters
     })
     options.value = response
+    // console.log(response,'response')
+  } catch (err) {
+    console.error('Error fetching options:', err)
+  }
+}
+
+const get_development_areas = async () => {
+  try {
+    const response = await call('british_asian_trust.api.get_development_areas')
+    options.value = response
+  } catch (err) {
+    console.error('Error fetching options:', err)
+  }
+}
+
+const get_State = async () => {
+  try {
+    const response = await call('british_asian_trust.api.get_State')
+    options.value = response
   } catch (err) {
     console.error('Error fetching options:', err)
   }
@@ -150,8 +169,26 @@ const updateValue = (value) => {
 }
 
 watch(() => props.field, getOptions, { immediate: true })
-</script>
+watch(
+  () => props.field, // Watch `props.field`
+  (newField, oldField) => {
+    if (newField.fieldname === 'program_area_focus') {
+      get_development_areas();
+    }
+    if (newField.fieldname === 'program_implementation_states') {
+      get_State();
+    }
 
+  },
+  { immediate: true } // Trigger the watcher immediately
+);
+
+
+// onMounted(() => {
+//   get_development_areas() 
+// })
+
+</script>
 <style scoped>
 /* Add any additional scoped styles here */
 </style>
