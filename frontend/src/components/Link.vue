@@ -134,7 +134,6 @@ const getOptions = async () => {
     } else {
       filters = { field: props.field.fieldname, ref_doctype: props.field.parent }
     }
-    console.log(props.field, 'fields')
     let response = []
     if (props.field.options === "Field Options") {
       response = await call('sva_form_vuejs.controllers.api.get_option', {
@@ -155,7 +154,7 @@ const getOptions = async () => {
 const updateValue = (value) => {
   emit('update:modelValue', value)
   // Save as draft after updating the value
-  saveAsDraft({ [props.field.name]: value })
+  saveAsDraft({ [props.field.fieldname]: value })
 }
 
 watch(() => props.field, getOptions, { immediate: true })

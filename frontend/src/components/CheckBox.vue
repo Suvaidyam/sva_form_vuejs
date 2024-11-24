@@ -127,7 +127,7 @@ const updateValue = (option) => {
   emit('update:modelValue', newValue)
   
   // Save as draft after updating the value
-  saveAsDraft({ [props.field.name]: newValue })
+  saveAsDraft({ [props.field.fieldname]: newValue })
 }
 
 watch(() => props.field, getOptions, { immediate: true })
