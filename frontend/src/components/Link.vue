@@ -2,17 +2,16 @@
   <div v-if="!field.hidden" class="w-full">
     <div v-if="matrix" class="overflow-x-auto">
       <div class="inline-block min-w-full py-2 align-middle">
-        <div class="overflow-hidden  rounded-lg">
-          <span v-if="index < 1" class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-8" >
+        <div class="overflow-hidden rounded-lg">
+          <span v-if="index < 1" class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-8">
             {{ section }}
           </span>
           <div class="grid" :style="gridTemplateColumns">
-            <div v-if="index < 1"
-              class="bg-gray-50 dark:bg-gray-800 p-4  text-gray-900 dark:text-gray-100">
+            <div v-if="index < 1" class="bg-gray-50 dark:bg-gray-800 p-4 text-gray-900 dark:text-gray-100">
               Question
             </div>
             <div v-if="index < 1" v-for="option in options" :key="`header-${option.name}`"
-              class="bg-gray-50 dark:bg-gray-800 p-4  text-center text-gray-900 dark:text-gray-100">
+              class="bg-gray-50 dark:bg-gray-800 p-4 text-center text-gray-900 dark:text-gray-100">
               {{ option.label }}
             </div>
 
@@ -76,12 +75,10 @@
       </div>
     </div>
   </div>
-
-
 </template>
 
 <script setup>
-import { ref, computed, watch, inject } from 'vue'
+import { ref, computed, watch, inject, onMounted } from 'vue'
 import { InfoIcon } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -117,6 +114,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 const call = inject('$call')
+const saveAsDraft = inject('saveAsDraft')
 const options = ref([])
 
 const gridTemplateColumns = computed(() => {
@@ -136,9 +134,18 @@ const getOptions = async () => {
     } else {
       filters = { field: props.field.fieldname, ref_doctype: props.field.parent }
     }
-    const response = await call('sva_form_vuejs.controllers.api.get_option', {
-      filters: filters
-    })
+    console.log(props.field, 'fields')
+    let response = []
+    if (props.field.options === "Field Options") {
+      response = await call('sva_form_vuejs.controllers.api.get_option', {
+        filters: filters
+      })
+    } else {
+      response = await call('sva_form_vuejs.controllers.api.get_option_with_dt', {
+        dt: props.field.options,
+        filters: props.field.link_filters ? JSON.parse(props.field.link_filters) : []
+      })
+    }
     options.value = response
   } catch (err) {
     console.error('Error fetching options:', err)
@@ -147,9 +154,15 @@ const getOptions = async () => {
 
 const updateValue = (value) => {
   emit('update:modelValue', value)
+  // Save as draft after updating the value
+  saveAsDraft({ [props.field.name]: value })
 }
 
 watch(() => props.field, getOptions, { immediate: true })
+
+onMounted(() => {
+  getOptions()
+})
 </script>
 
 <style scoped>

@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, inject } from 'vue';
 import { UploadCloudIcon, XIcon } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -57,6 +57,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:modelValue']);
+const saveAsDraft = inject('saveAsDraft');
 
 const preview = ref('');
 const error = ref('');
@@ -105,9 +106,12 @@ const processFile = (file) => {
     saveToFrappe(file)
       .then((response) => {
         console.log('File saved successfully:', response.message.file_url);
-        emit('update:modelValue', response.message.file_url);
+        const fileUrl = response.message.file_url;
+        emit('update:modelValue', fileUrl);
         // Update preview with the URL from the server
-        preview.value = response.message.file_url;
+        preview.value = fileUrl;
+        // Save as draft
+        saveAsDraft({ [props.field.fieldname]: fileUrl });
       })
       .catch((apiError) => {
         error.value = 'Failed to save file to the server.';
@@ -153,6 +157,8 @@ const removeFile = () => {
   fileName.value = '';
   error.value = '';
   emit('update:modelValue', '');
+  // Save as draft when file is removed
+  saveAsDraft({ [props.field.fieldname]: '' });
 };
 
 watch(() => props.modelValue, (newValue) => {

@@ -73,6 +73,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 
 const call = inject('$call')
+const saveAsDraft = inject('saveAsDraft')
 
 const options = ref([])
 
@@ -124,6 +125,9 @@ const updateValue = (option) => {
   }
   
   emit('update:modelValue', newValue)
+  
+  // Save as draft after updating the value
+  saveAsDraft({ [props.field.name]: newValue })
 }
 
 watch(() => props.field, getOptions, { immediate: true })
