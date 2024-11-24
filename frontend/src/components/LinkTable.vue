@@ -2,7 +2,7 @@
   <transition name="fade" mode="in-out">
     <div  class="flex flex-col gap-2 pt-2">
         <div class="flex gap-2">
-          <div class="w-5 h-5 rounded-full flex items-center justify-center text-xs text-white bg-slate-700">
+          <div class="w-6 min-w-6 min-h-6 h-6 rounded-full flex items-center justify-center text-xs text-white bg-slate-700">
             {{ index + 1 }}
           </div>
           <h2 class="text-sebase text-h5">{{ field.label }}</h2>
@@ -13,7 +13,7 @@
             <div class="w-28 border-r flex items-center justify-center">Level</div>
             <div class="w-full border-r flex items-center justify-center">Options</div>
           </div>
-          <div class="flex w-full max-h-12 min-h-12 h-12 border-b" v-for="option in options" :key="option.name">
+          <div class="flex w-full  min-h-12 h-full border-b" v-for="option in options" :key="option.name">
             <div class="w-10 border-r flex items-center justify-center">
               <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
                 :checked="modelValue === option.name" @change="$emit('update:modelValue', option.name)"
@@ -23,7 +23,7 @@
               :style="{ opacity: (10 - option.level) / 10 }">
               Level {{ option.level }}
             </div>
-            <label :for="`${field.name}-${option.name}`" class="w-full flex items-center px-4"> {{ option.label }}
+            <label :for="`${field.name}-${option.name}`" class="w-full flex items-center py-3 px-4"> {{ option.label }}
             </label>
           </div>
         </div>
