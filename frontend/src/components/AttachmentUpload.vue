@@ -1,37 +1,55 @@
 <template>
   <div class="w-full">
-    <label :for="field.fieldname" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-      {{ field.label }}
-      <span v-if="field.reqd" class="text-red-500 ml-1">*</span>
-    </label>
+    <div class="flex items-center mb-2">
+      <label :for="field.fieldname" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+        {{ field.label }}
+        <span v-if="field.reqd" class="text-red-500 ml-1">*</span>
+      </label>
+      <Popover v-if="field.description" class="relative inline-block ml-2">
+        <PopoverButton class="focus:outline-none">
+          <InfoIcon class="w-4 h-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
+        </PopoverButton>
+        <transition
+          enter-active-class="transition duration-200 ease-out"
+          enter-from-class="opacity-0 translate-y-1"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition duration-150 ease-in"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0 translate-y-1"
+        >
+          <PopoverPanel class="absolute z-10 w-64 px-4 mt-3 transform -translate-x-1/2 left-1/2 sm:px-0 lg:max-w-3xl">
+            <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+              <div class="p-4 bg-white dark:bg-gray-800">
+                <p class="text-sm text-gray-700 dark:text-gray-300">
+                  {{ field.description }}
+                </p>
+              </div>
+            </div>
+          </PopoverPanel>
+        </transition>
+      </Popover>
+    </div>
     <div
-      class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300  rounded-md hover:border-gray-400 transition-colors duration-200"
-      @dragover.prevent
-      @drop.prevent="handleDrop"
+      class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 rounded-md hover:border-gray-400 transition-colors duration-200"
+      :class="{ 'border-red-500': error }"
+      @dragover.prevent @drop.prevent="handleDrop"
     >
       <div class="space-y-1 text-center">
         <UploadCloudIcon v-if="!preview" class="mx-auto h-12 w-12 text-gray-400" />
         <div v-if="!preview" class="flex text-sm text-gray-600">
-          <label :for="field.fieldname" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+          <label :for="field.fieldname"
+            class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
             <span>Upload a file</span>
-            <input 
-              :id="field.fieldname" 
-              :name="field.fieldname" 
-              type="file" 
-              class="sr-only" 
-              @change="handleFileUpload" 
-              :accept="acceptedFileTypes"
-            >
+            <input :id="field.fieldname" :name="field.fieldname" type="file" class="sr-only" @change="handleFileUpload"
+              :accept="acceptedFileTypes">
           </label>
           <p class="pl-1">or drag and drop</p>
         </div>
         <p v-if="!preview" class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
         <div v-if="preview" class="relative mt-4">
           <img :src="preview" alt="File preview" class="max-w-full h-auto rounded-lg shadow-md">
-          <button 
-            @click="removeFile" 
-            class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-          >
+          <button @click="removeFile"
+            class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
             <XIcon class="h-4 w-4" />
           </button>
         </div>
@@ -43,7 +61,8 @@
 
 <script setup>
 import { ref, computed, watch, inject } from 'vue';
-import { UploadCloudIcon, XIcon } from 'lucide-vue-next';
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
+import { UploadCloudIcon, XIcon, InfoIcon } from 'lucide-vue-next';
 
 const props = defineProps({
   field: {
@@ -53,6 +72,11 @@ const props = defineProps({
   modelValue: {
     type: [String, File],
     default: ''
+  },
+  onfieldChange: {
+    type: Boolean,
+    required: false,
+    default: false
   }
 });
 
@@ -65,12 +89,9 @@ const fileName = ref('');
 const acceptedFileTypes = '.png,.jpg,.jpeg,.gif';
 const maxFileSize = 10 * 1024 * 1024; // 10MB
 
-const isImage = computed(() => {
-  if (props.modelValue instanceof File) {
-    return ['image/png', 'image/jpeg', 'image/gif'].includes(props.modelValue.type);
-  }
-  return props.modelValue && typeof props.modelValue === 'string' && props.modelValue.match(/\.(jpeg|jpg|gif|png)$/i) != null;
-});
+const isImageFile = (file) => {
+  return file && file.type.startsWith('image/');
+};
 
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
@@ -84,16 +105,18 @@ const handleDrop = (event) => {
 
 const processFile = (file) => {
   if (file) {
+    error.value = '';
+
     if (file.size > maxFileSize) {
       error.value = 'File size exceeds 10MB limit.';
       return;
     }
-    if (!file.type.match('image.*')) {
+
+    if (!isImageFile(file)) {
       error.value = 'Only image files are allowed.';
       return;
     }
 
-    error.value = '';
     fileName.value = file.name;
 
     // Set preview immediately
@@ -110,13 +133,16 @@ const processFile = (file) => {
         emit('update:modelValue', fileUrl);
         // Update preview with the URL from the server
         preview.value = fileUrl;
-        // Save as draft
-        saveAsDraft({ [props.field.fieldname]: fileUrl });
+        if (props.onfieldChange) {
+          saveAsDraft({ [props.field.fieldname]: fileUrl });
+        }
       })
       .catch((apiError) => {
         error.value = 'Failed to save file to the server.';
         console.error('API error:', apiError);
       });
+  } else if (props.field.reqd) {
+    error.value = 'Please upload a file.';
   }
 };
 
@@ -155,10 +181,15 @@ const saveToFrappe = async (file) => {
 const removeFile = () => {
   preview.value = '';
   fileName.value = '';
-  error.value = '';
   emit('update:modelValue', '');
   // Save as draft when file is removed
   saveAsDraft({ [props.field.fieldname]: '' });
+  
+  if (props.field.reqd) {
+    error.value = 'Please upload a file.';
+  } else {
+    error.value = '';
+  }
 };
 
 watch(() => props.modelValue, (newValue) => {
@@ -173,5 +204,12 @@ watch(() => props.modelValue, (newValue) => {
   } else {
     preview.value = '';
   }
+  
+  if (!newValue && props.field.reqd) {
+    error.value = 'Please upload a file.';
+  } else {
+    error.value = '';
+  }
 }, { immediate: true });
 </script>
+

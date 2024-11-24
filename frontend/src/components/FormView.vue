@@ -25,8 +25,7 @@
                 {{ tab.label }}
                 <span class="mr-2" v-if="index > 0">
                   <LockIcon v-if="!allTabsUnlocked" class="w-4 h-4" />
-                  <UnlockIcon v-else-if="!tabCompletionStatus[tab.name]" class="w-4 h-4" />
-                  <CheckCircleIcon v-else class="w-4 h-4 text-green-500" />
+                  <CheckCircleIcon v-if="allTabsUnlocked && tabCompletionStatus[tab.name]" class="w-4 h-4 text-green-500" />
                 </span>
               </button>
             </li>
@@ -51,6 +50,7 @@
                       <component :section="section.description" v-if="isFieldVisible(field)"
                         :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard"
                         :matrix="section.is_matrix" :index="fieldIndex" v-model="formData[field.fieldname]"
+                        :onfieldChange="props.onfieldChange"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)" />
                     </div>
                   </div>
@@ -68,6 +68,7 @@
                         :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard"
                         :matrix="section.is_matrix" :index="fieldIndex" v-model="formData[field.fieldname]"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
+                        :onfieldChange="props.onfieldChange"
                         :aria-label="field.label || field.fieldname" />
                     </div>
                   </div>
@@ -108,7 +109,7 @@
 
 <script setup>
 import { ref, computed, onMounted, inject, watch, provide } from 'vue'
-import { ChevronDownIcon, LockIcon, UnlockIcon, CheckCircleIcon } from 'lucide-vue-next'
+import { ChevronDownIcon, LockIcon, CheckCircleIcon } from 'lucide-vue-next'
 import Input from './Input.vue'
 import Link from './Link.vue'
 import LinkTable from './LinkTable.vue'
@@ -118,6 +119,7 @@ import Loader from './Loader.vue'
 import AttachmentUpload from './AttachmentUpload.vue'
 import DateInput from './DateInput.vue'
 import Textarea from './TextareaInput.vue'
+import CheckboxComponent from './CheckboxComponent.vue'
 
 const loading = ref(true)
 const props = defineProps({
@@ -152,6 +154,10 @@ const props = defineProps({
   onSubmit: {
     type: Function,
     required: true
+  },
+  onfieldChange:{
+    type:Boolean,
+    default:true
   }
 })
 
@@ -167,7 +173,6 @@ const tabCompletionStatus = ref({})
 const tabFields = computed(() =>
   docTypeMeta.value?.fields.filter(field => field.fieldtype === 'Tab Break') || []
 )
-
 
 const activeFieldSections = computed(() => {
   if (!docTypeMeta.value || !activeTab.value) return []
@@ -262,6 +267,7 @@ const getFieldComponent = (fieldtype) => {
     case 'Attach': return AttachmentUpload
     case 'Date': return DateInput
     case 'Small Text': return Textarea
+    case 'Check': return CheckboxComponent
     default: return 'div'
   }
 }
@@ -279,6 +285,9 @@ const isFieldVisible = (field) => {
 
 const handleFieldUpdate = (fieldName, value) => {
   formData.value[fieldName] = value
+  if (props.onfieldChange) {
+    props.save_as_draft({ [fieldName]: value })
+  }
 }
 
 const getMeta = async () => {
@@ -303,22 +312,11 @@ const getMeta = async () => {
   }
 }
 
-// const initializeFormData = () => {
-//   if (!docTypeMeta.value) return
-//   docTypeMeta.value.fields.forEach(field => {
-//     if (field.fieldtype === 'Table MultiSelect') {
-//       formData.value[field.fieldname] = []
-//     } else {
-//       formData.value[field.fieldname] = field.fieldtype === 'Data' ? '' : null
-//     }
-//   })
-// }
 watch(() => props.initialData, (newVal) => {
   console.log('Initial data updated:', newVal)
   Object.assign(formData.value, newVal)
 }, { deep: true, immediate: true })
 
-// Update the initializeFormData function
 const initializeFormData = () => {
   if (!docTypeMeta.value) return
   const newFormData = { ...formData.value } // Start with existing data
@@ -331,6 +329,7 @@ const initializeFormData = () => {
       }
     }
   })
+  // formData.value = newFormData
 }
 
 const initializeTabCompletionStatus = () => {
