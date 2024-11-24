@@ -48,7 +48,7 @@ const handleInput = (event) => {
 }
 
 const handleBlur = () => {
-  saveAsDraft({ [props.field.name]: props.modelValue })
+  saveAsDraft({ [props.field.fieldname]: props.modelValue })
 }
 </script>
 

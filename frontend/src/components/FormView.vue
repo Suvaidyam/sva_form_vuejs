@@ -78,7 +78,7 @@
               </template>
             </div>
             <div class="mt-6 flex justify-end gap-2">
-              <button v-if="!props.section && !isLastTab" @click="saveAsDraftAndNext" type="button"
+              <button v-if="!props.section && !isLastTab" @click="nextTab" type="button"
                 :disabled="isFirstTab && !isFirstTabCompletelyFilled" :class="[
                   'px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
                   isFirstTab && !isFirstTabCompletelyFilled
@@ -87,9 +87,10 @@
                 ]">
                 Next
               </button>
-              <button 
+              <button
                 :class="isSubmitDisabled ? 'bg-gray-400' : 'bg-secondary hover:bg-primary bg-orange-600 text-white'"
-                v-if="props.section || isLastTab" type="submit" class="px-4 py-2 bg-orange-600 border rounded-md focus:outline-none">
+                v-if="props.section || isLastTab" type="submit"
+                class="px-4 py-2 bg-orange-600 border rounded-md focus:outline-none">
                 Submit
               </button>
               <button @click="save_as_draft(formData)" v-if="props.isDraft" type="button" :disabled="isSubmitDisabled"
@@ -106,7 +107,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, inject, watch,provide } from 'vue'
+import { ref, computed, onMounted, inject, watch, provide } from 'vue'
 import { ChevronDownIcon, LockIcon, UnlockIcon, CheckCircleIcon } from 'lucide-vue-next'
 import Input from './Input.vue'
 import Link from './Link.vue'
@@ -158,7 +159,7 @@ const call = inject('$call')
 
 const docTypeMeta = ref(null)
 const activeTab = ref('')
-const formData = ref({...props.initialData})
+const formData = ref({})
 const openSections = ref([])
 const allTabsUnlocked = ref(false)
 const tabCompletionStatus = ref({})
@@ -166,6 +167,7 @@ const tabCompletionStatus = ref({})
 const tabFields = computed(() =>
   docTypeMeta.value?.fields.filter(field => field.fieldtype === 'Tab Break') || []
 )
+
 
 const activeFieldSections = computed(() => {
   if (!docTypeMeta.value || !activeTab.value) return []
@@ -177,6 +179,9 @@ const activeFieldSections = computed(() => {
   let currentSection = null
 
   relevantFields.forEach(field => {
+    if (field.fieldname === 'amended_from') {
+      return
+    }
     if (field.fieldtype === 'Section Break') {
       if (currentSection) {
         sections.push(currentSection)
@@ -200,6 +205,9 @@ const allSections = computed(() => {
   let currentSection = null
 
   docTypeMeta.value.fields.forEach(field => {
+    if (field.fieldname === 'amended_from') {
+      return
+    }
     if (field.fieldtype === 'Tab Break') {
       return
     }
@@ -220,10 +228,6 @@ const allSections = computed(() => {
   return sections
 })
 
-const saveAsDraftAndNext = async () => {
-  await props.save_as_draft(formData.value)
-  nextTab()
-}
 const isLastTab = computed(() => {
   const currentTabIndex = tabFields.value.findIndex(tab => tab.name === activeTab.value)
   return currentTabIndex === tabFields.value.length - 1
@@ -299,13 +303,32 @@ const getMeta = async () => {
   }
 }
 
+// const initializeFormData = () => {
+//   if (!docTypeMeta.value) return
+//   docTypeMeta.value.fields.forEach(field => {
+//     if (field.fieldtype === 'Table MultiSelect') {
+//       formData.value[field.fieldname] = []
+//     } else {
+//       formData.value[field.fieldname] = field.fieldtype === 'Data' ? '' : null
+//     }
+//   })
+// }
+watch(() => props.initialData, (newVal) => {
+  console.log('Initial data updated:', newVal)
+  Object.assign(formData.value, newVal)
+}, { deep: true, immediate: true })
+
+// Update the initializeFormData function
 const initializeFormData = () => {
   if (!docTypeMeta.value) return
+  const newFormData = { ...formData.value } // Start with existing data
   docTypeMeta.value.fields.forEach(field => {
-    if (field.fieldtype === 'Table MultiSelect') {
-      formData.value[field.fieldname] = []
-    } else {
-      formData.value[field.fieldname] = field.fieldtype === 'Data' ? '' : null
+    if (!(field.fieldname in newFormData)) {
+      if (field.fieldtype === 'Table MultiSelect') {
+        newFormData[field.fieldname] = []
+      } else {
+        newFormData[field.fieldname] = field.fieldtype === 'Data' ? '' : null
+      }
     }
   })
 }
@@ -349,12 +372,17 @@ const toggleSection = (index) => {
 }
 provide('saveAsDraft', props.save_as_draft)
 
-onMounted(()=> {
+onMounted(() => {
   getMeta()
   if (Object.keys(props.initialData).length > 0) {
-    formData.value = {...props.initialData}
+    formData.value = { ...props.initialData }
   }
 })
+
+watch(formData, (newVal) => {
+  console.log('Form data updated:', newVal)
+}, { deep: true })
+
 </script>
 
 <style scoped>

@@ -44,7 +44,7 @@
       :id="field.name"
       :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
-      @blur="handleBlur"
+      @focusout="handleBlur"
       :type="field.fieldtype === 'Password' ? 'password' : 'text'"
       :disabled="field.read_only"
       :required="field.reqd"
@@ -77,6 +77,6 @@ const handleInput = (event) => {
 }
 
 const handleBlur = () => {
-  saveAsDraft({ [props.field.name]: props.modelValue })
+  saveAsDraft({ [props.field.fieldname]: props.modelValue })
 }
 </script>
