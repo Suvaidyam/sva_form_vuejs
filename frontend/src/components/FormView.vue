@@ -2,7 +2,7 @@
   <div class="w-full h-full bg-white dark:bg-gray-900 z-10" v-if="loading">
     <Loader />
   </div>
-  <div v-else class="flex h-screen bg-white dark:bg-gray-900 overflow-hidden">
+  <div v-else class="flex w-full h-screen bg-white dark:bg-gray-900 ">
     <!-- Sidebar -->
     <aside v-if="!props.section" :class="[
       ' static inset-y-0 left-0  w-20 transform transition-transform duration-300 ease-in-out bg-gray-50 dark:bg-gray-800 shadow-lg overflow-y-auto',
@@ -37,7 +37,7 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 overflow-x-hidden overflow-y-auto bg-white dark:bg-gray-900">
+    <main class="flex-1 w-full bg-white dark:bg-gray-900">
       <h2 v-if="!props.section" class="text-3xl flex  items-center font-semibold text-[#0E4688] dark:text-white">
         Assessment Simple Test</h2>
       <div class=" mx-auto px-6 py-8">
