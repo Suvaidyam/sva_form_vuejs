@@ -1,8 +1,9 @@
 <template>
   <div v-if="!field.hidden" class="flex flex-col gap-2">
     <div :class="props.isCard ? 'gap-2' : ''" class="flex items-center">
-      <p class="w-6 h-6 rounded-full bg-gray-500 text-white flex justify-center items-center text-sm"
-        v-if="props.isCard">{{ 1 }}</p>
+      <p v-if="props.isCard" class="w-6 h-6 rounded-full bg-gray-500 text-white flex justify-center items-center text-sm">
+        {{ 1 }}
+      </p>
       <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
         {{ field.label }}
         <span v-if="field.reqd" class="text-red-500 ml-1">*</span>
@@ -38,33 +39,85 @@
         </Popover>
       </div>
     </div>
-    <div class="space-y-2" v-if="!props.isCard">
-      <div v-for="option in options" :key="option.name" class="flex items-center">
-        <input :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
-          @change="updateValue(option)" :disabled="field.read_only" :required="field.reqd && modelValue.length === 0"
-          class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
-        <label :for="`${field.name}-${option.name}`" class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
-          {{ option.label }}
+    <div v-if="!props.isCard" class="flex flex-wrap -mx-2">
+      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" 
+           :class="columnClasses"
+           class="px-2 mb-4">
+        <div v-for="option in columnOptions" :key="option.name" class="flex items-center mb-2">
+          <input 
+            :id="`${field.name}-${option.name}`" 
+            :name="field.name" 
+            type="checkbox" 
+            :checked="isChecked(option)"
+            @change="updateValue(option)" 
+            :disabled="field.read_only" 
+            :required="field.reqd && modelValue.length === 0"
+            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" 
+          />
+          <label :for="`${field.name}-${option.name}`" class="ml-2 block text-sm text-gray-700 dark:text-gray-200 truncate">
+            {{ option.label }}
+          </label>
+        </div>
+      </div>
+    </div>
+    <div v-else class="flex flex-wrap -mx-2 px-6">
+      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" 
+           :class="columnClasses"
+           class="px-2 mb-4">
+        <label 
+          v-for="option in columnOptions" 
+          :key="option.name"
+          :for="`${field.name}-${option.name}`" 
+          class="flex items-center gap-2 border rounded-md p-2 mb-2"
+        >
+          <input 
+            :id="`${field.name}-${option.name}`" 
+            :name="field.name" 
+            type="checkbox" 
+            :checked="isChecked(option)"
+            @change="updateValue(option)" 
+            :disabled="field.read_only" 
+            :required="field.reqd && modelValue.length === 0"
+            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600 flex-shrink-0" 
+          />
+          <p class="ml-2 block text-sm text-gray-700 dark:text-gray-200 truncate">
+            {{ option.label }}
+          </p>
         </label>
       </div>
     </div>
-    <div v-else class="flex flex-col gap-2 px-6">
-      <label :for="`${field.name}-${option.name}`" v-for="option in options" :key="option.name"
-        class="flex items-center gap-2 border rounded-md p-2">
-        <input :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
-          @change="updateValue(option)" :disabled="field.read_only" :required="field.reqd && modelValue.length === 0"
-          class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
-        <p class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
-          {{ option.label }}
-        </p>
-      </label>
+    <div v-else class="flex flex-wrap -mx-2 px-6">
+      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" 
+           :class="columnClasses"
+           class="px-2 mb-4">
+        <label 
+          v-for="option in columnOptions" 
+          :key="option.name"
+          :for="`${field.name}-${option.name}`" 
+          class="flex items-center gap-2 border rounded-md p-2 mb-2"
+        >
+          <input 
+            :id="`${field.name}-${option.name}`" 
+            :name="field.name" 
+            type="checkbox" 
+            :checked="isChecked(option)"
+            @change="updateValue(option)" 
+            :disabled="field.read_only" 
+            :required="field.reqd && modelValue.length === 0"
+            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" 
+          />
+          <p class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
+            {{ option.label }}
+          </p>
+        </label>
+      </div>
     </div>
     <p v-if="error" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ error }}</p>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, inject } from 'vue'
+import { ref, watch, inject, computed } from 'vue'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 import { InfoIcon } from 'lucide-vue-next'
 
@@ -96,6 +149,26 @@ const saveAsDraft = inject('saveAsDraft')
 
 const options = ref([])
 const error = ref('')
+
+const splitOptions = computed(() => {
+  if (options.value.length <= 8) {
+    return [options.value]
+  } else {
+    const columns = 4
+    const itemsPerColumn = Math.ceil(options.value.length / columns)
+    return Array.from({ length: columns }, (_, index) => 
+      options.value.slice(index * itemsPerColumn, (index + 1) * itemsPerColumn)
+    )
+  }
+})
+
+const columnClasses = computed(() => {
+  if (options.value.length <= 6) {
+    return 'w-full'
+  } else {
+    return 'w-full sm:w-1/2 md:w-1/4'
+  }
+})
 
 const getOptions = async () => {
   try {
@@ -162,8 +235,20 @@ const updateValue = (option) => {
 watch(() => props.field, getOptions, { immediate: true })
 </script>
 
+
+
 <style scoped>
 .group:hover .group-hover\:opacity-100 {
   opacity: 1;
+}
+
+/* Add these new styles */
+input[type="checkbox"] {
+  min-width: 1rem;
+  min-height: 1rem;
+}
+
+label, p {
+  max-width: calc(100% - 1.5rem);
 }
 </style>

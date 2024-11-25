@@ -21,7 +21,8 @@
                   <span class="mr-2">{{ field.label }}</span>
                   <span v-if="field.reqd" class="text-red-500">*</span>
                 </label>
-                <div v-if="field.description" class="ml-2 inline-block relative">
+                <p v-if="parsedDescription.desc" class="text-sm text-gray-500 mt-1">{{ parsedDescription.desc }}</p>
+                <div v-if="parsedDescription.info" class="ml-2 inline-block relative">
                   <Popover v-slot="{ open }" class="relative">
                     <PopoverButton @mouseenter="open = true" @mouseleave="open = false" class="focus:outline-none">
                       <InfoIcon class="w-4 h-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
@@ -43,7 +44,7 @@
                         <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                           <div class="p-4 bg-white dark:bg-gray-800">
                             <p class="text-sm text-gray-700 dark:text-gray-300">
-                              {{ field.description }}
+                              {{ parsedDescription.info }}
                             </p>
                           </div>
                         </div>
@@ -73,7 +74,7 @@
           {{ field.label }}
           <span v-if="field.reqd" class="text-red-500 ml-1">*</span>
         </label>
-        <div v-if="field.description" class="ml-2 relative">
+        <div v-if="parsedDescription.info" class="ml-2 relative">
           <Popover v-slot="{ open }" class="relative">
             <PopoverButton @mouseenter="open = true" @mouseleave="open = false" class="focus:outline-none">
               <InfoIcon class="w-4 h-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
@@ -95,7 +96,7 @@
                 <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                   <div class="p-4 bg-white dark:bg-gray-800">
                     <p class="text-sm text-gray-700 dark:text-gray-300">
-                      {{ field.description }}
+                      {{ parsedDescription.info }}
                     </p>
                   </div>
                 </div>
@@ -104,7 +105,24 @@
           </Popover>
         </div>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+      <p v-if="parsedDescription.desc" class="text-sm text-gray-500 mb-2">{{ parsedDescription.desc }}</p>
+      <div v-if="dropDownOptions" class="mt-1">
+        <select
+          :id="`${field.name}-select`"
+          :name="field.name"
+          v-model="selectedOption"
+          @change="updateValue(selectedOption)"
+          :disabled="field.read_only"
+          :required="field.reqd"
+          class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        >
+          <option value="" disabled selected>Select an option</option>
+          <option v-for="option in options" :key="option.name" :value="option.name">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2"
         :class="props.isCard ? 'px-6' : ''">
         <label v-if="props.isCard" :for="`${field.name}-${option.name}`" v-for="option in options" :key="option.name"
           :class="props.isCard ? 'border p-2 rounded-md shadow-sm' : ''"
@@ -119,7 +137,7 @@
         </label>
         <div v-if="!props.isCard" v-for="option in options" :key="option.name"
           :class="props.isCard ? 'border p-2 rounded-md' : ''" class="flex items-center">
-          <div class="flex-shrink-0 w-5 h-5 mr-2">
+          <div class="flex-shrink-0 w-5 h-5 mr-2 ml-2">
             <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
               :checked="modelValue === option.name" @change="updateValue(option.name)" :disabled="field.read_only"
               :required="field.reqd"
@@ -173,6 +191,11 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: false
+  },
+  dropDownOptions: {
+    type: Boolean,
+    required: false,
+    default: false
   }
 })
 
@@ -181,11 +204,30 @@ const call = inject('$call')
 const saveAsDraft = inject('saveAsDraft')
 const options = ref([])
 const error = ref('')
+const selectedOption = ref('')
 
 const gridTemplateColumns = computed(() => {
   const optionCount = options.value.length
   return `grid-template-columns: minmax(200px, 2fr) repeat(${optionCount}, minmax(100px, 1fr))`
 })
+
+const parsedDescription = computed(() => {
+  return getString(props.field.description || '')
+})
+
+function getString(str) {
+  const match = str.match(/\{([^}]+)\)/);
+  if (match) {
+    let arr = str.split(match[0])
+    if (arr.length > 1) {
+      return { desc: arr[0], info: match[1] }
+    } else {
+      return { desc: arr[0], info: '' }
+    }
+  } else {
+    return { desc: str, info: '' }
+  }
+}
 
 const getOptions = async () => {
   try {
@@ -232,6 +274,10 @@ const updateValue = (value) => {
 }
 
 watch(() => props.field, getOptions, { immediate: true })
+
+watch(() => props.modelValue, (newValue) => {
+  selectedOption.value = newValue
+}, { immediate: true })
 
 onMounted(() => {
   getOptions()

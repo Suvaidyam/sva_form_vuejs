@@ -79,7 +79,9 @@
                     class="space-y-4">
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
                       <component v-if="isFieldVisible(field)" :section="section.description"
-                        :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard"
+                        :is="getFieldComponent(field.fieldtype)"
+                         :field="field" :isCard="props.isCard"
+                         :dropDownOptions="field.is_dropDown"
                         :matrix="section.is_matrix" :index="fieldIndex" v-model="formData[field.fieldname]"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
                         :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname" />
