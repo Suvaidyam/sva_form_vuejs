@@ -55,7 +55,7 @@
             </div>
             <div v-for="option in options" :key="`radio-${option.name}`"
               class="bg-white dark:bg-gray-900 p-4 flex justify-center items-center border-t border-l border-gray-200 dark:border-gray-700">
-              <input v-if="isOptionVisible(option)" :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
+              <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
                 :checked="modelValue === option.name" @change="updateValue(option.name)" :disabled="field.read_only"
                 :required="field.reqd"
                 class="h-4 w-4 text-primary border-gray-300 focus:ring-primary dark:border-gray-600 dark:focus:ring-primary" />
@@ -106,21 +106,29 @@
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
         :class="props.isCard ? 'px-6' : ''">
-        <template v-for="option in options" :key="option.name">
-          <label v-if="isOptionVisible(option)" :for="`${field.name}-${option.name}`"
-            :class="[
-              props.isCard ? 'border p-2 rounded-md shadow-sm' : '',
-              'flex items-center text-sm cursor-pointer'
-            ]">
-            <div class="flex-shrink-0 w-5 h-5 mr-2">
-              <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
-                :checked="modelValue === option.name" @change="updateValue(option.name)" :disabled="field.read_only"
-                :required="field.reqd"
-                class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
-            </div>
-            <span class="flex-grow">{{ option.label }}</span>
+        <label v-if="props.isCard" :for="`${field.name}-${option.name}`" v-for="option in options" :key="option.name"
+          :class="props.isCard ? 'border p-2 rounded-md shadow-sm' : ''"
+          class="flex items-center text-sm cursor-pointer">
+          <div class="flex-shrink-0 w-5 h-5 mr-2">
+            <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
+              :checked="modelValue === option.name" @change="updateValue(option.name)" :disabled="field.read_only"
+              :required="field.reqd"
+              class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
+          </div>
+          <span class="flex-grow">{{ option.label }}</span>
+        </label>
+        <div v-if="!props.isCard" v-for="option in options" :key="option.name"
+          :class="props.isCard ? 'border p-2 rounded-md' : ''" class="flex items-center">
+          <div class="flex-shrink-0 w-5 h-5 mr-2">
+            <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
+              :checked="modelValue === option.name" @change="updateValue(option.name)" :disabled="field.read_only"
+              :required="field.reqd"
+              class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
+          </div>
+          <label :for="`${field.name}-${option.name}`" class="flex-grow text-sm text-gray-700 dark:text-gray-200 cursor-pointer">
+            {{ option.label }}
           </label>
-        </template>
+        </div>
       </div>
     </div>
     <p v-if="error" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ error }}</p>
@@ -165,10 +173,6 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: false
-  },
-  formData: {
-    type: Object,
-    required: true
   }
 })
 
@@ -224,17 +228,6 @@ const updateValue = (value) => {
   validateInput(value)
   if (props.onfieldChange && !error.value) {
     saveAsDraft({ [props.field.fieldname]: value })
-  }
-}
-
-const isOptionVisible = (option) => {
-  if (!option.depends_on) return true
-  const condition = option.depends_on.replace('eval:', '').replace(/doc\./g, 'props.formData.')
-  try {
-    return new Function('props', `return ${condition}`)(props)
-  } catch (error) {
-    console.error('Error evaluating option visibility:', error)
-    return false
   }
 }
 
