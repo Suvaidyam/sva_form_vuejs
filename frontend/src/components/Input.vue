@@ -84,10 +84,11 @@ const togglePasswordVisibility = () => {
 
 const handleBlur = (event) => {
   const value = event.target.value;
+  console.log(value,'value');
   emit('update:modelValue', value)
   validateInput(props.modelValue)
   if (props.onfieldChange && !error.value) {
-    saveAsDraft({ [props.field.fieldname]: props.modelValue })
+    saveAsDraft({ [props.field.fieldname]: value })
   }
 }
 

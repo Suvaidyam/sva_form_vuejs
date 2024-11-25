@@ -77,7 +77,7 @@
                   </h3>
                   <div v-if="section.fields && section.fields.length > 0" :aria-labelledby="`section-${index}`"
                     class="space-y-4">
-                    <div v-for="(field, fieldIndex) in section.fields" :key="field.name" class="mb-4">
+                    <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
                       <component v-if="isFieldVisible(field)" :section="section.description"
                         :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard"
                         :matrix="section.is_matrix" :index="fieldIndex" v-model="formData[field.fieldname]"
