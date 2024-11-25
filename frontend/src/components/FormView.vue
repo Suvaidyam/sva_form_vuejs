@@ -173,11 +173,11 @@ const props = defineProps({
   },
   onfieldChange: {
     type: Boolean,
-    default: true
+    default: false
   },
   submitButtonColor: {
     type: String,
-    default: 'Blue'
+    default: '#255b97'
   }
 })
 
@@ -307,9 +307,9 @@ const isFieldVisible = (field) => {
 
 const handleFieldUpdate = (fieldName, value) => {
   formData.value[fieldName] = value
-  if (props.onfieldChange) {
-    props.save_as_draft({ [fieldName]: value })
-  }
+  // if (props.onfieldChange) {
+  //   props.save_as_draft({ [fieldName]: value })
+  // }
 }
 
 const getMeta = async () => {
@@ -411,9 +411,9 @@ onMounted(() => {
   })
 })
 
-watch(formData, (newVal) => {
-  console.log('Form data updated:', newVal)
-}, { deep: true })
+// watch(formData, (newVal) => {
+//   console.log('Form data updated:', newVal)
+// }, { deep: true })
 
 </script>
 
