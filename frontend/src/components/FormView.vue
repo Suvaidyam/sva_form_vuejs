@@ -2,39 +2,53 @@
   <div class="w-full h-full bg-white dark:bg-gray-900 z-10" v-if="loading">
     <Loader />
   </div>
-  <div v-else class="w-full h-full min-h-screen dark:bg-gray-900">
-    <div v-if="allSections.length === 0"
-      class="w-full h-full flex justify-center items-center text-h3 text-gray-500 dark:text-gray-400">
-      Assessment Not Found
-    </div>
-    <div v-else class="max-w-[1920px] min-h-screen mx-auto overflow-hidden">
-      <div class="flex min-h-screen">
-        <!-- Sidebar with increased width -->
-        <nav v-if="!props.section" class="w-96 flex-shrink-0 bg-gray-50 dark:bg-gray-800 p-6 overflow-y-auto">
+  <div v-else class="flex h-screen bg-white dark:bg-gray-900 overflow-hidden">
+    <!-- Sidebar -->
+    <aside v-if="!props.section" :class="[
+      ' static inset-y-0 left-0  w-20 transform transition-transform duration-300 ease-in-out bg-gray-50 dark:bg-gray-800 shadow-lg overflow-y-auto',
+      isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
+      'md:translate-x-0 md:static md:inset-auto'
+    ]">
+      <div class="flex flex-col h-full">
+        <div class="flex items-center  justify-between p-4 border-b dark:border-gray-700">
+          <h3 class="text-lg ml-4 text-gray-800 dark:text-white">Section</h3>
+        </div>
+        <nav class="flex-1 px-4 py-4">
           <ul class="space-y-2">
             <li v-for="(tab, index) in tabFields" :key="tab.name">
               <button @click="setActiveTab(tab.name)" :disabled="index > 0 && !allTabsUnlocked" :class="[
-                'text-left px-4 py-2 rounded-lg transition-colors duration-150 ease-in-out w-full flex justify-between items-center',
+                'w-full text-left px-4 py-2 rounded-lg transition-colors duration-150 ease-in-out flex justify-between items-center',
                 activeTab === tab.name
                   ? 'bg-orange-500 text-white'
                   : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700',
-                index > 0 && !allTabsUnlocked
-                  ? 'opacity-50 cursor-not-allowed'
-                  : ''
+                index > 0 && !allTabsUnlocked ? 'opacity-50 cursor-not-allowed' : ''
               ]">
                 {{ tab.label }}
                 <span class="mr-2" v-if="index > 0">
                   <LockIcon v-if="!allTabsUnlocked" class="w-4 h-4" />
-                  <CheckCircleIcon v-if="allTabsUnlocked && tabCompletionStatus[tab.name]" class="w-4 h-4 text-green-500" />
+                  <CheckCircleIcon v-if="allTabsUnlocked && tabCompletionStatus[tab.name]"
+                    class="w-4 h-4 text-green-500" />
                 </span>
               </button>
             </li>
           </ul>
         </nav>
-        <!-- Main Content -->
-        <div class="flex-grow overflow-y-auto">
-          <form @submit.prevent="onSubmit(formData)" class="p-6 flex flex-col h-full">
-            <div class="flex-grow">
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-x-hidden overflow-y-auto bg-white dark:bg-gray-900">
+      <h2 v-if="!props.section" class="text-3xl flex  items-center font-semibold text-[#0E4688] dark:text-white">
+        Assessment Simple Test</h2>
+      <div class=" mx-auto px-6 py-8">
+
+
+        <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
+          Assessment Not Found
+        </div>
+        <div v-else>
+          <form @submit.prevent="onSubmit(formData)" class="mt-16 md:mt-0">
+            <div class="space-y-6">
               <template v-if="props.section">
                 <div v-for="(section, index) in allSections" :key="index" class="mb-6">
                   <div @click="toggleSection(index)"
@@ -68,8 +82,7 @@
                         :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard"
                         :matrix="section.is_matrix" :index="fieldIndex" v-model="formData[field.fieldname]"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
-                        :onfieldChange="props.onfieldChange"
-                        :aria-label="field.label || field.fieldname" />
+                        :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname" />
                     </div>
                   </div>
                   <p v-else class="text-gray-500 dark:text-gray-400 italic">
@@ -89,9 +102,13 @@
                 Next
               </button>
               <button
-                :class="isSubmitDisabled ? 'bg-gray-400' : 'bg-secondary hover:bg-primary bg-orange-600 text-white'"
-                v-if="props.section || isLastTab" type="submit"
-                class="px-4 py-2 bg-orange-600 border rounded-md focus:outline-none">
+              :style="{ backgroundColor: props.submitButtonColor }"
+               :class="[
+                isSubmitDisabled ? 'bg-gray-400' : `bg-blue-500 hover:bg-blue-600`,
+                'text-white'
+              ]" v-if="props.section || isLastTab" type="submit"
+                class="px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2"
+                :disabled="isSubmitDisabled">
                 Submit
               </button>
               <button @click="save_as_draft(formData)" v-if="props.isDraft" type="button" :disabled="isSubmitDisabled"
@@ -103,13 +120,13 @@
           </form>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, inject, watch, provide } from 'vue'
-import { ChevronDownIcon, LockIcon, CheckCircleIcon } from 'lucide-vue-next'
+import { ChevronDownIcon, LockIcon, CheckCircleIcon, XIcon, MenuIcon } from 'lucide-vue-next'
 import Input from './Input.vue'
 import Link from './Link.vue'
 import LinkTable from './LinkTable.vue'
@@ -121,7 +138,6 @@ import DateInput from './DateInput.vue'
 import Textarea from './TextareaInput.vue'
 import CheckboxComponent from './CheckboxComponent.vue'
 
-const loading = ref(true)
 const props = defineProps({
   doctype: {
     type: String,
@@ -155,20 +171,26 @@ const props = defineProps({
     type: Function,
     required: true
   },
-  onfieldChange:{
-    type:Boolean,
-    default:true
+  onfieldChange: {
+    type: Boolean,
+    default: true
+  },
+  submitButtonColor: {
+    type: String,
+    default: 'Blue'
   }
 })
 
 const call = inject('$call')
 
+const loading = ref(true)
 const docTypeMeta = ref(null)
 const activeTab = ref('')
 const formData = ref({})
 const openSections = ref([])
 const allTabsUnlocked = ref(false)
 const tabCompletionStatus = ref({})
+const isSidebarOpen = ref(false)
 
 const tabFields = computed(() =>
   docTypeMeta.value?.fields.filter(field => field.fieldtype === 'Tab Break') || []
@@ -312,14 +334,9 @@ const getMeta = async () => {
   }
 }
 
-watch(() => props.initialData, (newVal) => {
-  console.log('Initial data updated:', newVal)
-  Object.assign(formData.value, newVal)
-}, { deep: true, immediate: true })
-
 const initializeFormData = () => {
   if (!docTypeMeta.value) return
-  const newFormData = { ...formData.value } // Start with existing data
+  const newFormData = { ...formData.value }
   docTypeMeta.value.fields.forEach(field => {
     if (!(field.fieldname in newFormData)) {
       if (field.fieldtype === 'Table MultiSelect') {
@@ -350,7 +367,6 @@ const nextTab = () => {
     allTabsUnlocked.value = true
   }
 
-  // Check if current tab is complete
   const currentTabFields = activeFieldSections.value.flatMap(section => section.fields)
   const isCurrentTabComplete = currentTabFields.some(field => {
     const value = formData.value[field.fieldname]
@@ -369,6 +385,8 @@ const nextTab = () => {
 const toggleSection = (index) => {
   openSections.value[index] = !openSections.value[index]
 }
+
+
 provide('saveAsDraft', props.save_as_draft)
 
 onMounted(() => {
@@ -376,6 +394,21 @@ onMounted(() => {
   if (Object.keys(props.initialData).length > 0) {
     formData.value = { ...props.initialData }
   }
+
+  // Set initial sidebar state based on screen size
+  isSidebarOpen.value = window.innerWidth >= 768
+
+  // Update sidebar state on window resize
+  window.addEventListener('resize', () => {
+    isSidebarOpen.value = window.innerWidth >= 768
+  })
+
+  // Close sidebar when clicking outside on mobile
+  document.addEventListener('click', (event) => {
+    if (isSidebarOpen.value && window.innerWidth < 768 && !event.target.closest('aside') && !event.target.closest('button')) {
+      isSidebarOpen.value = false
+    }
+  })
 })
 
 watch(formData, (newVal) => {
@@ -385,7 +418,9 @@ watch(formData, (newVal) => {
 </script>
 
 <style scoped>
-.w-96 {
-  width: 270px !important;
+.w-20 {
+  width: 15% !important;
 }
+
+/* Add any additional styles here */
 </style>

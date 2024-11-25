@@ -2,7 +2,8 @@
   <div v-if="!field.hidden" class="flex flex-col gap-2">
     <div :class="props.isCard ? 'gap-2' : ''" class="flex items-center justify-between">
       <div class="flex items-center">
-        <p v-if="props.isCard" class="w-6 h-6 rounded-full bg-gray-500 text-white flex justify-center items-center text-sm mr-2">
+        <p v-if="props.isCard"
+          class="w-6 h-6 rounded-full bg-gray-500 text-white flex justify-center items-center text-sm mr-2">
           {{ 1 }}
         </p>
         <label :for="field.name" class="text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -15,19 +16,12 @@
               <InfoIcon class="w-4 h-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
             </PopoverButton>
 
-            <transition
-              enter-active-class="transition duration-200 ease-out"
-              enter-from-class="opacity-0 translate-y-1"
-              enter-to-class="opacity-100 translate-y-0"
-              leave-active-class="transition duration-150 ease-in"
-              leave-from-class="opacity-100 translate-y-0"
-              leave-to-class="opacity-0 translate-y-1"
-            >
+            <transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-1"
+              enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
+              leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
               <PopoverPanel
                 class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-1/2 left-1/2 sm:px-0 lg:max-w-3xl"
-                @mouseenter="open = true"
-                @mouseleave="open = false"
-              >
+                @mouseenter="open = true" @mouseleave="open = false">
                 <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                   <div class="p-4 bg-white dark:bg-gray-800">
                     <p class="text-sm text-gray-700 dark:text-gray-300">
@@ -41,19 +35,11 @@
         </div>
       </div>
       <div class="flex items-center">
-        <input
-          :id="field.name"
-          :name="field.name"
-          type="checkbox"
-          :checked="modelValue"
-          @change="handleChange"
-          @blur="handleBlur"
-          :disabled="field.read_only"
-          :required="field.reqd"
-          class="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600"
-          :class="{ 'border-red-500 focus:ring-red-500': error }"
-        />
         <label :for="field.name" class="ml-2 text-sm text-gray-700 dark:text-gray-200">{{ field.placeholder }}</label>
+        <input :id="field.name" :name="field.name" type="checkbox" :checked="modelValue" @change="handleChange"
+          @blur="handleBlur" :disabled="field.read_only" :required="field.reqd"
+          class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600"
+          :class="{ 'border-red-500 focus:ring-red-500': error }" />
       </div>
     </div>
     <p v-if="error" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ error }}</p>
