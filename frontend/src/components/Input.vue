@@ -109,3 +109,10 @@ const validateInput = (value) => {
 }
 
 </script>
+<style scoped>
+ .w-96{
+  width: 100% !important;
+  max-width: 800px !important;
+  min-width: 500px !important;
+ }
+</style>
