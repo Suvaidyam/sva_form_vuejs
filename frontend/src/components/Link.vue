@@ -215,18 +215,18 @@ const parsedDescription = computed(() => {
   return getString(props.field.description || '')
 })
 
-function getString(str) {
-  const match = str.match(/\{([^}]+)\)/);
-  if (match) {
-    let arr = str.split(match[0])
-    if (arr.length > 1) {
-      return { desc: arr[0], info: match[1] }
+function getString(str){
+    const match = str.match(/\{([^}]+)\}/); // Matches content inside {}
+    if (match) {
+        let arr = str.split(match[0])
+        if(arr.length > 1){
+            return {desc:arr[0], info:match[1]}
+        }else{
+            return {desc:arr[0], info:''}
+        }
     } else {
-      return { desc: arr[0], info: '' }
+        return {desc:str, info:''}
     }
-  } else {
-    return { desc: str, info: '' }
-  }
 }
 
 const getOptions = async () => {
@@ -268,7 +268,7 @@ const validateInput = (value) => {
 const updateValue = (value) => {
   emit('update:modelValue', value)
   validateInput(value)
-  if (props.onfieldChange && !error.value) {
+  if (props.onfieldChange ) {
     saveAsDraft({ [props.field.fieldname]: value })
   }
 }

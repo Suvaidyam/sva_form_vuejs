@@ -5,7 +5,7 @@
   <div v-else class="flex w-full h-screen bg-white dark:bg-gray-900 ">
     <!-- Sidebar -->
     <aside v-if="!props.section" :class="[
-      ' static inset-y-0 left-0  w-20 transform transition-transform duration-300 ease-in-out bg-gray-50 dark:bg-gray-800 shadow-lg overflow-y-auto',
+      'static inset-y-0 left-0  w-20 transform transition-transform duration-300 ease-in-out bg-gray-50 dark:bg-gray-800 shadow-lg overflow-y-auto',
       isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
       'md:translate-x-0 md:static md:inset-auto'
     ]">
@@ -38,16 +38,14 @@
 
     <!-- Main Content -->
     <main class="flex-1 w-full bg-white dark:bg-gray-900">
-      <h2 v-if="!props.section" class="text-3xl flex  items-center font-semibold text-[#0E4688] dark:text-white">
+      <h2 v-if="!props.section" class="text-3xl flex ml-5  items-center font-semibold text-[#0E4688] dark:text-white">
         Assessment Simple Test</h2>
       <div class=" mx-auto px-6 py-8">
-
-
         <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
           Assessment Not Found
         </div>
         <div v-else>
-          <form @submit.prevent="onSubmit(formData)" class="mt-16 md:mt-0">
+          <form @submit.prevent="onSubmit" class="mt-16 md:mt-0">
             <div class="space-y-6">
               <template v-if="props.section">
                 <div v-for="(section, index) in allSections" :key="index" class="mb-6">
@@ -79,10 +77,9 @@
                     class="space-y-4">
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
                       <component v-if="isFieldVisible(field)" :section="section.description"
-                        :is="getFieldComponent(field.fieldtype)"
-                         :field="field" :isCard="props.isCard"
-                         :dropDownOptions="field.is_dropDown"
-                        :matrix="section.is_matrix" :index="fieldIndex" v-model="formData[field.fieldname]"
+                        :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard"
+                        :dropDownOptions="field.is_dropDown" :matrix="section.is_matrix" :index="fieldIndex"
+                        v-model="formData[field.fieldname]"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
                         :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname" />
                     </div>
@@ -103,14 +100,11 @@
                 ]">
                 Next
               </button>
-              <button
-              :style="{ backgroundColor: props.submitButtonColor }"
-               :class="[
+              <button :style="{ backgroundColor: props.submitButtonColor }" :class="[
                 isSubmitDisabled ? 'bg-gray-400' : `bg-blue-500 hover:bg-blue-600`,
                 'text-white'
               ]" v-if="props.section || isLastTab" type="submit"
-                class="px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2"
-                :disabled="isSubmitDisabled">
+                class="px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2">
                 Submit
               </button>
               <button @click="save_as_draft(formData)" v-if="props.isDraft" type="button" :disabled="isSubmitDisabled"
@@ -129,6 +123,7 @@
 <script setup>
 import { ref, computed, onMounted, inject, watch, provide } from 'vue'
 import { ChevronDownIcon, LockIcon, CheckCircleIcon, XIcon, MenuIcon } from 'lucide-vue-next'
+import { useToast } from 'vue-toastification'
 import Input from './Input.vue'
 import Link from './Link.vue'
 import LinkTable from './LinkTable.vue'
@@ -184,6 +179,7 @@ const props = defineProps({
 })
 
 const call = inject('$call')
+const toast = useToast()
 
 const loading = ref(true)
 const docTypeMeta = ref(null)
@@ -309,9 +305,6 @@ const isFieldVisible = (field) => {
 
 const handleFieldUpdate = (fieldName, value) => {
   formData.value[fieldName] = value
-  // if (props.onfieldChange) {
-  //   props.save_as_draft({ [fieldName]: value })
-  // }
 }
 
 const getMeta = async () => {
@@ -348,7 +341,7 @@ const initializeFormData = () => {
       }
     }
   })
-  // formData.value = newFormData
+  formData.value = newFormData
 }
 
 const initializeTabCompletionStatus = () => {
@@ -388,6 +381,46 @@ const toggleSection = (index) => {
   openSections.value[index] = !openSections.value[index]
 }
 
+const validateForm = () => {
+  const newErrors = {}
+  const sectionsWithErrors = new Set()
+  let firstErrorTab = null
+
+  docTypeMeta.value.fields.forEach(field => {
+    if (field.reqd && (!formData.value[field.fieldname] || formData.value[field.fieldname] === '')) {
+      newErrors[field.fieldname] = 'This field is required'
+      const section = allSections.value.find(s => s.fields.some(f => f.fieldname === field.fieldname))
+      if (section) {
+        sectionsWithErrors.add(section.label)
+      }
+      if (!firstErrorTab) {
+        firstErrorTab = tabFields.value.find(tab =>
+          tab.name === field.parent ||
+          (field.idx > tab.idx && field.idx < (tabFields.value[tabFields.value.indexOf(tab) + 1]?.idx || Infinity))
+        )?.name
+      }
+    }
+  })
+
+  return { isValid: Object.keys(newErrors).length === 0, firstErrorTab, sectionsWithErrors }
+}
+
+const onSubmit = () => {
+  const { isValid, firstErrorTab, sectionsWithErrors } = validateForm()
+
+  if (!isValid) {
+    if (firstErrorTab) {
+      setActiveTab(firstErrorTab)
+    }
+    const errorMessage = `Mandatory fields not filled in sections: ${Array.from(sectionsWithErrors).join(', ')}`
+    toast.error(errorMessage, {
+      timeout: 5000,
+      closeOnClick: true,
+    })
+  } else {
+    props.onSubmit(formData.value)
+  }
+}
 
 provide('saveAsDraft', props.save_as_draft)
 
@@ -397,15 +430,12 @@ onMounted(() => {
     formData.value = { ...props.initialData }
   }
 
-  // Set initial sidebar state based on screen size
   isSidebarOpen.value = window.innerWidth >= 768
 
-  // Update sidebar state on window resize
   window.addEventListener('resize', () => {
     isSidebarOpen.value = window.innerWidth >= 768
   })
 
-  // Close sidebar when clicking outside on mobile
   document.addEventListener('click', (event) => {
     if (isSidebarOpen.value && window.innerWidth < 768 && !event.target.closest('aside') && !event.target.closest('button')) {
       isSidebarOpen.value = false
@@ -413,15 +443,23 @@ onMounted(() => {
   })
 })
 
-// watch(formData, (newVal) => {
-//   console.log('Form data updated:', newVal)
-// }, { deep: true })
-
+watch(activeTab, () => {
+  // Removed error clearing logic
+})
 </script>
 
 <style scoped>
 .w-20 {
   width: 15% !important;
+
+
+
+  /* Add any additional styles here */
+}
+
+.ml-5 {
+  margin-left: 1.25rem !important;
+  color: #0E4688 !important;
 }
 
 /* Add any additional styles here */

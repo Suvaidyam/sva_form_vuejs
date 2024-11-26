@@ -1,6 +1,13 @@
 <template>
   <div v-if="!field.hidden" class="flex flex-col gap-2">
-    <div :class="props.isCard ? 'gap-2' : ''" class="flex items-center justify-between">
+    <div :class="props.isCard ? 'gap-2' : ''" class="flex items-center gap-2">
+      <div class="flex items-center">
+        <label :for="field.name" class="ml-2 text-sm text-gray-700 dark:text-gray-200">{{ field.placeholder }}</label>
+        <input :id="field.name" :name="field.name" type="checkbox" :checked="modelValue" @change="handleChange"
+          @blur="handleBlur" :disabled="field.read_only" :required="field.reqd"
+          class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600"
+          :class="{ 'border-red-500 focus:ring-red-500': error }" />
+      </div>
       <div class="flex items-center">
         <p v-if="props.isCard"
           class="w-6 h-6 rounded-full bg-gray-500 text-white flex justify-center items-center text-sm mr-2">
@@ -34,13 +41,7 @@
           </Popover>
         </div>
       </div>
-      <div class="flex items-center">
-        <label :for="field.name" class="ml-2 text-sm text-gray-700 dark:text-gray-200">{{ field.placeholder }}</label>
-        <input :id="field.name" :name="field.name" type="checkbox" :checked="modelValue" @change="handleChange"
-          @blur="handleBlur" :disabled="field.read_only" :required="field.reqd"
-          class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600"
-          :class="{ 'border-red-500 focus:ring-red-500': error }" />
-      </div>
+      
     </div>
     <p v-if="error" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ error }}</p>
   </div>
