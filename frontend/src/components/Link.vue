@@ -18,8 +18,7 @@
             <div class="bg-white dark:bg-gray-900 p-4 flex items-center border-t border-gray-200 dark:border-gray-700">
               <div class="text-sm text-gray-900 dark:text-gray-100">
                 <label :for="`${field.name}-${options[0]?.name}`" class="flex items-center">
-                  <span class="mr-2">{{ field.label }}</span>
-                  <span v-if="isFieldMandatory(field)" class="text-red-500">*</span>
+                  <span class="mr-2">{{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500">*</span></span>
                 </label>
                 <p v-if="parsedDescription.desc" class="text-sm text-gray-500 mt-1">{{ parsedDescription.desc }}</p>
                 <div v-if="parsedDescription.info" class="ml-2 inline-block relative">
@@ -71,8 +70,7 @@
           class="w-6 h-6 text-sm flex items-center justify-center rounded-full bg-gray-500 text-white">{{ index + 1 }}
         </p>
         <label :for="`${field.name}-${options[0]?.name}`" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
-          {{ field.label }}
-          <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
+          {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
         </label>
         <div v-if="parsedDescription.info" class="ml-2 relative">
           <Popover v-slot="{ open }" class="relative">

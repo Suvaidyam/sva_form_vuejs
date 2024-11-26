@@ -1,12 +1,12 @@
 <template>
   <div v-if="!field.hidden" class="flex flex-col gap-2">
     <div :class="props.isCard ? 'gap-2' : ''" class="flex items-center">
-      <p v-if="props.isCard" class="w-6 h-6 rounded-full bg-gray-500 text-white flex justify-center items-center text-sm">
+      <p v-if="props.isCard"
+        class="w-6 h-6 rounded-full bg-gray-500 text-white flex justify-center items-center text-sm">
         {{ 1 }}
       </p>
       <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        {{ field.label }}
-        <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
+        {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
       <div v-if="field.description" class="ml-2 relative">
         <Popover v-slot="{ open }" class="relative">
@@ -14,19 +14,11 @@
             <InfoIcon class="w-4 h-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
           </PopoverButton>
 
-          <transition
-            enter-active-class="transition duration-200 ease-out"
-            enter-from-class="opacity-0 translate-y-1"
-            enter-to-class="opacity-100 translate-y-0"
-            leave-active-class="transition duration-150 ease-in"
-            leave-from-class="opacity-100 translate-y-0"
-            leave-to-class="opacity-0 translate-y-1"
-          >
-            <PopoverPanel
-              class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-1/2 left-1/2 sm:px-0 lg:max-w-3xl"
-              @mouseenter="open = true"
-              @mouseleave="open = false"
-            >
+          <transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-1"
+            enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
+            leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
+            <PopoverPanel class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-1/2 left-1/2 sm:px-0 lg:max-w-3xl"
+              @mouseenter="open = true" @mouseleave="open = false">
               <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                 <div class="p-4 bg-white dark:bg-gray-800">
                   <p class="text-sm text-gray-700 dark:text-gray-300">
@@ -40,46 +32,28 @@
       </div>
     </div>
     <div v-if="!props.isCard" class="flex flex-wrap -mx-2">
-      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" 
-           :class="columnClasses"
-           class="px-2 mb-4">
+      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses"
+        class="px-2 mb-4">
         <div v-for="option in columnOptions" :key="option.name" class="flex items-center mb-2">
-          <input 
-            :id="`${field.name}-${option.name}`" 
-            :name="field.name" 
-            type="checkbox" 
-            :checked="isChecked(option)"
-            @change="updateValue(option)" 
-            :disabled="field.read_only" 
-            :required="field.reqd && modelValue.length === 0"
-            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" 
-          />
-          <label :for="`${field.name}-${option.name}`" class="ml-2 block text-sm text-gray-700 dark:text-gray-200 truncate">
+          <input :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
+            @change="updateValue(option)" :disabled="field.read_only" :required="field.reqd && modelValue.length === 0"
+            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
+          <label :for="`${field.name}-${option.name}`"
+            class="ml-2 block text-sm text-gray-700 dark:text-gray-200 truncate">
             {{ option.label }}
           </label>
         </div>
       </div>
     </div>
     <div v-else class="flex flex-wrap -mx-2 px-6">
-      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" 
-           :class="columnClasses"
-           class="px-2 mb-4">
-        <label 
-          v-for="option in columnOptions" 
-          :key="option.name"
-          :for="`${field.name}-${option.name}`" 
-          class="flex items-center gap-2 border rounded-md p-2 mb-2"
-        >
-          <input 
-            :id="`${field.name}-${option.name}`" 
-            :name="field.name" 
-            type="checkbox" 
-            :checked="isChecked(option)"
-            @change="updateValue(option)" 
-            :disabled="field.read_only" 
+      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses"
+        class="px-2 mb-4">
+        <label v-for="option in columnOptions" :key="option.name" :for="`${field.name}-${option.name}`"
+          class="flex items-center gap-2 border rounded-md p-2 mb-2">
+          <input :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
+            @change="updateValue(option)" :disabled="field.read_only"
             :required="isFieldMandatory(field) && modelValue.length === 0"
-            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600 flex-shrink-0" 
-          />
+            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600 flex-shrink-0" />
           <p class="ml-2 block text-sm text-gray-700 dark:text-gray-200 truncate">
             {{ option.label }}
           </p>
@@ -87,25 +61,14 @@
       </div>
     </div>
     <div v-else class="flex flex-wrap -mx-2 px-6">
-      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" 
-           :class="columnClasses"
-           class="px-2 mb-4">
-        <label 
-          v-for="option in columnOptions" 
-          :key="option.name"
-          :for="`${field.name}-${option.name}`" 
-          class="flex items-center gap-2 border rounded-md p-2 mb-2"
-        >
-          <input 
-            :id="`${field.name}-${option.name}`" 
-            :name="field.name" 
-            type="checkbox" 
-            :checked="isChecked(option)"
-            @change="updateValue(option)" 
-            :disabled="field.read_only" 
+      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses"
+        class="px-2 mb-4">
+        <label v-for="option in columnOptions" :key="option.name" :for="`${field.name}-${option.name}`"
+          class="flex items-center gap-2 border rounded-md p-2 mb-2">
+          <input :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
+            @change="updateValue(option)" :disabled="field.read_only"
             :required="isFieldMandatory(field) && modelValue.length === 0"
-            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" 
-          />
+            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
           <p class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
             {{ option.label }}
           </p>
@@ -172,7 +135,7 @@ const splitOptions = computed(() => {
   } else {
     const columns = 4
     const itemsPerColumn = Math.ceil(options.value.length / columns)
-    return Array.from({ length: columns }, (_, index) => 
+    return Array.from({ length: columns }, (_, index) =>
       options.value.slice(index * itemsPerColumn, (index + 1) * itemsPerColumn)
     )
   }
@@ -264,14 +227,15 @@ input[type="checkbox"] {
   min-height: 1rem;
 }
 
-label, p {
+label,
+p {
   max-width: calc(100% - 1.5rem);
 }
 
 
-.w-96{
+.w-96 {
   width: 100% !important;
   max-width: 800px !important;
   min-width: 500px !important;
- }
+}
 </style>
