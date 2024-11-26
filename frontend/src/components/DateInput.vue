@@ -39,7 +39,7 @@
     <div class="relative">
       <input
         :id="field.name"
-        :value="modelValue"
+        :value="manipulateModelValue(modelValue)"
         @input="handleInput"
         @change="handleChange"
         type="month"
@@ -82,6 +82,15 @@ const props = defineProps({
   }
 })
 
+const manipulateModelValue = (modelValue) => {
+  if (!modelValue) return ''
+  if (modelValue.split('-').length === 3){
+    return modelValue.split('-').slice(0, 2).join('-')
+  }else if (modelValue.split('-').length === 2){
+    return modelValue
+  }
+}
+
 const emit = defineEmits(['update:modelValue'])
 const saveAsDraft = inject('saveAsDraft')
 
@@ -101,15 +110,15 @@ const isFieldMandatory = (field) => {
 
 const handleInput = (event) => {
   const value = event.target.value
-  emit('update:modelValue', value)
-  validateInput(value)
+  emit('update:modelValue', value + "-01")
+  validateInput(value + "-01")
 }
 
 const handleChange = (event) => {
   const value = event.target.value
-  validateInput(value)
+  validateInput(value + "-01")
   if (props.onfieldChange && !error.value) {
-    saveAsDraft({ [props.field.fieldname]: value })
+    saveAsDraft({ [props.field.fieldname]: value + "-01" })
   }
 }
 
