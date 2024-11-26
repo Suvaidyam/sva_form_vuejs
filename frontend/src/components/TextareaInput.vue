@@ -3,7 +3,7 @@
     <div class="flex items-center">
       <label :for="field.name" class="text-sm font-medium text-gray-700 dark:text-gray-200">
         {{ field.label }}
-        <span v-if="field.reqd === 1" class="text-red-500 ml-1">*</span>
+        <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
       <div v-if="field.description" class="ml-2 relative">
         <Popover v-slot="{ open }" class="relative">
@@ -42,7 +42,7 @@
       @input="handleInput" 
       @blur="handleBlur" 
       :disabled="field.read_only"
-      :required="field.reqd" 
+      :required="isFieldMandatory(field)" 
       :rows="field.rows || 3"
       :placeholder="field.placeholder"
       :class="[
@@ -73,6 +73,11 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: false
+  },
+  formData: {
+    type: Object,
+    required: false,
+    default: () => ({})
   }
 })
 
@@ -85,6 +90,18 @@ const handleInput = (event) => {
   const value = event.target.value
   emit('update:modelValue', value)
   validateInput(value)
+}
+
+const isFieldMandatory = (field) => {
+  if (field.reqd) return true
+  if (!field.mandatory_depends_on) return false
+  const condition = field.mandatory_depends_on.replace('eval:', '').replace(/doc\./g, 'formData.')
+  try {
+    return new Function('formData', `return ${condition}`)(props?.formData)
+  } catch (error) {
+    console.error('Error evaluating field visibility:', error)
+    return false
+  }
 }
 
 const handleBlur = () => {
