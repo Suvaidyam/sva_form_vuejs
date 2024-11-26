@@ -123,7 +123,7 @@
 <script setup>
 import { ref, computed, onMounted, inject, watch, provide } from 'vue'
 import { ChevronDownIcon, LockIcon, CheckCircleIcon, XIcon, MenuIcon } from 'lucide-vue-next'
-// import { useToast } from 'vue-toastification'
+import { useToast } from 'vue-toastification'
 import Input from './Input.vue'
 import Link from './Link.vue'
 import LinkTable from './LinkTable.vue'
@@ -179,7 +179,7 @@ const props = defineProps({
 })
 
 const call = inject('$call')
-// const toast = useToast()
+const toast = useToast()
 
 const loading = ref(true)
 const docTypeMeta = ref(null)
@@ -420,10 +420,10 @@ const onSubmit = () => {
       setActiveTab(firstErrorTab)
     }
     const errorMessage = `Mandatory fields not filled in sections: ${Array.from(sectionsWithErrors).join(', ')}`
-    // toast.error(errorMessage, {
-    //   timeout: 5000,
-    //   closeOnClick: true,
-    // })
+    toast.error(errorMessage, {
+      timeout: 5000,
+      closeOnClick: true,
+    })
   } else {
     props.onSubmit(formData.value)
   }
