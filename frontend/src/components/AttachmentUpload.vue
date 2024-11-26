@@ -17,7 +17,7 @@
           leave-from-class="opacity-100 translate-y-0"
           leave-to-class="opacity-0 translate-y-1"
         >
-          <PopoverPanel class="absolute z-10 w-64 px-4 mt-3 transform -translate-x-1/2 left-1/2 sm:px-0 lg:max-w-3xl">
+          <PopoverPanel class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-1/2 left-1/2 sm:px-0 lg:max-w-3xl">
             <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
               <div class="p-4 bg-white dark:bg-gray-800">
                 <p class="text-sm text-gray-700 dark:text-gray-300">
@@ -230,3 +230,10 @@ watch(() => props.modelValue, (newValue) => {
 }, { immediate: true });
 </script>
 
+<style scoped>
+ .w-96{
+  width: 100% !important;
+  max-width: 800px !important;
+  min-width: 500px !important;
+ }
+</style>

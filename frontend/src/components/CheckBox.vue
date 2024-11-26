@@ -267,4 +267,11 @@ input[type="checkbox"] {
 label, p {
   max-width: calc(100% - 1.5rem);
 }
+
+
+.w-96{
+  width: 100% !important;
+  max-width: 800px !important;
+  min-width: 500px !important;
+ }
 </style>

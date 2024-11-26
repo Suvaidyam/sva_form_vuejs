@@ -95,7 +95,7 @@
                 :disabled="isFirstTab && !isFirstTabCompletelyFilled" :class="[
                   'px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
                   isFirstTab && !isFirstTabCompletelyFilled
-                    ? 'bg-gray-300 cursor-not-allowed'
+                    ? 'bg-gray-300 abc cursor-not-allowed'
                     : 'bg-orange-500 text-white hover:bg-orange-600'
                 ]">
                 Next
@@ -467,6 +467,9 @@ watch(activeTab, () => {
 .ml-5 {
   margin-left: 1.25rem !important;
   color: #0E4688 !important;
+}
+.abc{
+  background-color: #eef0f3 !important;
 }
 
 /* Add any additional styles here */
