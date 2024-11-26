@@ -2,21 +2,15 @@
   <div class="w-full">
     <div class="flex items-center mb-2">
       <label :for="field.fieldname" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
-        {{ field.label }}
-        <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
+        {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
       <Popover v-if="field.description" class="relative inline-block ml-2">
         <PopoverButton class="focus:outline-none">
           <InfoIcon class="w-4 h-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
         </PopoverButton>
-        <transition
-          enter-active-class="transition duration-200 ease-out"
-          enter-from-class="opacity-0 translate-y-1"
-          enter-to-class="opacity-100 translate-y-0"
-          leave-active-class="transition duration-150 ease-in"
-          leave-from-class="opacity-100 translate-y-0"
-          leave-to-class="opacity-0 translate-y-1"
-        >
+        <transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-1"
+          enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
+          leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
           <PopoverPanel class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-1/2 left-1/2 sm:px-0 lg:max-w-3xl">
             <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
               <div class="p-4 bg-white dark:bg-gray-800">
@@ -29,27 +23,33 @@
         </transition>
       </Popover>
     </div>
+
     <div
-      class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 rounded-md hover:border-gray-400 transition-colors duration-200"
-      :class="{ 'border-red-500': error }"
-      @dragover.prevent @drop.prevent="handleDrop"
-    >
+      class="mt-1 border-2 py-2 rounded-md hover:border-gray-400 transition-colors duration-200"
+      :class="{ 'border-red-500': error }" @dragover.prevent @drop.prevent="handleDrop">
       <div class="space-y-1 text-center">
-        <UploadCloudIcon v-if="!preview" class="mx-auto h-12 w-12 text-gray-400" />
-        <div v-if="!preview" class="flex text-sm text-gray-600">
+        <div v-if="!preview" class="text-sm w-full text-gray-600">
           <label :for="field.fieldname"
-            class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-            <span>Upload a file</span>
-            <input :id="field.fieldname" :name="field.fieldname" type="file" class="sr-only" @change="handleFileUpload" :required="isFieldMandatory(field)"
-              :accept="acceptedFileTypes">
+            class="bg-white w-full text-gray-300 text-base rounded max-w-md h-52 flex flex-col items-center justify-center cursor-pointer mx-auto font-[sans-serif]">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 mb-2 fill-gray-300" viewBox="0 0 32 32">
+              <path
+                d="M23.75 11.044a7.99 7.99 0 0 0-15.5-.009A8 8 0 0 0 9 27h3a1 1 0 0 0 0-2H9a6 6 0 0 1-.035-12 1.038 1.038 0 0 0 1.1-.854 5.991 5.991 0 0 1 11.862 0A1.08 1.08 0 0 0 23 13a6 6 0 0 1 0 12h-3a1 1 0 0 0 0 2h3a8 8 0 0 0 .75-15.956z"
+                data-original="#000000" stroke="#e2e8f0" />
+              <path
+                d="M20.293 19.707a1 1 0 0 0 1.414-1.414l-5-5a1 1 0 0 0-1.414 0l-5 5a1 1 0 0 0 1.414 1.414L15 16.414V29a1 1 0 0 0 2 0V16.414z"
+                data-original="#000000" stroke="#e2e8f0"  />
+            </svg>
+            Upload file
+
+            <input :id="field.fieldname" :name="field.fieldname" type="file" class="w-full h-full hidden" @change="handleFileUpload"
+              :required="isFieldMandatory(field)" :accept="acceptedFileTypes">
+            <p v-if="!preview" class="text-xs font-medium text-gray-400 mt-2">PNG, JPG, GIF up to 10MB</p>
           </label>
-          <p class="pl-1">or drag and drop</p>
         </div>
-        <p v-if="!preview" class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
         <div v-if="preview" class="relative mt-4">
           <img :src="preview" alt="File preview" class="max-w-full h-auto rounded-lg shadow-md">
           <button @click="removeFile"
-            class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+            class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
             <XIcon class="h-4 w-4" />
           </button>
         </div>
@@ -201,7 +201,7 @@ const removeFile = () => {
   emit('update:modelValue', '');
   // Save as draft when file is removed
   saveAsDraft({ [props.field.fieldname]: '' });
-  
+
   if (props.field.reqd) {
     error.value = 'Please upload a file.';
   } else {
@@ -221,7 +221,7 @@ watch(() => props.modelValue, (newValue) => {
   } else {
     preview.value = '';
   }
-  
+
   if (!newValue && props.field.reqd) {
     error.value = 'Please upload a file.';
   } else {
@@ -231,9 +231,12 @@ watch(() => props.modelValue, (newValue) => {
 </script>
 
 <style scoped>
- .w-96{
+.w-96 {
   width: 100% !important;
   max-width: 800px !important;
   min-width: 500px !important;
- }
+}
+.border-2{
+  border: 2px dashed #e2e8f0;
+}
 </style>
