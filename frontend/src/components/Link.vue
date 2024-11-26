@@ -19,7 +19,7 @@
               <div class="text-sm text-gray-900 dark:text-gray-100">
                 <label :for="`${field.name}-${options[0]?.name}`" class="flex items-center">
                   <span class="mr-2">{{ field.label }}</span>
-                  <span v-if="field.reqd" class="text-red-500">*</span>
+                  <span v-if="isFieldMandatory(field)" class="text-red-500">*</span>
                 </label>
                 <p v-if="parsedDescription.desc" class="text-sm text-gray-500 mt-1">{{ parsedDescription.desc }}</p>
                 <div v-if="parsedDescription.info" class="ml-2 inline-block relative">
@@ -72,7 +72,7 @@
         </p>
         <label :for="`${field.name}-${options[0]?.name}`" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
           {{ field.label }}
-          <span v-if="field.reqd" class="text-red-500 ml-1">*</span>
+          <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
         </label>
         <div v-if="parsedDescription.info" class="ml-2 relative">
           <Popover v-slot="{ open }" class="relative">
@@ -140,7 +140,7 @@
           <div class="flex-shrink-0 w-5 h-5 mr-2 ml-2">
             <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
               :checked="modelValue === option.name" @change="updateValue(option.name)" :disabled="field.read_only"
-              :required="field.reqd"
+              :required="isFieldMandatory(field)"
               class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
           </div>
           <label :for="`${field.name}-${option.name}`" class="flex-grow text-sm text-gray-700 dark:text-gray-200 cursor-pointer">
@@ -196,6 +196,10 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: false
+  },
+  formData: {
+    type: Object,
+    required: true
   }
 })
 
@@ -205,6 +209,20 @@ const saveAsDraft = inject('saveAsDraft')
 const options = ref([])
 const error = ref('')
 const selectedOption = ref('')
+
+
+const isFieldMandatory = (field) => {
+  if (field.reqd) return true
+  if (!field.mandatory_depends_on) return false
+  const condition = field.mandatory_depends_on.replace('eval:', '').replace(/doc\./g, 'formData.')
+  try {
+    return new Function('formData', `return ${condition}`)(props?.formData)
+  } catch (error) {
+    console.error('Error evaluating field visibility:', error)
+    return false
+  }
+}
+
 
 const gridTemplateColumns = computed(() => {
   const optionCount = options.value.length

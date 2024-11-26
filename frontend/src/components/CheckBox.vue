@@ -6,7 +6,7 @@
       </p>
       <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
         {{ field.label }}
-        <span v-if="field.reqd" class="text-red-500 ml-1">*</span>
+        <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
       <div v-if="field.description" class="ml-2 relative">
         <Popover v-slot="{ open }" class="relative">
@@ -77,7 +77,7 @@
             :checked="isChecked(option)"
             @change="updateValue(option)" 
             :disabled="field.read_only" 
-            :required="field.reqd && modelValue.length === 0"
+            :required="isFieldMandatory(field) && modelValue.length === 0"
             class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600 flex-shrink-0" 
           />
           <p class="ml-2 block text-sm text-gray-700 dark:text-gray-200 truncate">
@@ -103,7 +103,7 @@
             :checked="isChecked(option)"
             @change="updateValue(option)" 
             :disabled="field.read_only" 
-            :required="field.reqd && modelValue.length === 0"
+            :required="isFieldMandatory(field) && modelValue.length === 0"
             class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" 
           />
           <p class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
@@ -139,6 +139,10 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: false
+  },
+  formData: {
+    type: Object,
+    default: () => ({})
   }
 })
 
@@ -150,6 +154,18 @@ const saveAsDraft = inject('saveAsDraft')
 const options = ref([])
 const error = ref('')
 
+
+const isFieldMandatory = (field) => {
+  if (field.reqd) return true
+  if (!field.mandatory_depends_on) return false
+  const condition = field.mandatory_depends_on.replace('eval:', '').replace(/doc\./g, 'formData.')
+  try {
+    return new Function('formData', `return ${condition}`)(props?.formData)
+  } catch (error) {
+    console.error('Error evaluating field visibility:', error)
+    return false
+  }
+}
 const splitOptions = computed(() => {
   if (options.value.length <= 8) {
     return [options.value]

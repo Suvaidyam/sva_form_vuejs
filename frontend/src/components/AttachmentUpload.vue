@@ -3,7 +3,7 @@
     <div class="flex items-center mb-2">
       <label :for="field.fieldname" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
         {{ field.label }}
-        <span v-if="field.reqd" class="text-red-500 ml-1">*</span>
+        <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
       <Popover v-if="field.description" class="relative inline-block ml-2">
         <PopoverButton class="focus:outline-none">
@@ -40,7 +40,7 @@
           <label :for="field.fieldname"
             class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
             <span>Upload a file</span>
-            <input :id="field.fieldname" :name="field.fieldname" type="file" class="sr-only" @change="handleFileUpload"
+            <input :id="field.fieldname" :name="field.fieldname" type="file" class="sr-only" @change="handleFileUpload" :required="isFieldMandatory(field)"
               :accept="acceptedFileTypes">
           </label>
           <p class="pl-1">or drag and drop</p>
@@ -77,6 +77,11 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: false
+  },
+  formData: {
+    type: Object,
+    required: false,
+    default: () => ({})
   }
 });
 
@@ -92,6 +97,18 @@ const maxFileSize = 10 * 1024 * 1024; // 10MB
 const isImageFile = (file) => {
   return file && file.type.startsWith('image/');
 };
+
+const isFieldMandatory = (field) => {
+  if (field.reqd) return true
+  if (!field.mandatory_depends_on) return false
+  const condition = field.mandatory_depends_on.replace('eval:', '').replace(/doc\./g, 'formData.')
+  try {
+    return new Function('formData', `return ${condition}`)(props?.formData)
+  } catch (error) {
+    console.error('Error evaluating field visibility:', error)
+    return false
+  }
+}
 
 const handleFileUpload = (event) => {
   const file = event.target.files[0];

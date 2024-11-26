@@ -4,7 +4,7 @@
       <div class="flex items-center">
         <label :for="field.name" class="ml-2 text-sm text-gray-700 dark:text-gray-200">{{ field.placeholder }}</label>
         <input :id="field.name" :name="field.name" type="checkbox" :checked="modelValue" @change="handleChange"
-          @blur="handleBlur" :disabled="field.read_only" :required="field.reqd"
+          @blur="handleBlur" :disabled="field.read_only" :required="isFieldMandatory(field)"
           class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600"
           :class="{ 'border-red-500 focus:ring-red-500': error }" />
       </div>
@@ -15,7 +15,7 @@
         </p>
         <label :for="field.name" class="text-sm font-medium text-gray-700 dark:text-gray-200">
           {{ field.label }}
-          <span v-if="field.reqd" class="text-red-500 ml-1">*</span>
+          <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
         </label>
         <div v-if="field.description" class="ml-2 relative">
           <Popover v-slot="{ open }" class="relative">
@@ -69,6 +69,10 @@ const props = defineProps({
   onfieldChange: {
     type: Boolean,
     default: false
+  },
+  formData: {
+    type: Object,
+    default: () => ({})
   }
 })
 
@@ -94,6 +98,18 @@ const validateInput = (value) => {
   error.value = ''
   if (props.field.reqd && !value) {
     error.value = `${props.field.label} is required.`
+  }
+}
+
+const isFieldMandatory = (field) => {
+  if (field.reqd) return true
+  if (!field.mandatory_depends_on) return false
+  const condition = field.mandatory_depends_on.replace('eval:', '').replace(/doc\./g, 'formData.')
+  try {
+    return new Function('formData', `return ${condition}`)(props?.formData)
+  } catch (error) {
+    console.error('Error evaluating field visibility:', error)
+    return false
   }
 }
 </script>
