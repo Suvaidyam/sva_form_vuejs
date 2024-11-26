@@ -272,11 +272,12 @@ const isFirstTabCompletelyFilled = computed(() => {
 })
 
 const isSubmitDisabled = computed(() => {
-  return Object.entries(formData.value).some(([key, value]) => {
-    const field = docTypeMeta.value?.fields.find(f => f.fieldname === key)
-    return field && field.reqd && (value === null || value === '' || (Array.isArray(value) && value.length === 0))
-  })
-})
+  return !Object.entries(formData.value).some(([key, value]) => {
+    const field = docTypeMeta.value?.fields.find(f => f.fieldname === key);
+    return field && value !== null && value !== '' && (!Array.isArray(value) || value.length > 0);
+  });
+});
+
 
 const getFieldComponent = (fieldtype) => {
   switch (fieldtype) {
