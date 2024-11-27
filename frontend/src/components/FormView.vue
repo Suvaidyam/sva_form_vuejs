@@ -420,6 +420,7 @@ const onSubmit = () => {
       setActiveTab(firstErrorTab)
     }
     const errorMessage = `Mandatory fields not filled in sections: ${Array.from(sectionsWithErrors).join(', ')}`
+    window.alert(errorMessage)
     // toast.error(errorMessage, {
     //   timeout: 5000,
     //   closeOnClick: true,
