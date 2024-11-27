@@ -134,6 +134,7 @@ import AttachmentUpload from './AttachmentUpload.vue'
 import DateInput from './DateInput.vue'
 import Textarea from './TextareaInput.vue'
 import CheckboxComponent from './CheckboxComponent.vue'
+import percent  from './PercentageInput.vue'
 
 const props = defineProps({
   doctype: {
@@ -294,6 +295,7 @@ const getFieldComponent = (fieldtype) => {
     case 'Small Text': return Textarea
     case 'Check': return CheckboxComponent
     case 'Int': return Input
+    case 'Percent': return percent
     default: return 'div'
   }
 }
