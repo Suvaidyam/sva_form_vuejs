@@ -14,7 +14,7 @@
             enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
             leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
             <PopoverPanel class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-1/2 left-1/2 sm:px-0 lg:max-w-3xl"
-              @mouseenter="open = true"  @mouseleave="open = false" >
+              @mouseenter="open = true" @mouseleave="open = false">
               <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                 <div class="p-4 bg-white dark:bg-gray-800">
                   <p class="text-sm text-gray-700 dark:text-gray-300">
@@ -43,7 +43,7 @@
 <script setup>
 import { ref, inject } from 'vue'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
-import { InfoIcon, } from 'lucide-vue-next'
+import { InfoIcon } from 'lucide-vue-next'
 
 const props = defineProps({
   field: {
@@ -68,8 +68,6 @@ const emit = defineEmits(['update:modelValue'])
 const saveAsDraft = inject('saveAsDraft')
 
 const inputType = ref(props.field.fieldtype === 'Int' ? 'number' : 'text')
-const error = ref('')
-
 
 const isFieldMandatory = (field) => {
   if (field.reqd) return true
@@ -83,35 +81,19 @@ const isFieldMandatory = (field) => {
   }
 }
 
-
-// const handleInput = (event) => {
-//   const value = event.target.value
-//   emit('update:modelValue', value)
-//   validateInput(value)
-// }
-
 const handleBlur = (event) => {
-  const value = event.target.value;
- 
+  const value = event.target.value
   emit('update:modelValue', value)
-  // validateInput(props.modelValue)
-  if (props.onfieldChange ) {
+  if (props.onfieldChange) {
     saveAsDraft({ [props.field.fieldname]: value })
   }
 }
-
-const validateInput = (value) => {
-  error.value = ''
-  if (props.field.reqd ) {
-    error.value = `${props.field.label} is required.`
-  }
-}
-
 </script>
+
 <style scoped>
- .w-96{
+.w-96 {
   width: 100% !important;
   max-width: 800px !important;
   min-width: 500px !important;
- }
+}
 </style>
