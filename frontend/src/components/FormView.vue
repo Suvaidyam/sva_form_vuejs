@@ -78,8 +78,8 @@
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
                       <component v-if="isFieldVisible(field)" :section="section.description"
                         :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard"
-                        :dropDownOptions="field.is_dropDown" :matrix="section.is_matrix" :index="fieldIndex" :formData="formData"
-                        v-model="formData[field.fieldname]" :isRow="props.isRow"
+                        :dropDownOptions="field.is_dropDown" :matrix="section.is_matrix" :index="fieldIndex"
+                        :formData="formData" v-model="formData[field.fieldname]" :isRow="props.isRow"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
                         :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname" />
                     </div>
@@ -123,7 +123,6 @@
 <script setup>
 import { ref, computed, onMounted, inject, watch, provide } from 'vue'
 import { ChevronDownIcon, LockIcon, CheckCircleIcon, XIcon, MenuIcon } from 'lucide-vue-next'
-// import { useToast } from 'vue-toastification'
 import Input from './Input.vue'
 import Link from './Link.vue'
 import LinkTable from './LinkTable.vue'
@@ -134,7 +133,7 @@ import AttachmentUpload from './AttachmentUpload.vue'
 import DateInput from './DateInput.vue'
 import Textarea from './TextareaInput.vue'
 import CheckboxComponent from './CheckboxComponent.vue'
-import percent  from './PercentageInput.vue'
+import percent from './PercentageInput.vue'
 
 const props = defineProps({
   doctype: {
@@ -180,12 +179,14 @@ const props = defineProps({
   submitButtonColor: {
     type: String,
     default: '#255b97'
-  }
+  },
+  toast: {
+    type: Function,
+    required: false
+  },
 })
 
 const call = inject('$call')
-// const toast = useToast()
-
 const loading = ref(true)
 const docTypeMeta = ref(null)
 const activeTab = ref('')
@@ -426,11 +427,10 @@ const onSubmit = () => {
       setActiveTab(firstErrorTab)
     }
     const errorMessage = `Mandatory fields not filled in sections: ${Array.from(sectionsWithErrors).join(', ')}`
-    window.alert(errorMessage)
-    // toast.error(errorMessage, {
-    //   timeout: 5000,
-    //   closeOnClick: true,
-    // })
+    props.toast.error(errorMessage, {
+      timeout: 5000,
+      closeOnClick: true,
+    })
   } else {
     props.onSubmit(formData.value)
   }
@@ -475,10 +475,11 @@ watch(activeTab, () => {
   margin-left: 1.25rem !important;
   color: #0E4688 !important;
 }
-.abc{
+
+.abc {
   background-color: #EFEFEF !important;
   color: rgb(119, 119, 119) !important;
-  
+
 }
 
 /* Add any additional styles here */
