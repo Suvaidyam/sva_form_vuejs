@@ -95,14 +95,14 @@ const handleBlur = (event) => {
   console.log(value,'value');
   emit('update:modelValue', value)
   validateInput(props.modelValue)
-  if (props.onfieldChange && !error.value) {
+  if (props.onfieldChange ) {
     saveAsDraft({ [props.field.fieldname]: value })
   }
 }
 
 const validateInput = (value) => {
   error.value = ''
-  if (props.field.reqd && !value) {
+  if (props.field.reqd ) {
     error.value = `${props.field.label} is required.`
   }
 }
