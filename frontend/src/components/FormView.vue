@@ -62,7 +62,7 @@
                       <component :section="section.description" v-if="isFieldVisible(field)"
                         :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard"
                         :matrix="section.is_matrix" :index="fieldIndex" v-model="formData[field.fieldname]"
-                        :onfieldChange="props.onfieldChange"
+                        :onfieldChange="props.onfieldChange" :isRow="props.isRow"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)" />
                     </div>
                   </div>
@@ -79,7 +79,7 @@
                       <component v-if="isFieldVisible(field)" :section="section.description"
                         :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard"
                         :dropDownOptions="field.is_dropDown" :matrix="section.is_matrix" :index="fieldIndex" :formData="formData"
-                        v-model="formData[field.fieldname]"
+                        v-model="formData[field.fieldname]" :isRow="props.isRow"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
                         :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname" />
                     </div>
@@ -153,6 +153,10 @@ const props = defineProps({
     default: false
   },
   isDraft: {
+    type: Boolean,
+    default: false
+  },
+  isRow: {
     type: Boolean,
     default: false
   },
@@ -420,6 +424,7 @@ const onSubmit = () => {
       setActiveTab(firstErrorTab)
     }
     const errorMessage = `Mandatory fields not filled in sections: ${Array.from(sectionsWithErrors).join(', ')}`
+    window.alert(errorMessage)
     // toast.error(errorMessage, {
     //   timeout: 5000,
     //   closeOnClick: true,

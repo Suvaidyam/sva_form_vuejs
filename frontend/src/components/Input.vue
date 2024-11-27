@@ -92,9 +92,9 @@ const isFieldMandatory = (field) => {
 
 const handleBlur = (event) => {
   const value = event.target.value;
-  console.log(value,'value');
+ 
   emit('update:modelValue', value)
-  validateInput(props.modelValue)
+  // validateInput(props.modelValue)
   if (props.onfieldChange ) {
     saveAsDraft({ [props.field.fieldname]: value })
   }
