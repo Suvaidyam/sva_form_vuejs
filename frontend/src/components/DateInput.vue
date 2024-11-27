@@ -41,7 +41,7 @@
         :id="field.name"
         :value="manipulateModelValue(modelValue)"
         @input="handleInput"
-        @change="handleChange"
+        @focus="openPicker"
         type="month"
         :disabled="field.read_only"
         :required="isFieldMandatory(field)"
@@ -84,9 +84,9 @@ const props = defineProps({
 
 const manipulateModelValue = (modelValue) => {
   if (!modelValue) return ''
-  if (modelValue.split('-').length === 3){
+  if (modelValue.split('-').length === 3) {
     return modelValue.split('-').slice(0, 2).join('-')
-  }else if (modelValue.split('-').length === 2){
+  } else if (modelValue.split('-').length === 2) {
     return modelValue
   }
 }
@@ -110,15 +110,20 @@ const isFieldMandatory = (field) => {
 
 const handleInput = (event) => {
   const value = event.target.value
-  emit('update:modelValue', value + "-01")
-  validateInput(value + "-01")
+  emit('update:modelValue', value + '-01')
+  validateInput(value + '-01')
+  if (props.onfieldChange) {
+    saveAsDraft({ [props.field.fieldname]: value + '-01' })
+  }
 }
 
-const handleChange = (event) => {
-  const value = event.target.value
-  validateInput(value + "-01")
-  if (props.onfieldChange && !error.value) {
-    saveAsDraft({ [props.field.fieldname]: value + "-01" })
+const openPicker = (event) => {
+  const input = event.target
+  if (input.showPicker) {
+    input.showPicker()
+  } else {
+    console.warn('showPicker is not supported in this browser.')
+    // Fallback (e.g., display a custom modal or instruct the user to click the input field)
   }
 }
 
@@ -129,40 +134,3 @@ const validateInput = (value) => {
   }
 }
 </script>
-
-<style scoped>
-.w-96 {
-  width: 100% !important;
-  max-width: 800px !important;
-  min-width: 500px !important;
-}
-
-/* Styling for the month input */
-input[type="month"] {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 8px center;
-  background-size: 20px;
-  padding-right: 32px;
-}
-
-.dark input[type="month"] {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
-}
-
-/* Hide default calendar icon in webkit browsers */
-input[type="month"]::-webkit-calendar-picker-indicator {
-  opacity: 0;
-}
-
-/* Adjust the appearance for Firefox */
-@-moz-document url-prefix() {
-  input[type="month"] {
-    background-image: none;
-    padding-right: 8px;
-  }
-}
-</style>
