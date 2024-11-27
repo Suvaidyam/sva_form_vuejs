@@ -469,7 +469,9 @@ watch(activeTab, () => {
   color: #0E4688 !important;
 }
 .abc{
-  background-color: #eef0f3 !important;
+  background-color: #EFEFEF !important;
+  color: rgb(119, 119, 119) !important;
+  
 }
 
 /* Add any additional styles here */
