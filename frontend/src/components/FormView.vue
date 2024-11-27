@@ -26,8 +26,7 @@
                 {{ tab.label }}
                 <span class="mr-2" v-if="index > 0">
                   <LockIcon v-if="!allTabsUnlocked" class="w-4 h-4" />
-                  <CheckCircleIcon v-if="allTabsUnlocked && tabCompletionStatus[tab.name]"
-                    class="w-4 h-4 text-green-500" />
+                  <CheckCircleIcon v-if="allTabsUnlocked && isTabComplete(tab.name)" class="w-4 h-4 text-green-500" />
                 </span>
               </button>
             </li>
@@ -312,6 +311,22 @@ const isFieldVisible = (field) => {
   }
 }
 
+const isTabComplete = (tabName) => {
+  const tabFields = getTabFields(tabName)
+  return tabFields.every(field => {
+    const value = formData.value[field.fieldname]
+    return !field.reqd || (value !== null && value !== '' && (!Array.isArray(value) || value.length > 0))
+  })
+}
+
+const getTabFields = (tabName) => {
+  if (!docTypeMeta.value) return []
+  const fields = docTypeMeta.value.fields
+  const startIndex = fields.findIndex(f => f.name === tabName)
+  const endIndex = fields.findIndex((f, i) => i > startIndex && f.fieldtype === 'Tab Break')
+  return fields.slice(startIndex + 1, endIndex === -1 ? undefined : endIndex)
+}
+
 const handleFieldUpdate = (fieldName, value) => {
   formData.value[fieldName] = value
 }
@@ -370,19 +385,34 @@ const setActiveTab = (tabName) => {
   }
 }
 
+// const nextTab = () => {
+//   const currentIndex = tabFields.value.findIndex(tab => tab.name === activeTab.value)
+//   if (currentIndex === 0 && !allTabsUnlocked.value) {
+//     allTabsUnlocked.value = true
+//   }
+
+//   const currentTabFields = activeFieldSections.value.flatMap(section => section.fields)
+//   const isCurrentTabComplete = currentTabFields.some(field => {
+//     const value = formData.value[field.fieldname]
+//     return value !== null && value !== '' && (!Array.isArray(value) || value.length > 0)
+//   })
+
+//   if (isCurrentTabComplete) {
+//     tabCompletionStatus.value[activeTab.value] = true
+//   }
+
+//   if (currentIndex < tabFields.value.length - 1) {
+//     activeTab.value = tabFields.value[currentIndex + 1].name
+//   }
+// }
+
 const nextTab = () => {
   const currentIndex = tabFields.value.findIndex(tab => tab.name === activeTab.value)
   if (currentIndex === 0 && !allTabsUnlocked.value) {
     allTabsUnlocked.value = true
   }
 
-  const currentTabFields = activeFieldSections.value.flatMap(section => section.fields)
-  const isCurrentTabComplete = currentTabFields.some(field => {
-    const value = formData.value[field.fieldname]
-    return value !== null && value !== '' && (!Array.isArray(value) || value.length > 0)
-  })
-
-  if (isCurrentTabComplete) {
+  if (isTabComplete(activeTab.value)) {
     tabCompletionStatus.value[activeTab.value] = true
   }
 
