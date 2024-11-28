@@ -43,11 +43,17 @@
 
             <input :id="field.fieldname" :name="field.fieldname" type="file" class="w-full h-full hidden" @change="handleFileUpload"
               :required="isFieldMandatory(field)" :accept="acceptedFileTypes">
-            <p v-if="!preview" class="text-xs font-medium text-gray-400 mt-2">PNG, JPG, GIF up to 10MB</p>
+            <p v-if="!preview" class="text-xs font-medium text-gray-400 mt-2">PNG, JPG, GIF, PDF up to 10MB</p>
           </label>
         </div>
         <div v-if="preview" class="relative mt-4">
-          <img :src="preview" alt="File preview" class="max-w-full h-auto rounded-lg shadow-md">
+          <img v-if="isImageFile(preview)" :src="preview" alt="File preview" class="max-w-full h-auto rounded-lg shadow-md">
+          <div v-else-if="isPdfFile(preview)" class="flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+            </svg>
+            <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ fileName }}</span>
+          </div>
           <button @click="removeFile"
             class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
             <XIcon class="h-4 w-4" />
@@ -91,11 +97,15 @@ const saveAsDraft = inject('saveAsDraft');
 const preview = ref('');
 const error = ref('');
 const fileName = ref('');
-const acceptedFileTypes = '.png,.jpg,.jpeg,.gif';
+const acceptedFileTypes = '.png,.jpg,.jpeg,.gif,.pdf';
 const maxFileSize = 10 * 1024 * 1024; // 10MB
 
 const isImageFile = (file) => {
-  return file && file.type.startsWith('image/');
+  return file && (typeof file === 'string' ? file.match(/\.(jpeg|jpg|gif|png)$/) : file.type.startsWith('image/'));
+};
+
+const isPdfFile = (file) => {
+  return file && (typeof file === 'string' ? file.endsWith('.pdf') : file.type === 'application/pdf');
 };
 
 const isFieldMandatory = (field) => {
@@ -129,19 +139,22 @@ const processFile = (file) => {
       return;
     }
 
-    if (!isImageFile(file)) {
-      error.value = 'Only image files are allowed.';
+    if (!file.type.match(/^(image\/(png|jpeg|gif)|application\/pdf)$/)) {
+      error.value = 'Only PNG, JPG, GIF, or PDF files are allowed.';
       return;
     }
 
     fileName.value = file.name;
 
-    // Set preview immediately
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      preview.value = e.target.result;
-    };
-    reader.readAsDataURL(file);
+    if (isImageFile(file)) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.value = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      preview.value = 'pdf';
+    }
 
     saveToFrappe(file)
       .then((response) => {
@@ -211,15 +224,22 @@ const removeFile = () => {
 
 watch(() => props.modelValue, (newValue) => {
   if (newValue instanceof File) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      preview.value = e.target.result;
-    };
-    reader.readAsDataURL(newValue);
+    if (isImageFile(newValue)) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.value = e.target.result;
+      };
+      reader.readAsDataURL(newValue);
+    } else if (isPdfFile(newValue)) {
+      preview.value = 'pdf';
+    }
+    fileName.value = newValue.name;
   } else if (typeof newValue === 'string' && newValue) {
     preview.value = newValue;
+    fileName.value = newValue.split('/').pop();
   } else {
     preview.value = '';
+    fileName.value = '';
   }
 
   if (!newValue && props.field.reqd) {

@@ -26,8 +26,7 @@
                 {{ tab.label }}
                 <span class="mr-2" v-if="index > 0">
                   <LockIcon v-if="!allTabsUnlocked" class="w-4 h-4" />
-                  <CheckCircleIcon v-if="allTabsUnlocked && tabCompletionStatus[tab.name]"
-                    class="w-4 h-4 text-green-500" />
+                  <CheckCircleIcon v-if="allTabsUnlocked && isTabComplete(tab.name)" class="w-4 h-4 text-green-500" />
                 </span>
               </button>
             </li>
@@ -78,8 +77,8 @@
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
                       <component v-if="isFieldVisible(field)" :section="section.description"
                         :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard"
-                        :dropDownOptions="field.is_dropDown" :matrix="section.is_matrix" :index="fieldIndex" :formData="formData"
-                        v-model="formData[field.fieldname]" :isRow="props.isRow"
+                        :dropDownOptions="field.is_dropDown" :matrix="section.is_matrix" :index="fieldIndex"
+                        :formData="formData" v-model="formData[field.fieldname]" :isRow="props.isRow"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
                         :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname" />
                     </div>
@@ -123,7 +122,6 @@
 <script setup>
 import { ref, computed, onMounted, inject, watch, provide } from 'vue'
 import { ChevronDownIcon, LockIcon, CheckCircleIcon, XIcon, MenuIcon } from 'lucide-vue-next'
-// import { useToast } from 'vue-toastification'
 import Input from './Input.vue'
 import Link from './Link.vue'
 import LinkTable from './LinkTable.vue'
@@ -134,6 +132,7 @@ import AttachmentUpload from './AttachmentUpload.vue'
 import DateInput from './DateInput.vue'
 import Textarea from './TextareaInput.vue'
 import CheckboxComponent from './CheckboxComponent.vue'
+import percent from './PercentageInput.vue'
 
 const props = defineProps({
   doctype: {
@@ -179,12 +178,14 @@ const props = defineProps({
   submitButtonColor: {
     type: String,
     default: '#255b97'
-  }
+  },
+  toast: {
+    type: Function,
+    required: false
+  },
 })
 
 const call = inject('$call')
-// const toast = useToast()
-
 const loading = ref(true)
 const docTypeMeta = ref(null)
 const activeTab = ref('')
@@ -294,6 +295,7 @@ const getFieldComponent = (fieldtype) => {
     case 'Small Text': return Textarea
     case 'Check': return CheckboxComponent
     case 'Int': return Input
+    case 'Percent': return percent
     default: return 'div'
   }
 }
@@ -307,6 +309,22 @@ const isFieldVisible = (field) => {
     console.error('Error evaluating field visibility:', error)
     return false
   }
+}
+
+const isTabComplete = (tabName) => {
+  const tabFields = getTabFields(tabName)
+  return tabFields.every(field => {
+    const value = formData.value[field.fieldname]
+    return !field.reqd || (value !== null && value !== '' && (!Array.isArray(value) || value.length > 0))
+  })
+}
+
+const getTabFields = (tabName) => {
+  if (!docTypeMeta.value) return []
+  const fields = docTypeMeta.value.fields
+  const startIndex = fields.findIndex(f => f.name === tabName)
+  const endIndex = fields.findIndex((f, i) => i > startIndex && f.fieldtype === 'Tab Break')
+  return fields.slice(startIndex + 1, endIndex === -1 ? undefined : endIndex)
 }
 
 const handleFieldUpdate = (fieldName, value) => {
@@ -367,19 +385,34 @@ const setActiveTab = (tabName) => {
   }
 }
 
+// const nextTab = () => {
+//   const currentIndex = tabFields.value.findIndex(tab => tab.name === activeTab.value)
+//   if (currentIndex === 0 && !allTabsUnlocked.value) {
+//     allTabsUnlocked.value = true
+//   }
+
+//   const currentTabFields = activeFieldSections.value.flatMap(section => section.fields)
+//   const isCurrentTabComplete = currentTabFields.some(field => {
+//     const value = formData.value[field.fieldname]
+//     return value !== null && value !== '' && (!Array.isArray(value) || value.length > 0)
+//   })
+
+//   if (isCurrentTabComplete) {
+//     tabCompletionStatus.value[activeTab.value] = true
+//   }
+
+//   if (currentIndex < tabFields.value.length - 1) {
+//     activeTab.value = tabFields.value[currentIndex + 1].name
+//   }
+// }
+
 const nextTab = () => {
   const currentIndex = tabFields.value.findIndex(tab => tab.name === activeTab.value)
   if (currentIndex === 0 && !allTabsUnlocked.value) {
     allTabsUnlocked.value = true
   }
 
-  const currentTabFields = activeFieldSections.value.flatMap(section => section.fields)
-  const isCurrentTabComplete = currentTabFields.some(field => {
-    const value = formData.value[field.fieldname]
-    return value !== null && value !== '' && (!Array.isArray(value) || value.length > 0)
-  })
-
-  if (isCurrentTabComplete) {
+  if (isTabComplete(activeTab.value)) {
     tabCompletionStatus.value[activeTab.value] = true
   }
 
@@ -424,11 +457,10 @@ const onSubmit = () => {
       setActiveTab(firstErrorTab)
     }
     const errorMessage = `Mandatory fields not filled in sections: ${Array.from(sectionsWithErrors).join(', ')}`
-    window.alert(errorMessage)
-    // toast.error(errorMessage, {
-    //   timeout: 5000,
-    //   closeOnClick: true,
-    // })
+    props.toast.error(errorMessage, {
+      timeout: 5000,
+      closeOnClick: true,
+    })
   } else {
     props.onSubmit(formData.value)
   }
@@ -473,10 +505,11 @@ watch(activeTab, () => {
   margin-left: 1.25rem !important;
   color: #0E4688 !important;
 }
-.abc{
+
+.abc {
   background-color: #EFEFEF !important;
   color: rgb(119, 119, 119) !important;
-  
+
 }
 
 /* Add any additional styles here */
