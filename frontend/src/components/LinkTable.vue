@@ -2,7 +2,7 @@
   <transition name="fade" mode="in-out">
     <div v-if="!field.hidden" class="flex flex-col gap-2 pt-2">
         <div class="flex gap-2">
-          <div class="w-6 min-w-6 min-h-6 h-6 rounded-full flex items-center justify-center text-xs text-white bg-slate-700">
+          <div class="w-7 min-w-7 min-h-7 h-7 rounded-full flex items-center justify-center text-xs text-white bg-slate-700">
             {{ index + 1 }}
           </div>
           <h2 class="text-sebase text-h5">{{ field.label }}</h2>
