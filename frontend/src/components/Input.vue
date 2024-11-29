@@ -28,20 +28,31 @@
       </div>
     </div>
     <div class="relative">
-      <input :id="field.name" :value="modelValue" @focusout="handleBlur" :type="inputType" :disabled="field.read_only"
-        :required="isFieldMandatory(field)" :placeholder="field.placeholder" :class="[
+      <input 
+        :id="field.name" 
+        :value="displayValue" 
+        @input="handleInput"
+        @focusout="handleBlur" 
+        :type="inputType" 
+        :disabled="field.read_only"
+        :required="isFieldMandatory(field)" 
+        :placeholder="field.placeholder" 
+        :class="[
           'w-full h-10 px-3 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200',
           'dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:focus:ring-blue-400 dark:focus:border-blue-400',
           { 'pr-10': field.fieldtype === 'Password' },
           { 'border-red-500 focus:ring-red-500 focus:border-red-500': error }
-        ]" />
+        ]" 
+        :aria-invalid="!!error"
+        :aria-describedby="error ? `${field.name}-error` : undefined"
+      />
     </div>
-    <p v-if="error" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ error }}</p>
+    <p v-if="error" :id="`${field.name}-error`" class="mt-1 text-sm text-red-600 dark:text-red-400" role="alert">{{ error }}</p>
   </div>
 </template>
 
 <script setup>
-import { ref, inject } from 'vue'
+import { ref, inject, computed } from 'vue'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 import { InfoIcon } from 'lucide-vue-next'
 
@@ -64,10 +75,19 @@ const props = defineProps({
   }
 })
 
+const error = ref('');
 const emit = defineEmits(['update:modelValue'])
 const saveAsDraft = inject('saveAsDraft')
 
-const inputType = ref(props.field.fieldtype === 'Int' ? 'number' : 'text')
+const inputType = computed(() => props.field.fieldtype === 'Int' ? 'number' : 'text')
+
+const displayValue = computed(() => {
+  if (props.field.fieldtype === 'Int') {
+    const numValue = parseInt(props.modelValue);
+    return isNaN(numValue) || numValue < 0 ? '' : props.modelValue;
+  }
+  return props.modelValue;
+})
 
 const isFieldMandatory = (field) => {
   if (field.reqd) return true
@@ -81,10 +101,52 @@ const isFieldMandatory = (field) => {
   }
 }
 
+const validateURL = (url) => {
+  const urlPattern = /^(https?:\/\/)?([\w\d\-]+\.)+[a-z]{2,}(\/.*)?$/i;
+  return urlPattern.test(url);
+};
+
+const handleInput = (event) => {
+  let value = event.target.value;
+  if (props.field.fieldtype === 'Int') {
+    const numValue = parseInt(value);
+    if (isNaN(numValue) || numValue < 0) {
+      error.value = 'Please enter a non-negative integer.';
+      emit('update:modelValue', '');
+    } else {
+      error.value = '';
+      emit('update:modelValue', numValue.toString());
+    }
+  } else {
+    emit('update:modelValue', value);
+  }
+}
+
 const handleBlur = (event) => {
-  const value = event.target.value
-  emit('update:modelValue', value)
-  if (props.onfieldChange) {
+  const value = event.target.value;
+
+  if (props.field.fieldname === 'organisation_website' && value) {
+    if (!validateURL(value)) {
+      error.value = 'Please enter a valid URL.';
+      return;
+    }
+  }
+
+  if (props.field.fieldtype === 'Int') {
+    const numValue = parseInt(value);
+    if (isNaN(numValue) || numValue < 0) {
+      error.value = 'Please enter a non-negative integer.';
+      emit('update:modelValue', '');
+    } else {
+      error.value = '';
+      emit('update:modelValue', numValue.toString());
+    }
+  } else {
+    error.value = '';
+    emit('update:modelValue', value);
+  }
+
+  if (props.onfieldChange && !error.value) {
     saveAsDraft({ [props.field.fieldname]: value })
   }
 }
@@ -97,3 +159,4 @@ const handleBlur = (event) => {
   min-width: 500px !important;
 }
 </style>
+

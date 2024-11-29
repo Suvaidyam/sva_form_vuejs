@@ -43,13 +43,12 @@
 
             <input :id="field.fieldname" :name="field.fieldname" type="file" class="w-full h-full hidden" @change="handleFileUpload"
               :required="isFieldMandatory(field)" :accept="acceptedFileTypes">
-            <p v-if="!preview" class="text-xs font-medium text-gray-400 mt-2">PNG, JPG, GIF, PDF up to 10MB</p>
+            <p v-if="!preview" class="text-xs font-medium text-gray-400 mt-2">PDF, DOCX up to 10MB</p>
           </label>
         </div>
         <div v-if="preview" class="relative mt-4">
-          <img v-if="isImageFile(preview)" :src="preview" alt="File preview" class="max-w-full h-auto rounded-lg shadow-md">
-          <div v-else-if="isPdfFile(preview)" class="flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+          <div class="flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
             </svg>
             <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ fileName }}</span>
@@ -68,7 +67,7 @@
 <script setup>
 import { ref, computed, watch, inject } from 'vue';
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
-import { UploadCloudIcon, XIcon, InfoIcon } from 'lucide-vue-next';
+import { XIcon, InfoIcon } from 'lucide-vue-next';
 
 const props = defineProps({
   field: {
@@ -97,15 +96,15 @@ const saveAsDraft = inject('saveAsDraft');
 const preview = ref('');
 const error = ref('');
 const fileName = ref('');
-const acceptedFileTypes = '.png,.jpg,.jpeg,.gif,.pdf';
+const acceptedFileTypes = '.pdf,.docx';
 const maxFileSize = 10 * 1024 * 1024; // 10MB
-
-const isImageFile = (file) => {
-  return file && (typeof file === 'string' ? file.match(/\.(jpeg|jpg|gif|png)$/) : file.type.startsWith('image/'));
-};
 
 const isPdfFile = (file) => {
   return file && (typeof file === 'string' ? file.endsWith('.pdf') : file.type === 'application/pdf');
+};
+
+const isDocxFile = (file) => {
+  return file && (typeof file === 'string' ? file.endsWith('.docx') : file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
 };
 
 const isFieldMandatory = (field) => {
@@ -139,29 +138,19 @@ const processFile = (file) => {
       return;
     }
 
-    if (!file.type.match(/^(image\/(png|jpeg|gif)|application\/pdf)$/)) {
-      error.value = 'Only PNG, JPG, GIF, or PDF files are allowed.';
+    if (!isPdfFile(file) && !isDocxFile(file)) {
+      error.value = 'Only PDF or DOCX files are allowed.';
       return;
     }
 
     fileName.value = file.name;
-
-    if (isImageFile(file)) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        preview.value = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    } else {
-      preview.value = 'pdf';
-    }
+    preview.value = 'file';
 
     saveToFrappe(file)
       .then((response) => {
         console.log('File saved successfully:', response.message.file_url);
         const fileUrl = response.message.file_url;
         emit('update:modelValue', fileUrl);
-        // Update preview with the URL from the server
         preview.value = fileUrl;
         if (props.onfieldChange) {
           saveAsDraft({ [props.field.fieldname]: fileUrl });
@@ -212,7 +201,6 @@ const removeFile = () => {
   preview.value = '';
   fileName.value = '';
   emit('update:modelValue', '');
-  // Save as draft when file is removed
   saveAsDraft({ [props.field.fieldname]: '' });
 
   if (props.field.reqd) {
@@ -224,15 +212,7 @@ const removeFile = () => {
 
 watch(() => props.modelValue, (newValue) => {
   if (newValue instanceof File) {
-    if (isImageFile(newValue)) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        preview.value = e.target.result;
-      };
-      reader.readAsDataURL(newValue);
-    } else if (isPdfFile(newValue)) {
-      preview.value = 'pdf';
-    }
+    preview.value = 'file';
     fileName.value = newValue.name;
   } else if (typeof newValue === 'string' && newValue) {
     preview.value = newValue;

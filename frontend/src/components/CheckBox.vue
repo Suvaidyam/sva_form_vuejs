@@ -165,6 +165,7 @@ const getOptions = async () => {
       doctype: 'Field Options',
       filters: filters,
       fields: ['*'],
+      limit_page_length: 100
     })
     options.value = response
   } catch (err) {

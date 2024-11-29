@@ -10,12 +10,10 @@
       'md:translate-x-0 md:static md:inset-auto'
     ]">
       <div class="flex flex-col h-full">
-        <div class="flex items-center  justify-between p-4 border-b dark:border-gray-700">
-          <h3 class="text-lg ml-4 text-gray-800 dark:text-white">Section</h3>
-        </div>
         <nav class="flex-1 px-4 py-4">
           <ul class="space-y-2">
             <li v-for="(tab, index) in tabFields" :key="tab.name">
+              <!-- {{ tab.name }} -->
               <button @click="setActiveTab(tab.name)" :disabled="index > 0 && !allTabsUnlocked" :class="[
                 'w-full text-left px-4 py-2 rounded-lg transition-colors duration-150 ease-in-out flex justify-between items-center',
                 activeTab === tab.name
@@ -37,8 +35,6 @@
 
     <!-- Main Content -->
     <main class="flex-1 w-full bg-white dark:bg-gray-900">
-      <h2 v-if="!props.section" class="text-3xl flex ml-5  items-center font-semibold text-[#0E4688] dark:text-white">
-        Assessment Simple Test</h2>
       <div class=" mx-auto px-6 py-8">
         <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
           Assessment Not Found
@@ -69,7 +65,7 @@
               </template>
               <template v-else>
                 <div v-for="(section, index) in activeFieldSections" :key="section.name" class="mb-6">
-                  <h3 :id="`section-${index}`" class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white mb-4">
                     {{ section.label }}
                   </h3>
                   <div v-if="section.fields && section.fields.length > 0" :aria-labelledby="`section-${index}`"
@@ -184,6 +180,8 @@ const props = defineProps({
     required: false
   },
 })
+
+console.log(props.initialData, 'initialData');
 
 const call = inject('$call')
 const loading = ref(true)
@@ -356,6 +354,13 @@ const getMeta = async () => {
 const initializeFormData = () => {
   if (!docTypeMeta.value) return
   const newFormData = { ...formData.value }
+  if(formData.value?.active_tab){
+    const firstTab = tabFields.value[0]?.name
+    if (firstTab != formData.value?.active_tab && !allTabsUnlocked.value) {
+      allTabsUnlocked.value = true
+      setActiveTab(formData.value?.active_tab,true)
+    }
+  }
   docTypeMeta.value.fields.forEach(field => {
     if (!(field.fieldname in newFormData)) {
       if (field.fieldtype === 'Table MultiSelect') {
@@ -379,7 +384,10 @@ const initializeTabCompletionStatus = () => {
   })
 }
 
-const setActiveTab = (tabName) => {
+const setActiveTab = (tabName,fromMounted=false) => {
+  if(!fromMounted){
+    props.save_as_draft({'active_tab':tabName})
+  }
   if (allTabsUnlocked.value || tabFields.value.indexOf(tabFields.value.find(tab => tab.name === tabName)) === 0) {
     activeTab.value = tabName
   }
@@ -407,6 +415,7 @@ const setActiveTab = (tabName) => {
 // }
 
 const nextTab = () => {
+  // console.log(activeTab,"iuy" ,activeTab.value ,"9797");
   const currentIndex = tabFields.value.findIndex(tab => tab.name === activeTab.value)
   if (currentIndex === 0 && !allTabsUnlocked.value) {
     allTabsUnlocked.value = true
@@ -419,6 +428,7 @@ const nextTab = () => {
   if (currentIndex < tabFields.value.length - 1) {
     activeTab.value = tabFields.value[currentIndex + 1].name
   }
+  setActiveTab(activeTab.value)
 }
 
 const toggleSection = (index) => {
@@ -499,6 +509,10 @@ watch(activeTab, () => {
 
 
   /* Add any additional styles here */
+}
+.custom{
+  color: #0E4688 !important;
+  margin-top: -15px!important;
 }
 
 .ml-5 {
