@@ -151,27 +151,31 @@ const columnClasses = computed(() => {
 
 const getOptions = async () => {
   try {
-    let filters = {}
+    let filters = {};
     if (props.field.link_filters) {
       try {
-        filters = JSON.parse(props.field.link_filters)
+        filters = JSON.parse(props.field.link_filters);
       } catch (e) {
-        console.error('Invalid link_filters JSON:', e)
+        console.error('Invalid link_filters JSON:', e);
       }
     } else {
-      filters = { field: props.field.fieldname }
+      filters = { field: props.field.fieldname };
     }
+
+    // Remove 'order_by' from filters and pass it directly in the request
     const response = await call('frappe.client.get_list', {
       doctype: 'Field Options',
       filters: filters,
       fields: ['*'],
-      limit_page_length: 100
-    })
-    options.value = response
+      order_by: 'code asc', // Correct placement
+      limit_page_length: 100,
+    });
+    
+    options.value = response;
   } catch (err) {
-    console.error('Error fetching options:', err)
+    console.error('Error fetching options:', err);
   }
-}
+};
 
 const isChecked = (option) => {
   return Array.isArray(props.modelValue) && props.modelValue.some(item => item.field_options === option.name)
