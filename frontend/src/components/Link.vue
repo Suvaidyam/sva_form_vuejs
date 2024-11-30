@@ -64,10 +64,10 @@
     <div v-else>
       <div class="flex items-center" :class="props.isCard ? 'py-2 gap-2' : 'mb-2'">
         <p v-if="props.isCard"
-          class="w-7 h-7 min-w-7 min-h-7 text-sm flex items-center justify-center rounded-full bg-gray-500 text-white">{{ index + 1 }}
+          class="w-7 h-7 min-w-7 min-h-7 text-sm flex items-center justify-center rounded-full bg-gray-700 text-white">{{ index + 1 }}
         </p>
         <label :for="`${field.name}-${options[0]?.name}`"
-          class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+          class="block text-sm font-medium text-gray-900 dark:text-gray-200">
           {{ field.label }}{{ props.isCard?parsedDescription.desc:'' }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
         </label>
         <div v-if="parsedDescription.info" class="ml-2 relative">
