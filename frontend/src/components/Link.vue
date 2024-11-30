@@ -64,11 +64,11 @@
     <div v-else>
       <div class="flex items-center" :class="props.isCard ? 'py-2 gap-2' : 'mb-2'">
         <p v-if="props.isCard"
-          class="w-6 h-6 text-sm flex items-center justify-center rounded-full bg-gray-500 text-white">{{ index + 1 }}
+          class="w-7 h-7 min-w-7 min-h-7 text-sm flex items-center justify-center rounded-full bg-gray-700 text-white">{{ index + 1 }}
         </p>
         <label :for="`${field.name}-${options[0]?.name}`"
-          class="block text-sm font-medium text-gray-700 dark:text-gray-200">
-          {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
+          class="block text-sm font-medium text-gray-900 dark:text-gray-200">
+          {{ field.label }}{{ props.isCard?parsedDescription.desc:'' }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
         </label>
         <div v-if="parsedDescription.info" class="ml-2 relative">
           <Popover v-slot="{ open }" class="relative">
@@ -94,7 +94,7 @@
           </Popover>
         </div>
       </div>
-      <p v-if="parsedDescription.desc" class="text-sm text-gray-500 mb-2">{{ parsedDescription.desc }}</p>
+      <p v-if="parsedDescription.desc && !props.isCard" class="text-sm text-gray-500 mb-2">{{ parsedDescription.desc }}</p>
       <div v-if="dropDownOptions" class="mt-1">
         <select :id="`${field.name}-select`" :name="field.name" v-model="selectedOption"
           @change="updateValue(selectedOption)" :disabled="field.read_only" :required="field.reqd"
