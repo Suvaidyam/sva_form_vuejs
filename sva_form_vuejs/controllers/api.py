@@ -15,3 +15,17 @@ def get_option_with_dt(dt,filters=[]):
         return frappe.get_all(dt,filters=filters, fields=['name', f"{meta['title_field']} as label"])
     else:
         return frappe.get_all(dt,filters=filters, fields=['name', 'name as label'])
+    
+
+@frappe.whitelist(allow_guest=True)
+def get_fields():
+    fieldtype= ['Table MultiSelect', 'Link']
+    fields = frappe.get_all(
+        'DocField',
+        filters={
+            'parent': 'Assessment',
+            'fieldtype': ['in', fieldtype]
+        },
+        fields=['fieldname', 'label']
+    )
+    return fields
