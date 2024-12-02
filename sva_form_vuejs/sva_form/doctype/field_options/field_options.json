@@ -11,8 +11,7 @@
   "field",
   "label",
   "code",
-  "score",
-  "depends_on"
+  "score"
  ],
  "fields": [
   {
@@ -49,16 +48,11 @@
    "fieldtype": "Float",
    "label": "Score",
    "reqd": 1
-  },
-  {
-   "fieldname": "depends_on",
-   "fieldtype": "Small Text",
-   "label": "Display Depends On (JS)"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-28 12:44:34.672640",
+ "modified": "2024-12-01 14:55:01.803011",
  "modified_by": "Administrator",
  "module": "sva_form",
  "name": "Field Options",
