@@ -132,7 +132,7 @@
       </div>
       <div v-else :class="[
         props.isCard ? 'px-6' : '',
-        props.isRow ? 'flex flex-col md:flex-row gap-3 w-full' : 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2'
+        props.isRow ? 'flex flex-col md:flex-row gap-3 w-full' : 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mt-2'
       ]">
         <label v-if="props.isCard" :for="`${field.name}-${option.name}`" v-for="option in options" :key="option.name"
           :class="[props.isCard ? 'border p-2 rounded-md shadow-sm' : '',
@@ -147,8 +147,8 @@
           <span class="flex-grow">{{ option.label }}</span>
         </label>
         <div v-if="!props.isCard" v-for="option in options" :key="option.name"
-          :class="props.isCard ? 'border p-2 rounded-md' : 'mt-2'" class="flex items-center">
-          <div class="flex-shrink-0 w-5 h-5 mr-2 ml-2">
+          :class="props.isCard ? 'border p-2 rounded-md' : ''" class="flex items-center ">
+          <div class="flex-shrink-0 w-5 h-5 mr-2 ml-2 ">
             <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
               :checked="modelValue === option.name" @change="updateValue(option.name)" :disabled="field.read_only"
               :required="isFieldMandatory(field)"
