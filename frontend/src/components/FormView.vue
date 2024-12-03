@@ -270,7 +270,7 @@ const isFirstTabCompletelyFilled = computed(() => {
   const firstTabFields = activeFieldSections.value.flatMap(section => section.fields)
   return firstTabFields.every(field => {
     const value = formData.value[field.fieldname]
-    return value !== null && value !== '' && (!Array.isArray(value) || value.length > 0)
+    return !field.reqd || (value !== null && value !== '' && (!Array.isArray(value) || value.length > 0))
   })
 })
 
@@ -354,11 +354,11 @@ const getMeta = async () => {
 const initializeFormData = () => {
   if (!docTypeMeta.value) return
   const newFormData = { ...formData.value }
-  if(formData.value?.active_tab){
+  if (formData.value?.active_tab) {
     const firstTab = tabFields.value[0]?.name
     if (firstTab != formData.value?.active_tab && !allTabsUnlocked.value) {
       allTabsUnlocked.value = true
-      setActiveTab(formData.value?.active_tab,true)
+      setActiveTab(formData.value?.active_tab, true)
     }
   }
   docTypeMeta.value.fields.forEach(field => {
@@ -384,9 +384,9 @@ const initializeTabCompletionStatus = () => {
   })
 }
 
-const setActiveTab = (tabName,fromMounted=false) => {
-  if(!fromMounted){
-    props.save_as_draft({'active_tab':tabName})
+const setActiveTab = (tabName, fromMounted = false) => {
+  if (!fromMounted) {
+    props.save_as_draft({ 'active_tab': tabName })
   }
   if (allTabsUnlocked.value || tabFields.value.indexOf(tabFields.value.find(tab => tab.name === tabName)) === 0) {
     activeTab.value = tabName
@@ -510,9 +510,10 @@ watch(activeTab, () => {
 
   /* Add any additional styles here */
 }
-.custom{
+
+.custom {
   color: #0E4688 !important;
-  margin-top: -15px!important;
+  margin-top: -15px !important;
 }
 
 .ml-5 {
