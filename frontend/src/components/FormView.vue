@@ -1,19 +1,15 @@
 <template>
-  <div class="w-full h-full bg-white dark:bg-gray-900 z-10" v-if="loading">
-    <Loader />
-  </div>
-  <div v-else class="flex w-full h-screen bg-white dark:bg-gray-900 ">
+  <div class="flex w-full h-screen bg-white dark:bg-gray-900 overflow-hidden">
     <!-- Sidebar -->
     <aside v-if="!props.section" :class="[
-      'static inset-y-0 left-0  w-20 transform transition-transform duration-300 ease-in-out bg-gray-50 dark:bg-gray-800 shadow-lg overflow-y-auto',
+      'sticky top-0 h-screen w-20 bg-gray-50 dark:bg-gray-800 shadow-lg overflow-y-auto',
       isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
-      'md:translate-x-0 md:static md:inset-auto'
+      'md:translate-x-0'
     ]">
       <div class="flex flex-col h-full">
         <nav class="flex-1 px-4 py-4">
           <ul class="space-y-2">
             <li v-for="(tab, index) in tabFields" :key="tab.name">
-              <!-- {{ tab.name }} -->
               <button @click="setActiveTab(tab.name)" :disabled="index > 0 && !allTabsUnlocked" :class="[
                 'w-full text-left px-4 py-2 rounded-lg transition-colors duration-150 ease-in-out flex justify-between items-center',
                 activeTab === tab.name
@@ -34,8 +30,8 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 w-full bg-white dark:bg-gray-900">
-      <div class=" mx-auto px-6 py-8">
+    <main class="flex-1 overflow-y-auto">
+      <div class="mx-auto px-6 py-8">
         <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
           Assessment Not Found
         </div>
@@ -181,8 +177,6 @@ const props = defineProps({
   },
 })
 
-console.log(props.initialData, 'initialData');
-
 const call = inject('$call')
 const loading = ref(true)
 const docTypeMeta = ref(null)
@@ -280,7 +274,6 @@ const isSubmitDisabled = computed(() => {
     return field && value !== null && value !== '' && (!Array.isArray(value) || value.length > 0);
   });
 });
-
 
 const getFieldComponent = (fieldtype) => {
   switch (fieldtype) {
@@ -393,29 +386,7 @@ const setActiveTab = (tabName, fromMounted = false) => {
   }
 }
 
-// const nextTab = () => {
-//   const currentIndex = tabFields.value.findIndex(tab => tab.name === activeTab.value)
-//   if (currentIndex === 0 && !allTabsUnlocked.value) {
-//     allTabsUnlocked.value = true
-//   }
-
-//   const currentTabFields = activeFieldSections.value.flatMap(section => section.fields)
-//   const isCurrentTabComplete = currentTabFields.some(field => {
-//     const value = formData.value[field.fieldname]
-//     return value !== null && value !== '' && (!Array.isArray(value) || value.length > 0)
-//   })
-
-//   if (isCurrentTabComplete) {
-//     tabCompletionStatus.value[activeTab.value] = true
-//   }
-
-//   if (currentIndex < tabFields.value.length - 1) {
-//     activeTab.value = tabFields.value[currentIndex + 1].name
-//   }
-// }
-
 const nextTab = () => {
-  // console.log(activeTab,"iuy" ,activeTab.value ,"9797");
   const currentIndex = tabFields.value.findIndex(tab => tab.name === activeTab.value)
   if (currentIndex === 0 && !allTabsUnlocked.value) {
     allTabsUnlocked.value = true
@@ -505,10 +476,6 @@ watch(activeTab, () => {
 <style scoped>
 .w-20 {
   width: 15% !important;
-
-
-
-  /* Add any additional styles here */
 }
 
 .custom {
@@ -524,8 +491,34 @@ watch(activeTab, () => {
 .abc {
   background-color: #EFEFEF !important;
   color: rgb(119, 119, 119) !important;
-
 }
 
-/* Add any additional styles here */
+/* Ensure the sidebar is sticky and scrollable if content overflows */
+aside {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* Ensure the main content takes up the full height and is scrollable */
+main {
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+main::-webkit-scrollbar,
+aside::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+main,
+aside {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
 </style>
