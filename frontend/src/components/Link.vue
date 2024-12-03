@@ -74,9 +74,9 @@
       </div>
     </div>
     <div v-else>
-      <p v-if="parsedDescription.qlable || fieldParsedDescription.qlable"
+      <p v-if="parsedDescription?.qlable || fieldParsedDescription?.qlable"
         class="text-sm font-medium text-gray-900 dark:text-gray-200"> {{
-          parsedDescription.qlable || fieldParsedDescription.qlable }}</p>
+          parsedDescription?.qlable || fieldParsedDescription?.qlable }}</p>
       <p v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
         class="text-sm text-gray-500  ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
       </p>
@@ -91,7 +91,7 @@
           {{ field.label }}{{ props.isCard ? parsedDescription.desc : '' }} <span v-if="isFieldMandatory(field)"
             class="text-red-500 ml-1">*</span>
         </label>
-        <div v-if="parsedDescription.info || fieldParsedDescription.info" class="ml-2 relative">
+        <div v-if="parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
           <Popover v-slot="{ open }" class="relative">
             <PopoverButton @mouseenter="open = true" @mouseleave="open = false" class="focus:outline-none">
               <InfoIcon class="w-4 h-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
@@ -106,7 +106,7 @@
                 <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                   <div class="p-4 bg-white dark:bg-gray-800">
                     <p class="text-sm text-gray-700 dark:text-gray-300">
-                      {{ parsedDescription.info || fieldParsedDescription.info }}
+                      {{ parsedDescription?.info || fieldParsedDescription?.info }}
                     </p>
                   </div>
                 </div>
@@ -115,8 +115,8 @@
           </Popover>
         </div>
       </div>
-      <p v-if="parsedDescription.desc || fieldParsedDescription.desc && !props.isCard"
-        class="text-sm text-gray-500  mb-2">{{ parsedDescription.desc || fieldParsedDescription.desc }}
+      <p v-if="parsedDescription?.desc || fieldParsedDescription?.desc && !props.isCard"
+        class="text-sm text-gray-500  mb-2">{{ parsedDescription?.desc || fieldParsedDescription?.desc }}
       </p>
 
 
@@ -132,7 +132,7 @@
       </div>
       <div v-else :class="[
         props.isCard ? 'px-6' : '',
-        props.isRow ? 'flex flex-col md:flex-row gap-3 w-full' : 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2'
+        props.isRow ? 'flex flex-col md:flex-row gap-3 w-full' : 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mt-2'
       ]">
         <label v-if="props.isCard" :for="`${field.name}-${option.name}`" v-for="option in options" :key="option.name"
           :class="[props.isCard ? 'border p-2 rounded-md shadow-sm' : '',
@@ -147,8 +147,8 @@
           <span class="flex-grow">{{ option.label }}</span>
         </label>
         <div v-if="!props.isCard" v-for="option in options" :key="option.name"
-          :class="props.isCard ? 'border p-2 rounded-md' : ''" class="flex items-center">
-          <div class="flex-shrink-0 w-5 h-5 mr-2 ml-2">
+          :class="props.isCard ? 'border p-2 rounded-md' : ''" class="flex items-center ">
+          <div class="flex-shrink-0 w-5 h-5 mr-2 ml-2 ">
             <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
               :checked="modelValue === option.name" @change="updateValue(option.name)" :disabled="field.read_only"
               :required="isFieldMandatory(field)"
