@@ -41,7 +41,7 @@
           </Popover>
         </div>
       </div>
-      
+
     </div>
     <p v-if="error" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ error }}</p>
   </div>
@@ -115,10 +115,11 @@ const isFieldMandatory = (field) => {
 </script>
 
 <style scoped>
- .w-96{
+.w-96 {
   width: 100% !important;
   max-width: 800px !important;
   min-width: 500px !important;
- }
+}
+
 /* Add any additional scoped styles here */
 </style>

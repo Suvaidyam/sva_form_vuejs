@@ -1,14 +1,24 @@
 <template>
-  <div v-if="!field.hidden" class="flex flex-col gap-2">
+  <div v-if="!field.hidden" class="flex flex-col ">
+    <span v-if="parsedDescription?.qlable || fieldParsedDescription?.qlable"
+      class="text-sm font-medium  text-gray-700 dark:text-gray-200  block ">
+      {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
+    </span>
+    <span v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
+      class="text-sm text-gray-500  ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
+    </span>
+
     <div :class="props.isCard ? 'gap-2' : ''" class="flex items-center">
       <p v-if="props.isCard"
         class="w-6 h-6 rounded-full bg-gray-500 text-white flex justify-center items-center text-sm">
         {{ 1 }}
       </p>
+
       <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
         {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
-      <div v-if="field.description" class="ml-2 relative">
+
+      <div v-if="parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
         <Popover v-slot="{ open }" class="relative">
           <PopoverButton @mouseenter="open = true" @mouseleave="open = false" class="focus:outline-none">
             <InfoIcon class="w-4 h-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
@@ -22,7 +32,7 @@
               <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                 <div class="p-4 bg-white dark:bg-gray-800">
                   <p class="text-sm text-gray-700 dark:text-gray-300">
-                    {{ field.description }}
+                    {{ parsedDescription?.info || fieldParsedDescription?.info }}
                   </p>
                 </div>
               </div>
@@ -31,7 +41,10 @@
         </Popover>
       </div>
     </div>
-    <div v-if="!props.isCard" class="flex flex-wrap -mx-2">
+    <span v-if="parsedDescription?.desc || fieldParsedDescription.desc" class="text-sm text-gray-500 mb-2  ">
+      {{ parsedDescription?.desc || fieldParsedDescription?.desc }}
+    </span>
+    <div v-if="!props.isCard" class="flex flex-wrap mx-2">
       <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses"
         class="px-2 mb-4">
         <div v-for="option in columnOptions" :key="option.name" class="flex items-center mb-2">
@@ -106,7 +119,11 @@ const props = defineProps({
   formData: {
     type: Object,
     default: () => ({})
-  }
+  },
+  section: {
+    type: String,
+    required: false,
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -116,6 +133,53 @@ const saveAsDraft = inject('saveAsDraft')
 
 const options = ref([])
 const error = ref('')
+
+
+const parsedDescription = computed(() => {
+  return getString(props.section || "")
+
+
+})
+const fieldParsedDescription = computed(() => {
+  return getString(props.field.description || "")
+})
+
+
+function getString(str) {
+  let desc = "";
+  let info = "";
+  let qlable = "";
+  let cenrieo = "";
+
+  // Handle {} first
+  const match = str.match(/\{([^}]+)\}/);
+  if (match) {
+    info = match[1]; // Extract content inside {}
+    str = str.replace(match[0], "").trim(); // Remove {} and its content from the string
+  }
+
+  // Handle @@ next
+  const cenrieoSplit = str.split("@@");
+  if (cenrieoSplit.length > 1) {
+    cenrieo = cenrieoSplit[1].trim(); // Extract content after @@
+    str = cenrieoSplit[0].trim(); // Keep content before @@
+  }
+
+  // Handle $$ last
+  const parts = str.split("$$");
+  if (parts.length > 1) {
+    qlable = parts[1].trim(); // Extract content after $$
+    str = parts[0].trim(); // Keep content before $$
+  }
+
+  // The remaining string is desc
+  desc = str.trim();
+
+  return { desc, info, qlable, cenrieo };
+}
+
+
+
 
 
 const isFieldMandatory = (field) => {
@@ -170,7 +234,7 @@ const getOptions = async () => {
       order_by: 'code asc', // Correct placement
       limit_page_length: 100,
     });
-    
+
     options.value = response;
   } catch (err) {
     console.error('Error fetching options:', err);
