@@ -84,6 +84,15 @@ const error = ref('');
 const emit = defineEmits(['update:modelValue'])
 const saveAsDraft = inject('saveAsDraft')
 
+const parsedDescription = computed(() => {
+  return getString(props.section || "")
+
+
+})
+const fieldParsedDescription = computed(() => {
+  return getString(props.field.description || "")
+})
+
 
 
 function getString(str) {
