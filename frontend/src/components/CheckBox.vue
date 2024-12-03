@@ -2,7 +2,7 @@
   <div v-if="!field.hidden" class="flex flex-col gap-2">
     <div :class="props.isCard ? 'gap-2' : ''" class="flex items-center">
       <p v-if="props.isCard"
-        class="w-6 h-6 rounded-full bg-gray-500 text-white flex justify-center items-center text-sm">
+        class="w-7 min-w-7 min-h-7 h-7 rounded-full bg-gray-700 text-white flex justify-center items-center text-sm">
         {{ 1 }}
       </p>
       <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
