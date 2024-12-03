@@ -1,11 +1,19 @@
 <template>
   <div v-if="!field.hidden" class="flex flex-col gap-2">
-    <p v-if="index < 1 " >{{  section }}</p>
+    <span v-if="parsedDescription.qlable || fieldParsedDescription.qlable"
+      class="text-sm font-medium  text-gray-700 dark:text-gray-200  block ">
+      {{ parsedDescription.qlable || fieldParsedDescription.qlable }}
+    </span>
+    <span v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
+      class="text-sm text-gray-500  ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
+    </span>
+
+    <p v-if="index < 1">{{ section }}</p>
     <div class="flex items-center">
       <label :for="field.name" class="text-sm font-medium text-gray-700 dark:text-gray-200">
         {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
-      <div v-if="field.description" class="ml-2 relative">
+      <div v-if="parsedDescription.info || fieldParsedDescription.info" class="ml-2 relative">
         <Popover v-slot="{ open }" class="relative">
           <PopoverButton @mouseenter="open = true" @mouseleave="open = false" class="focus:outline-none">
             <InfoIcon class="w-4 h-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
@@ -19,7 +27,7 @@
               <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                 <div class="p-4 bg-white dark:bg-gray-800">
                   <p class="text-sm text-gray-700 dark:text-gray-300">
-                    {{ field.description }}
+                    {{ parsedDescription.desc || fieldParsedDescription.desc }}
                   </p>
                 </div>
               </div>
@@ -28,7 +36,10 @@
         </Popover>
       </div>
     </div>
-   
+    <span v-if="parsedDescription.desc || fieldParsedDescription.desc" class="text-sm text-gray-500  ">
+      {{ parsedDescription.desc || fieldParsedDescription.desc }}
+    </span>
+
     <textarea :id="field.name" :value="modelValue" @input="handleInput" @blur="handleBlur" :disabled="field.read_only"
       :required="isFieldMandatory(field)" :rows="field.rows || 3" :placeholder="field.placeholder" :class="[
         'px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
@@ -75,6 +86,52 @@ const emit = defineEmits(['update:modelValue'])
 const saveAsDraft = inject('saveAsDraft')
 
 const error = ref('')
+
+
+const parsedDescription = computed(() => {
+  return getString(props.section || "")
+
+
+})
+const fieldParsedDescription = computed(() => {
+  return getString(props.field.description || "")
+})
+
+
+function getString(str) {
+  let desc = "";
+  let info = "";
+  let qlable = "";
+  let cenrieo = "";
+
+  // Handle {} first
+  const match = str.match(/\{([^}]+)\}/);
+  if (match) {
+    info = match[1]; // Extract content inside {}
+    str = str.replace(match[0], "").trim(); // Remove {} and its content from the string
+  }
+
+  // Handle @@ next
+  const cenrieoSplit = str.split("@@");
+  if (cenrieoSplit.length > 1) {
+    cenrieo = cenrieoSplit[1].trim(); // Extract content after @@
+    str = cenrieoSplit[0].trim(); // Keep content before @@
+  }
+
+  // Handle $$ last
+  const parts = str.split("$$");
+  if (parts.length > 1) {
+    qlable = parts[1].trim(); // Extract content after $$
+    str = parts[0].trim(); // Keep content before $$
+  }
+
+  // The remaining string is desc
+  desc = str.trim();
+
+  return { desc, info, qlable, cenrieo };
+}
+
+
 
 const handleInput = (event) => {
   const value = event.target.value
