@@ -45,9 +45,8 @@
       {{ parsedDescription?.desc || fieldParsedDescription?.desc }}
     </span>
     <div v-if="!props.isCard" class="flex flex-wrap mx-2">
-      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses"
-        class="px-2 mb-4">
-        <div v-for="option in columnOptions" :key="option.name" class="flex items-center mb-2">
+      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses" class="px-2 ">
+        <div v-for="option in columnOptions" :key="option.name" class="flex items-center mb-2  mt-2">
           <input :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
             @change="updateValue(option)" :disabled="field.read_only" :required="field.reqd && modelValue.length === 0"
             class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
@@ -58,11 +57,10 @@
         </div>
       </div>
     </div>
-    <div v-else class="flex flex-wrap -mx-2 px-6">
-      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses"
-        class="px-2 mb-4">
+    <div v-else class="flex flex-wrap mx-2 px-6">
+      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses" class="px-2 ">
         <label v-for="option in columnOptions" :key="option.name" :for="`${field.name}-${option.name}`"
-          class="flex items-center gap-2 border rounded-md p-2 mb-2">
+          class="flex items-center gap-2 border rounded-md ">
           <input :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
             @change="updateValue(option)" :disabled="field.read_only"
             :required="isFieldMandatory(field) && modelValue.length === 0"

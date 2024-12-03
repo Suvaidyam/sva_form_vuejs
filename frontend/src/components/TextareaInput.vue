@@ -1,6 +1,6 @@
 <template>
   <div v-if="!field.hidden" class="flex flex-col gap-2">
-    <span v-if="parsedDescription.qlable || fieldParsedDescription.qlable"
+    <span v-if="index < 1 && parsedDescription.qlable || fieldParsedDescription.qlable"
       class="text-sm font-medium  text-gray-700 dark:text-gray-200  block ">
       {{ parsedDescription.qlable || fieldParsedDescription.qlable }}
     </span>
@@ -8,7 +8,7 @@
       class="text-sm text-gray-500  ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
     </span>
 
-    <p v-if="index < 1">{{ section }}</p>
+    <!-- <p v-if="index < 1">{{ section }}</p> -->
     <div class="flex items-center">
       <label :for="field.name" class="text-sm font-medium text-gray-700 dark:text-gray-200">
         {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
@@ -36,8 +36,8 @@
         </Popover>
       </div>
     </div>
-    <span v-if="parsedDescription.desc || fieldParsedDescription.desc" class="text-sm text-gray-500  ">
-      {{ parsedDescription.desc || fieldParsedDescription.desc }}
+    <span v-if="parsedDescription?.desc || fieldParsedDescription?.desc" class="text-sm text-gray-500  ">
+      {{ parsedDescription?.desc || fieldParsedDescription?.desc }}
     </span>
 
     <textarea :id="field.name" :value="modelValue" @input="handleInput" @blur="handleBlur" :disabled="field.read_only"
@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import { ref, inject } from 'vue'
+import { ref, inject, computed } from 'vue'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 import { InfoIcon } from 'lucide-vue-next'
 
