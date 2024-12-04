@@ -4,7 +4,7 @@
       <div class="inline-block min-w-full py-2 align-middle">
         <div class="overflow-hidden rounded-lg">
           <div class=" flex item-center gap-2 ">
-            <span v-if="index < 1" class="text-sm font-medium  text-gray-700 dark:text-gray-200  block ">
+            <span v-if="index < 1" class="text-md font-medium  text-gray-700 dark:text-gray-200 mb-3  block ">
               {{ parsedDescription.qlable || fieldParsedDescription.qlable }}
             </span>
 
@@ -74,8 +74,8 @@
       </div>
     </div>
     <div v-else>
-      <p v-if="parsedDescription?.qlable || fieldParsedDescription?.qlable"
-        class="text-sm font-medium text-gray-900 dark:text-gray-200"> {{
+      <p v-if="parsedDescription?.qlable || fieldParsedDescription?.qlable && !props.isCard"
+        class="text-md font-medium text-gray-900 dark:text-gray-200"> {{
           parsedDescription?.qlable || fieldParsedDescription?.qlable }}</p>
       <p v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
         class="text-sm text-gray-500  ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
@@ -87,7 +87,8 @@
         </p>
 
         <label :for="`${field.name}-${options[0]?.name}`"
-          class="block text-sm font-medium text-gray-900 dark:text-gray-200">
+          :class="props.isCard ? 'text-sm' : 'text-md font-medium text-gray-900 dark:text-gray-200'"
+          class="block font-medium text-gray-900 dark:text-gray-200">
           {{ field.label }}{{ props.isCard ? parsedDescription.desc : '' }} <span v-if="isFieldMandatory(field)"
             class="text-red-500 ml-1">*</span>
         </label>
@@ -148,7 +149,7 @@
         </label>
         <div v-if="!props.isCard" v-for="option in options" :key="option.name"
           :class="props.isCard ? 'border p-2 rounded-md' : ''" class="flex items-center ">
-          <div class="flex-shrink-0 w-5 h-5 mr-2 ml-2 ">
+          <div class="flex-shrink-0 w-5 h-5 mr-2 ml-4 ">
             <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
               :checked="modelValue === option.name" @change="updateValue(option.name)" :disabled="field.read_only"
               :required="isFieldMandatory(field)"

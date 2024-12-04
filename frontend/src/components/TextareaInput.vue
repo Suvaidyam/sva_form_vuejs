@@ -1,7 +1,7 @@
 <template>
   <div v-if="!field.hidden" class="flex flex-col gap-2">
     <span v-if="index < 1 && parsedDescription.qlable || fieldParsedDescription.qlable"
-      class="text-sm font-medium  text-gray-700 dark:text-gray-200  block ">
+      class="text-md font-medium  text-gray-700 dark:text-gray-200  block ">
       {{ parsedDescription.qlable || fieldParsedDescription.qlable }}
     </span>
     <span v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
@@ -10,7 +10,7 @@
 
     <!-- <p v-if="index < 1">{{ section }}</p> -->
     <div class="flex items-center">
-      <label :for="field.name" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+      <label :for="field.name" class="text-md font-medium text-gray-700 dark:text-gray-200">
         {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
       <div v-if="parsedDescription.info || fieldParsedDescription.info" class="ml-2 relative">

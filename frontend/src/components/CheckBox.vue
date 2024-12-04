@@ -1,7 +1,7 @@
 <template>
   <div v-if="!field.hidden" class="flex flex-col">
-    <span v-if="parsedDescription?.qlable || fieldParsedDescription?.qlable"
-      class="text-sm font-medium text-gray-700 dark:text-gray-200 block break-words">
+    <span v-if="parsedDescription?.qlable || fieldParsedDescription?.qlable && !props.isCard"
+      class="text-md font-medium text-gray-700 dark:text-gray-200 block break-words">
       {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
     </span>
     <span v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
@@ -15,7 +15,8 @@
         {{ 1 }}
       </p>
 
-      <label class="text-sm font-medium text-gray-700 dark:text-gray-200 break-words">
+      <label :class="!props.isCard ? 'text-md' : 'text-sm'"
+        class=" font-medium text-gray-700 dark:text-gray-200 break-words">
         {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
 
@@ -45,7 +46,7 @@
     <span v-if="parsedDescription?.desc || fieldParsedDescription.desc" class="text-sm text-gray-500 mb-2 break-words">
       {{ parsedDescription?.desc || fieldParsedDescription?.desc }}
     </span>
-    <div v-if="!props.isCard" class="flex flex-wrap mx-2">
+    <div v-if="!props.isCard" class="flex flex-wrap ml-3">
       <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses" class="px-2">
         <div v-for="option in columnOptions" :key="option.name" class="flex items-center mb-2 mt-2">
           <input :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"

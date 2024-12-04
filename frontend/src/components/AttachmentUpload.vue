@@ -9,7 +9,7 @@
         class="text-sm text-gray-500  ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
       </span>
 
-      <label :for="field.fieldname" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+      <label :for="field.fieldname" class="block text-md font-medium text-gray-700 dark:text-gray-200">
         {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
       <Popover v-if="parsedDescription.info || fieldParsedDescription.info" class="relative inline-block ml-2">
