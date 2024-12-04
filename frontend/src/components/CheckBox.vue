@@ -1,11 +1,12 @@
 <template>
-  <div v-if="!field.hidden" class="flex flex-col ">
+  <div v-if="!field.hidden" class="flex flex-col">
     <span v-if="parsedDescription?.qlable || fieldParsedDescription?.qlable"
-      class="text-sm font-medium  text-gray-700 dark:text-gray-200  block ">
+      class="text-sm font-medium text-gray-700 dark:text-gray-200 block break-words">
       {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
     </span>
     <span v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
-      class="text-sm text-gray-500  ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
+      class="text-sm text-gray-500 break-words">
+      {{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
     </span>
 
     <div :class="props.isCard ? 'gap-2' : ''" class="flex items-center">
@@ -14,7 +15,7 @@
         {{ 1 }}
       </p>
 
-      <label class="text-sm font-medium text-gray-700 dark:text-gray-200">
+      <label class="text-sm font-medium text-gray-700 dark:text-gray-200 break-words">
         {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
 
@@ -31,7 +32,7 @@
               @mouseenter="open = true" @mouseleave="open = false">
               <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                 <div class="p-4 bg-white dark:bg-gray-800">
-                  <p class="text-sm text-gray-700 dark:text-gray-300">
+                  <p class="text-sm text-gray-700 dark:text-gray-300 break-words">
                     {{ parsedDescription?.info || fieldParsedDescription?.info }}
                   </p>
                 </div>
@@ -41,46 +42,31 @@
         </Popover>
       </div>
     </div>
-    <span v-if="parsedDescription?.desc || fieldParsedDescription.desc" class="text-sm text-gray-500 mb-2  ">
+    <span v-if="parsedDescription?.desc || fieldParsedDescription.desc" class="text-sm text-gray-500 mb-2 break-words">
       {{ parsedDescription?.desc || fieldParsedDescription?.desc }}
     </span>
     <div v-if="!props.isCard" class="flex flex-wrap mx-2">
-      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses" class="px-2 ">
-        <div v-for="option in columnOptions" :key="option.name" class="flex items-center mb-2  mt-2">
+      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses" class="px-2">
+        <div v-for="option in columnOptions" :key="option.name" class="flex items-center mb-2 mt-2">
           <input :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
             @change="updateValue(option)" :disabled="field.read_only" :required="field.reqd && modelValue.length === 0"
             class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
           <label :for="`${field.name}-${option.name}`"
-            class="ml-2 block text-sm text-gray-700 dark:text-gray-200 truncate">
+            class="ml-2 block text-sm text-gray-700 dark:text-gray-200 break-words">
             {{ option.label }}
           </label>
         </div>
       </div>
     </div>
     <div v-else class="flex flex-wrap mx-2 px-6">
-      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses" class="px-2 ">
-        <label v-for="option in columnOptions" :key="option.name" :for="`${field.name}-${option.name}`"
-          class="flex items-center gap-2 border rounded-md ">
-          <input :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
-            @change="updateValue(option)" :disabled="field.read_only"
-            :required="isFieldMandatory(field) && modelValue.length === 0"
-            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600 flex-shrink-0" />
-          <p class="ml-2 block text-sm text-gray-700 dark:text-gray-200 truncate">
-            {{ option.label }}
-          </p>
-        </label>
-      </div>
-    </div>
-    <div v-else class="flex flex-wrap -mx-2 px-6">
-      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses"
-        class="px-2 mb-4">
+      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses" class="px-2">
         <label v-for="option in columnOptions" :key="option.name" :for="`${field.name}-${option.name}`"
           class="flex items-center gap-2 border rounded-md p-2 mb-2">
           <input :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
             @change="updateValue(option)" :disabled="field.read_only"
             :required="isFieldMandatory(field) && modelValue.length === 0"
-            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
-          <p class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
+            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600 flex-shrink-0" />
+          <p class="ml-2 block text-sm text-gray-700 dark:text-gray-200 break-words">
             {{ option.label }}
           </p>
         </label>
@@ -132,16 +118,13 @@ const saveAsDraft = inject('saveAsDraft')
 const options = ref([])
 const error = ref('')
 
-
 const parsedDescription = computed(() => {
   return getString(props.section || "")
-
-
 })
+
 const fieldParsedDescription = computed(() => {
   return getString(props.field.description || "")
 })
-
 
 function getString(str) {
   let desc = "";
@@ -149,36 +132,28 @@ function getString(str) {
   let qlable = "";
   let cenrieo = "";
 
-  // Handle {} first
   const match = str.match(/\{([^}]+)\}/);
   if (match) {
-    info = match[1]; // Extract content inside {}
-    str = str.replace(match[0], "").trim(); // Remove {} and its content from the string
+    info = match[1];
+    str = str.replace(match[0], "").trim();
   }
 
-  // Handle @@ next
   const cenrieoSplit = str.split("@@");
   if (cenrieoSplit.length > 1) {
-    cenrieo = cenrieoSplit[1].trim(); // Extract content after @@
-    str = cenrieoSplit[0].trim(); // Keep content before @@
+    cenrieo = cenrieoSplit[1].trim();
+    str = cenrieoSplit[0].trim();
   }
 
-  // Handle $$ last
   const parts = str.split("$$");
   if (parts.length > 1) {
-    qlable = parts[1].trim(); // Extract content after $$
-    str = parts[0].trim(); // Keep content before $$
+    qlable = parts[1].trim();
+    str = parts[0].trim();
   }
 
-  // The remaining string is desc
   desc = str.trim();
 
   return { desc, info, qlable, cenrieo };
 }
-
-
-
-
 
 const isFieldMandatory = (field) => {
   if (field.reqd) return true
@@ -191,6 +166,7 @@ const isFieldMandatory = (field) => {
     return false
   }
 }
+
 const splitOptions = computed(() => {
   if (options.value.length <= 8) {
     return [options.value]
@@ -224,12 +200,11 @@ const getOptions = async () => {
       filters = { field: props.field.fieldname };
     }
 
-    // Remove 'order_by' from filters and pass it directly in the request
     const response = await call('frappe.client.get_list', {
       doctype: 'Field Options',
       filters: filters,
       fields: ['*'],
-      order_by: 'code asc', // Correct placement
+      order_by: 'code asc',
       limit_page_length: 100,
     });
 
@@ -281,14 +256,11 @@ const updateValue = (option) => {
 watch(() => props.field, getOptions, { immediate: true })
 </script>
 
-
-
 <style scoped>
 .group:hover .group-hover\:opacity-100 {
   opacity: 1;
 }
 
-/* Add these new styles */
 input[type="checkbox"] {
   min-width: 1rem;
   min-height: 1rem;
@@ -297,8 +269,9 @@ input[type="checkbox"] {
 label,
 p {
   max-width: calc(100% - 1.5rem);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
-
 
 .w-96 {
   width: 100% !important;
