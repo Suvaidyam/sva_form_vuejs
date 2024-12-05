@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full h-screen bg-white dark:bg-gray-900 overflow-hidden">
+  <div class="flex w-full h-screen bg-white dark:bg-gray-900 ">
     <!-- Sidebar -->
     <aside v-if="!props.section" :class="[
       'sticky top-0 h-screen w-20 bg-gray-50 dark:bg-gray-800 shadow-lg overflow-y-auto',
@@ -30,7 +30,7 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto">
+    <main class="flex-1 w-full">
       <div class="mx-auto px-6 py-8">
         <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
           Assessment Not Found
@@ -502,10 +502,10 @@ aside {
 }
 
 /* Ensure the main content takes up the full height and is scrollable */
-main {
+/* main {
   height: 100vh;
   overflow-y: auto;
-}
+} */
 
 /* Hide scrollbar for Chrome, Safari and Opera */
 main::-webkit-scrollbar,
