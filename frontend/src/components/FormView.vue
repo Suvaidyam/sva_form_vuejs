@@ -18,6 +18,7 @@
                 index > 0 && !allTabsUnlocked ? 'opacity-50 cursor-not-allowed' : ''
               ]">
                 {{ tab.label }}
+
                 <span class="mr-2" v-if="index > 0">
                   <LockIcon v-if="!allTabsUnlocked" class="w-4 h-4" />
                   <CheckCircleIcon v-if="allTabsUnlocked && isTabComplete(tab.name)" class="w-4 h-4 text-green-500" />
@@ -44,6 +45,7 @@
                     class="flex items-center justify-between cursor-pointer bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-2">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                       {{ section.label }}
+
                     </h3>
                     <ChevronDownIcon
                       :class="['w-5 h-5 transition-transform', { 'transform rotate-180': openSections[index] }]" />
@@ -61,9 +63,13 @@
               </template>
               <template v-else>
                 <div v-for="(section, index) in activeFieldSections" :key="section.name" class="mb-6">
-                  <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white mb-4">
-                    {{ section.label }}
-                  </h3>
+                  <div class="flex items-center justify-between">
+                    <h3 :id="`section-${index}`" class="text-2xl font-semibold custom  dark:text-white mb-4">
+                      {{ section.label }}
+
+                    </h3>
+                    <SaveStatusIcon v-if="section.label"   class="mb-4" :status="status" />
+                  </div>
                   <div v-if="section.fields && section.fields.length > 0" :aria-labelledby="`section-${index}`"
                     class="space-y-4">
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
@@ -113,7 +119,7 @@
 
 <script setup>
 import { ref, computed, onMounted, inject, watch, provide } from 'vue'
-import { ChevronDownIcon, LockIcon, CheckCircleIcon, XIcon, MenuIcon } from 'lucide-vue-next'
+import { ChevronDownIcon, LockIcon, CheckCircleIcon, XIcon, MenuIcon, SaveIcon } from 'lucide-vue-next'
 import Input from './Input.vue'
 import Link from './Link.vue'
 import LinkTable from './LinkTable.vue'
@@ -125,6 +131,8 @@ import DateInput from './DateInput.vue'
 import Textarea from './TextareaInput.vue'
 import CheckboxComponent from './CheckboxComponent.vue'
 import percent from './PercentageInput.vue'
+import SaveStatusIcon from './SaveStatusIcon.vue'
+
 
 const props = defineProps({
   doctype: {
@@ -175,6 +183,10 @@ const props = defineProps({
     type: Function,
     required: false
   },
+  status: {
+    type: String,
+    default: 'idle'
+  }
 })
 
 const call = inject('$call')
