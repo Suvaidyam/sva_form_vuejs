@@ -225,7 +225,7 @@ const allSections = computed(() => {
 
   const sections = []
   let currentSection = null
-
+  let mismatchedDependsOn = []
   docTypeMeta.value.fields.forEach(field => {
     if (field.fieldname === 'amended_from') {
       return
@@ -239,9 +239,16 @@ const allSections = computed(() => {
       }
       currentSection = { label: field.label, fields: [], is_matrix: field.is_matrix, description: field.description }
     } else if (currentSection) {
+      if (field.depends_on) {
+        if (field.mandatory_depends_on && field.mandatory_depends_on != field.depends_on) {
+          mismatchedDependsOn.push(field.label)
+        }
+      }
+
       currentSection.fields.push(field)
     }
   })
+  console.log(mismatchedDependsOn, 'mismatchedDependsOn');
 
   if (currentSection) {
     sections.push(currentSection)
@@ -398,6 +405,10 @@ const nextTab = () => {
 
   if (currentIndex < tabFields.value.length - 1) {
     activeTab.value = tabFields.value[currentIndex + 1].name
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   }
   setActiveTab(activeTab.value)
 }
