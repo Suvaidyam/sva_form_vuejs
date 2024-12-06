@@ -89,7 +89,7 @@
         <label :for="`${field.name}-${options[0]?.name}`"
           :class="props.isCard ? 'text-sm' : 'text-md font-medium text-gray-900 dark:text-gray-200'"
           class="block font-medium text-gray-900 dark:text-gray-200">
-          {{ field.label }}{{ props.isCard ? parsedDescription.desc : '' }} <span v-if="isFieldMandatory(field)"
+          {{ field.label }}{{ props.isCard ? fieldParsedDescription.desc : '' }} <span v-if="isFieldMandatory(field)"
             class="text-red-500 ml-1">*</span>
         </label>
         <div v-if="parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
