@@ -12,7 +12,8 @@
   "label",
   "code",
   "score",
-  "group"
+  "group",
+  "depends_on"
  ],
  "fields": [
   {
@@ -54,11 +55,16 @@
    "fieldname": "group",
    "fieldtype": "Data",
    "label": "Group"
+  },
+  {
+   "fieldname": "depends_on",
+   "fieldtype": "Data",
+   "label": "Display Depends On"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-07 13:26:16.924769",
+ "modified": "2024-12-07 15:14:41.021566",
  "modified_by": "Administrator",
  "module": "sva_form",
  "name": "Field Options",
