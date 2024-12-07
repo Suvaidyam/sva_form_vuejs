@@ -133,6 +133,7 @@ import Input from './Input.vue'
 import Link from './Link.vue'
 import LinkTable from './LinkTable.vue'
 import CheckBox from './CheckBox.vue'
+import CheckBoxPW from './CheckBoxPW.vue'
 import Button from './Button.vue'
 import Loader from './Loader.vue'
 import AttachmentUpload from './AttachmentUpload.vue'
@@ -317,7 +318,7 @@ const getFieldComponent = (fieldtype) => {
   switch (fieldtype) {
     case 'Link': return props.isTable ? LinkTable : Link
     case 'Data': return Input
-    case 'Table MultiSelect': return CheckBox
+    case 'Table MultiSelect': return props.isCard ? CheckBoxPW : CheckBox
     case 'Button': return Button
     case 'Attach': return AttachmentUpload
     case 'Date': return DateInput
