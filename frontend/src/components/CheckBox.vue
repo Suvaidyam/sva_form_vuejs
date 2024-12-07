@@ -16,7 +16,7 @@
       </p>
 
       <label :class="!props.isCard ? 'text-md' : 'text-sm'"
-        class=" font-medium text-gray-700 dark:text-gray-200 break-words">
+        class="font-medium text-gray-700 dark:text-gray-200 break-words">
         {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
 
@@ -50,7 +50,7 @@
       <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses" class="px-2">
         <div v-for="option in columnOptions" :key="option.name" class="flex items-center mb-2 mt-2">
           <input :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
-            @change="updateValue(option)" :disabled="field.read_only" :required="field.reqd && modelValue.length === 0"
+            @change="updateValue(option)" :disabled="isOptionDisabled(option)" :required="field.reqd && modelValue.length === 0"
             class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
           <label :for="`${field.name}-${option.name}`"
             class="ml-2 block text-sm text-gray-700 dark:text-gray-200 break-words">
@@ -64,7 +64,7 @@
         <label v-for="option in columnOptions" :key="option.name" :for="`${field.name}-${option.name}`"
           class="flex items-center gap-2 border rounded-md p-2 mb-2">
           <input :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
-            @change="updateValue(option)" :disabled="field.read_only"
+            @change="updateValue(option)" :disabled="isOptionDisabled(option)"
             :required="isFieldMandatory(field) && modelValue.length === 0"
             class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600 flex-shrink-0" />
           <p class="ml-2 block text-sm text-gray-700 dark:text-gray-200 break-words">
@@ -222,6 +222,19 @@ const validateInput = (newValue) => {
   }
 }
 
+const getSelectedGroup = computed(() => {
+  if (!Array.isArray(props.modelValue) || props.modelValue.length === 0) return null;
+  const selectedOption = options.value.find(option => props.modelValue.some(item => item.field_options === option.name));
+  return selectedOption ? selectedOption.group : null;
+})
+
+const isOptionDisabled = (option) => {
+  const selectedGroup = getSelectedGroup.value;
+  if (!option.group) return false;
+  if (selectedGroup === null) return false;
+  return selectedGroup !== option.group;
+}
+
 const updateValue = (option) => {
   if (!Array.isArray(props.modelValue)) {
     console.error('modelValue is not an array:', props.modelValue)
@@ -232,12 +245,14 @@ const updateValue = (option) => {
   const index = newValue.findIndex(item => item.field_options === option.name)
 
   if (index === -1) {
-    newValue.push({
-      doctype: "Options Child",
-      parentfield: props.field.fieldname,
-      parenttype: props.field.parent,
-      field_options: option.name
-    })
+    if (!isOptionDisabled(option)) {
+      newValue.push({
+        doctype: "Options Child",
+        parentfield: props.field.fieldname,
+        parenttype: props.field.parent,
+        field_options: option.name
+      })
+    }
   } else {
     newValue.splice(index, 1)
   }
@@ -276,3 +291,4 @@ p {
   min-width: 500px !important;
 }
 </style>
+
