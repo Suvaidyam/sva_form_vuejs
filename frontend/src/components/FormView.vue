@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full h-screen bg-white dark:bg-gray-900 ">
+  <div class="flex w-full h-screen bg-white dark:bg-gray-900">
     <!-- Sidebar -->
     <aside v-if="!props.section" :class="[
       'sticky top-0 h-screen w-20 bg-gray-50 dark:bg-gray-800 shadow-lg overflow-y-auto',
@@ -15,12 +15,14 @@
                 activeTab === tab.name
                   ? 'bg-orange-500 text-white'
                   : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700',
-                index > 0 && !allTabsUnlocked ? 'opacity-50 cursor-not-allowed' : ''
+                index > 0 && !allTabsUnlocked ? 'opacity-50 cursor-not-allowed' : '',
+                showErrors && tabErrors[tab.name] ? 'border-2 border-red-500' : ''
               ]">
                 {{ tab.label }}
                 <span class="mr-2" v-if="index > 0">
                   <LockIcon v-if="!allTabsUnlocked" class="w-4 h-4" />
                   <CheckCircleIcon v-if="allTabsUnlocked && isTabComplete(tab.name)" class="w-4 h-4 text-green-500" />
+                  <XCircleIcon v-if="showErrors && tabErrors[tab.name]" class="w-4 h-4 text-red-500" />
                 </span>
               </button>
             </li>
@@ -54,16 +56,24 @@
                         :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard"
                         :matrix="section.is_matrix" :index="fieldIndex" v-model="formData[field.fieldname]"
                         :onfieldChange="props.onfieldChange" :isRow="props.isRow"
-                        @update:modelValue="handleFieldUpdate(field.fieldname, $event)" />
+                        @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
+                        :class="{ 'border-red-500': showErrors && fieldErrors[field.fieldname] }"
+                      />
+                      <p v-if="showErrors && fieldErrors[field.fieldname]" class="text-red-500 text-sm mt-1">
+                        {{ fieldErrors[field.fieldname] }}
+                      </p>
                     </div>
                   </div>
                 </div>
               </template>
               <template v-else>
                 <div v-for="(section, index) in activeFieldSections" :key="section.name" class="mb-6">
-                  <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white mb-4">
-                    {{ section.label }}
-                  </h3>
+                  <div class="flex items-center justify-between">
+                    <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white mb-4">
+                      {{ section.label }}
+                    </h3>
+                    <SaveStatusIcon v-if="section.label" class="mb-4" :status="status" />
+                  </div>
                   <div v-if="section.fields && section.fields.length > 0" :aria-labelledby="`section-${index}`"
                     class="space-y-4">
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
@@ -72,7 +82,12 @@
                         :dropDownOptions="field.is_dropDown" :matrix="section.is_matrix" :index="fieldIndex"
                         :formData="formData" v-model="formData[field.fieldname]" :isRow="props.isRow"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
-                        :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname" />
+                        :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname"
+                        :class="{ 'border-red-500': showErrors && fieldErrors[field.fieldname] }"
+                      />
+                      <p v-if="showErrors && fieldErrors[field.fieldname]" class="text-red-500 text-sm mt-1">
+                        {{ fieldErrors[field.fieldname] }}
+                      </p>
                     </div>
                   </div>
                   <p v-else class="text-gray-500 dark:text-gray-400 italic">
@@ -83,9 +98,9 @@
             </div>
             <div class="mt-6 flex justify-end gap-2">
               <button v-if="!props.section && !isLastTab" @click="nextTab" type="button"
-                :disabled="isFirstTab && !isFirstTabCompletelyFilled" :class="[
+                :disabled="!isCurrentTabValid" :class="[
                   'px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-                  isFirstTab && !isFirstTabCompletelyFilled
+                  !isCurrentTabValid
                     ? 'bg-gray-300 abc cursor-not-allowed'
                     : 'bg-orange-500 text-white hover:bg-orange-600'
                 ]">
@@ -113,7 +128,7 @@
 
 <script setup>
 import { ref, computed, onMounted, inject, watch, provide } from 'vue'
-import { ChevronDownIcon, LockIcon, CheckCircleIcon, XIcon, MenuIcon } from 'lucide-vue-next'
+import { ChevronDownIcon, LockIcon, CheckCircleIcon, XIcon, MenuIcon, XCircleIcon } from 'lucide-vue-next'
 import Input from './Input.vue'
 import Link from './Link.vue'
 import LinkTable from './LinkTable.vue'
@@ -125,6 +140,7 @@ import DateInput from './DateInput.vue'
 import Textarea from './TextareaInput.vue'
 import CheckboxComponent from './CheckboxComponent.vue'
 import percent from './PercentageInput.vue'
+import SaveStatusIcon from './SaveStatusIcon.vue'
 
 const props = defineProps({
   doctype: {
@@ -175,8 +191,21 @@ const props = defineProps({
     type: Function,
     required: false
   },
+  status: {
+    type: String,
+    default: 'idle',
+    required: false
+
+  },
+//   errorCode:{
+//  type: String,
+//     required: false,
+//        default: '',
+
+//   }
 })
 
+console.log(props.errorCode,"opi709y98t98t98");
 const call = inject('$call')
 const loading = ref(true)
 const docTypeMeta = ref(null)
@@ -186,6 +215,9 @@ const openSections = ref([])
 const allTabsUnlocked = ref(false)
 const tabCompletionStatus = ref({})
 const isSidebarOpen = ref(false)
+const fieldErrors = ref({})
+const tabErrors = ref({})
+const showErrors = ref(false)
 
 const tabFields = computed(() =>
   docTypeMeta.value?.fields.filter(field => field.fieldtype === 'Tab Break') || []
@@ -266,12 +298,11 @@ const isFirstTab = computed(() => {
   return activeTab.value === tabFields.value[0]?.name
 })
 
-const isFirstTabCompletelyFilled = computed(() => {
-  if (!isFirstTab.value) return true
-  const firstTabFields = activeFieldSections.value.flatMap(section => section.fields)
-  return firstTabFields.every(field => {
+const isCurrentTabValid = computed(() => {
+  const currentTabFields = getTabFields(activeTab.value)
+  return currentTabFields.every(field => {
     const value = formData.value[field.fieldname]
-    return !field.reqd || (value !== null && value !== '' && (!Array.isArray(value) || value.length > 0))
+    return !field.reqd  || (value !== null && value !== '' && (!Array.isArray(value) || value.length > 0))
   })
 })
 
@@ -327,6 +358,32 @@ const getTabFields = (tabName) => {
 
 const handleFieldUpdate = (fieldName, value) => {
   formData.value[fieldName] = value
+  if (showErrors.value) {
+    validateField(fieldName)
+  }
+}
+
+const validateField = (fieldName) => {
+  const field = docTypeMeta.value.fields.find(f => f.fieldname === fieldName)
+  if (!field) return
+
+  if (field.reqd && (!formData.value[fieldName] || formData.value[fieldName] === '')) {
+    fieldErrors.value[fieldName] = 'This field is required'
+  } else {
+    delete fieldErrors.value[fieldName]
+  }
+
+  updateTabErrors()
+}
+
+const updateTabErrors = () => {
+  tabErrors.value = {}
+  tabFields.value.forEach(tab => {
+    const tabFieldNames = getTabFields(tab.name).map(f => f.fieldname)
+    if (tabFieldNames.some(fieldName => fieldErrors.value[fieldName])) {
+      tabErrors.value[tab.name] = true
+    }
+  })
 }
 
 const getMeta = async () => {
@@ -373,11 +430,6 @@ const initializeFormData = () => {
   formData.value = newFormData
 }
 
-watch(() => props.initialData, (newVal) => {
-  formData.value = { ...newVal }
-  initializeFormData()
-}, { deep: true, immediate: true })
-
 const initializeTabCompletionStatus = () => {
   tabFields.value.forEach(tab => {
     tabCompletionStatus.value[tab.name] = false
@@ -394,37 +446,69 @@ const setActiveTab = (tabName, fromMounted = false) => {
 }
 
 const nextTab = () => {
-  const currentIndex = tabFields.value.findIndex(tab => tab.name === activeTab.value)
-  if (currentIndex === 0 && !allTabsUnlocked.value) {
-    allTabsUnlocked.value = true
-  }
+  if (isCurrentTabValid.value) {
+    const currentIndex = tabFields.value.findIndex(tab => tab.name === activeTab.value)
+    if (currentIndex === 0 && !allTabsUnlocked.value) {
+      allTabsUnlocked.value = true
+    }
 
-  if (isTabComplete(activeTab.value)) {
     tabCompletionStatus.value[activeTab.value] = true
-  }
 
-  if (currentIndex < tabFields.value.length - 1) {
-    activeTab.value = tabFields.value[currentIndex + 1].name
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    if (currentIndex < tabFields.value.length - 1) {
+      activeTab.value = tabFields.value[currentIndex + 1].name
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+    setActiveTab(activeTab.value)
+  } else {
+    validateCurrentTab()
   }
-  setActiveTab(activeTab.value)
+}
+
+const validateCurrentTab = () => {
+  const currentTabFields = getTabFields(activeTab.value)
+  currentTabFields.forEach(field => {
+    validateField(field.fieldname)
+  })
 }
 
 const toggleSection = (index) => {
   openSections.value[index] = !openSections.value[index]
 }
 
+const onSubmit = () => {
+  showErrors.value = true
+  validateAllFields()
+  const { isValid, firstErrorTab, sectionsWithErrors } = validateForm()
+
+  if (!isValid) {
+    if (firstErrorTab) {
+      setActiveTab(firstErrorTab)
+    }
+    // const errorMessage = `Mandatory fields not filled in sections: ${Array.from(sectionsWithErrors).join(', ')}`
+    const errorMessage = `Mandatory fields not filled in sections`
+    props.toast.error(errorMessage, {
+      timeout: 5000,
+      closeOnClick: true,
+    })
+    // Scroll to the first error field
+    const firstErrorField = document.querySelector('.border-red-500')
+    if (firstErrorField) {
+      firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  } else {
+    props.onSubmit(formData.value)
+  }
+}
+
 const validateForm = () => {
-  const newErrors = {}
   const sectionsWithErrors = new Set()
   let firstErrorTab = null
 
   docTypeMeta.value.fields.forEach(field => {
     if (field.reqd && (!formData.value[field.fieldname] || formData.value[field.fieldname] === '')) {
-      newErrors[field.fieldname] = 'This field is required'
       const section = allSections.value.find(s => s.fields.some(f => f.fieldname === field.fieldname))
       if (section) {
         sectionsWithErrors.add(section.label)
@@ -438,24 +522,13 @@ const validateForm = () => {
     }
   })
 
-  return { isValid: Object.keys(newErrors).length === 0, firstErrorTab, sectionsWithErrors }
+  return { isValid: sectionsWithErrors.size === 0, firstErrorTab, sectionsWithErrors }
 }
 
-const onSubmit = () => {
-  const { isValid, firstErrorTab, sectionsWithErrors } = validateForm()
-
-  if (!isValid) {
-    if (firstErrorTab) {
-      setActiveTab(firstErrorTab)
-    }
-    const errorMessage = `Mandatory fields not filled in sections: ${Array.from(sectionsWithErrors).join(', ')}`
-    props.toast.error(errorMessage, {
-      timeout: 5000,
-      closeOnClick: true,
-    })
-  } else {
-    props.onSubmit(formData.value)
-  }
+const validateAllFields = () => {
+  docTypeMeta?.value?.fields?.forEach(field => {
+    validateField(field.fieldname)
+  })
 }
 
 provide('saveAsDraft', props.save_as_draft)
@@ -479,9 +552,17 @@ onMounted(() => {
   })
 })
 
-watch(activeTab, () => {
-  // Removed error clearing logic
-})
+watch(() => props.initialData, (newVal) => {
+  formData.value = { ...newVal }
+  initializeFormData()
+  validateAllFields()
+}, { deep: true, immediate: true })
+
+watch(formData, () => {
+  if (showErrors.value) {
+    validateAllFields()
+  }
+}, { deep: true })
 </script>
 
 <style scoped>
@@ -511,12 +592,6 @@ aside {
   height: 100vh;
   overflow-y: auto;
 }
-
-/* Ensure the main content takes up the full height and is scrollable */
-/* main {
-  height: 100vh;
-  overflow-y: auto;
-} */
 
 /* Hide scrollbar for Chrome, Safari and Opera */
 main::-webkit-scrollbar,
