@@ -68,12 +68,12 @@
               </template>
               <template v-else>
                 <div v-for="(section, index) in activeFieldSections" :key="section.name" class="mb-6">
-                  <div class="flex items-center justify-between">
-                    <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white mb-4">
+                
+                    <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white mb-4 flex ">
                       {{ section.label }}
+                      <SaveStatusIcon v-if="section.label" class=" mt-2 cust" :status="status" />
                     </h3>
-                    <SaveStatusIcon v-if="section.label" class="mb-4" :status="status" />
-                  </div>
+                 
                   <div v-if="section.fields && section.fields.length > 0" :aria-labelledby="`section-${index}`"
                     class="space-y-4">
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
@@ -606,5 +606,8 @@ aside {
   /* IE and Edge */
   scrollbar-width: none;
   /* Firefox */
+}
+.cust{
+  margin-left:20px !important;
 }
 </style>
