@@ -198,16 +198,12 @@ const getOptions = async () => {
         console.error('Invalid link_filters JSON:', e);
       }
     } else {
-      filters = { field: props.field.fieldname };
+      filters = { field: props.field.fieldname, ref_doctype: props.field.parent }
     }
 
-    const response = await call('frappe.client.get_list', {
-      doctype: 'Field Options',
-      filters: filters,
-      fields: ['*'],
-      order_by: 'code asc',
-      limit_page_length: 100,
-    });
+    const response = await call('sva_form_vuejs.controllers.api.get_option', {
+        filters: filters
+      })
 
     options.value = response;
   } catch (err) {

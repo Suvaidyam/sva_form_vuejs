@@ -11,7 +11,8 @@
   "field",
   "label",
   "code",
-  "score"
+  "score",
+  "group"
  ],
  "fields": [
   {
@@ -48,11 +49,16 @@
    "fieldtype": "Float",
    "label": "Score",
    "reqd": 1
+  },
+  {
+   "fieldname": "group",
+   "fieldtype": "Data",
+   "label": "Group"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-01 14:55:01.803011",
+ "modified": "2024-12-07 13:26:16.924769",
  "modified_by": "Administrator",
  "module": "sva_form",
  "name": "Field Options",
