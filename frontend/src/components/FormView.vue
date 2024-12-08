@@ -2,7 +2,7 @@
   <div class="flex w-full h-screen bg-white dark:bg-gray-900">
     <!-- Sidebar -->
     <aside v-if="!props.section" :class="[
-      'sticky top-0 h-screen w-20 bg-gray-50 dark:bg-gray-800 shadow-lg overflow-y-auto',
+      'sticky top-0 h-full w-20 bg-gray-50 dark:bg-gray-800  overflow-y-auto',
       isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
       'md:translate-x-0'
     ]">
@@ -32,12 +32,17 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 w-full">
+    <main class="flex-1 w-full ">
       <div class="mx-auto px-6 py-8">
         <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
           Assessment Not Found
         </div>
         <div v-else>
+          <!-- Loader -->
+          <!-- <div v-if="isLoading" class=" bg-white  inset-0 bg-opacity-50 flex items-center justify-center z-50">
+            <div class="animate-spin  rounded-full h-32 w-32 border-t-2 border-b-2 border-orange-500"></div>
+          </div> -->
+
           <form @submit.prevent="onSubmit" class="mt-16 md:mt-0">
             <div class="space-y-6">
               <template v-if="props.section">
@@ -68,12 +73,10 @@
               </template>
               <template v-else>
                 <div v-for="(section, index) in activeFieldSections" :key="section.name" class="mb-6">
-                
-                    <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white mb-4 flex ">
-                      {{ section.label }}
-                      <SaveStatusIcon v-if="section.label" class=" mt-2 cust" :status="status" />
-                    </h3>
-                 
+                  <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white mb-4 flex ">
+                    {{ section.label }}
+                    <SaveStatusIcon v-if="section.label" class=" mt-2 cust" :status="status" />
+                  </h3>
                   <div v-if="section.fields && section.fields.length > 0" :aria-labelledby="`section-${index}`"
                     class="space-y-4">
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
@@ -196,19 +199,12 @@ const props = defineProps({
     type: String,
     default: 'idle',
     required: false
-
-  },
-//   errorCode:{
-//  type: String,
-//     required: false,
-//        default: '',
-
-//   }
+  }
 })
 
-console.log(props.errorCode,"opi709y98t98t98");
 const call = inject('$call')
 const loading = ref(true)
+const isLoading = ref(false)
 const docTypeMeta = ref(null)
 const activeTab = ref('')
 const formData = ref({})
@@ -303,7 +299,7 @@ const isCurrentTabValid = computed(() => {
   const currentTabFields = getTabFields(activeTab.value)
   return currentTabFields.every(field => {
     const value = formData.value[field.fieldname]
-    return !field.reqd  || (value !== null && value !== '' && (!Array.isArray(value) || value.length > 0))
+    return !field.reqd || (value !== null && value !== '' && (!Array.isArray(value) || value.length > 0))
   })
 })
 
@@ -312,7 +308,7 @@ const isSubmitDisabled = computed(() => {
     const field = docTypeMeta.value?.fields.find(f => f.fieldname === key);
     return field && value !== null && value !== '' && (!Array.isArray(value) || value.length > 0);
   });
-});
+})
 
 const getFieldComponent = (fieldtype) => {
   switch (fieldtype) {
@@ -389,6 +385,7 @@ const updateTabErrors = () => {
 
 const getMeta = async () => {
   loading.value = true
+  isLoading.value = true
   try {
     const res = await call('sva_form_vuejs.controllers.api.get_meta', {
       doctype: props.doctype,
@@ -406,6 +403,7 @@ const getMeta = async () => {
     console.error('Error fetching meta data:', error)
   } finally {
     loading.value = false
+    isLoading.value = false
   }
 }
 
@@ -437,42 +435,55 @@ const initializeTabCompletionStatus = () => {
   })
 }
 
-const setActiveTab = (tabName, fromMounted = false) => {
+const setActiveTab = async (tabName, fromMounted = false) => {
   if (!fromMounted) {
-    props.save_as_draft({ 'active_tab': tabName })
-  }
-  if (allTabsUnlocked.value || tabFields.value.indexOf(tabFields.value.find(tab => tab.name === tabName)) === 0) {
-    activeTab.value = tabName
+    isLoading.value = true
+    try {
+      await props.save_as_draft({ 'active_tab': tabName })
+      if (allTabsUnlocked.value || tabFields.value.indexOf(tabFields.value.find(tab => tab.name === tabName)) === 0) {
+        activeTab.value = tabName
+      }
+      await fetchTabData(tabName)
+    } finally {
+      isLoading.value = false
+    }
+  } else {
+    if (allTabsUnlocked.value || tabFields.value.indexOf(tabFields.value.find(tab => tab.name === tabName)) === 0) {
+      activeTab.value = tabName
+    }
   }
 }
 
-const nextTab = () => {
+const nextTab = async () => {
   if (isCurrentTabValid.value) {
-    const currentIndex = tabFields.value.findIndex(tab => tab.name === activeTab.value)
-    if (currentIndex === 0 && !allTabsUnlocked.value) {
-      allTabsUnlocked.value = true
-    }
+    isLoading.value = true
+    try {
+      const currentIndex = tabFields.value.findIndex(tab => tab.name === activeTab.value)
+      if (currentIndex === 0 && !allTabsUnlocked.value) {
+        allTabsUnlocked.value = true
+      }
 
-    tabCompletionStatus.value[activeTab.value] = true
+      tabCompletionStatus.value[activeTab.value] = true
 
-    if (currentIndex < tabFields.value.length - 1) {
-      activeTab.value = tabFields.value[currentIndex + 1].name
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
+      if (currentIndex < tabFields.value.length - 1) {
+        const nextTabName = tabFields.value[currentIndex + 1].name
+        await setActiveTab(nextTabName)
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+    } finally {
+      isLoading.value = false
     }
-    setActiveTab(activeTab.value)
   } else {
     validateCurrentTab()
   }
 }
 
-const validateCurrentTab = () => {
-  const currentTabFields = getTabFields(activeTab.value)
-  currentTabFields.forEach(field => {
-    validateField(field.fieldname)
-  })
+const fetchTabData = async (tabName) => {
+  await new Promise(resolve => setTimeout(resolve, 1000))
+  console.log(`Fetched data for tab: ${tabName}`)
 }
 
 const toggleSection = (index) => {
@@ -488,13 +499,11 @@ const onSubmit = () => {
     if (firstErrorTab) {
       setActiveTab(firstErrorTab)
     }
-    // const errorMessage = `Mandatory fields not filled in sections: ${Array.from(sectionsWithErrors).join(', ')}`
     const errorMessage = `Mandatory fields not filled in sections`
     props.toast.error(errorMessage, {
       timeout: 5000,
       closeOnClick: true,
     })
-    // Scroll to the first error field
     const firstErrorField = document.querySelector('.border-red-500')
     if (firstErrorField) {
       firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -586,7 +595,6 @@ watch(formData, () => {
   color: rgb(119, 119, 119) !important;
 }
 
-/* Ensure the sidebar is sticky and scrollable if content overflows */
 aside {
   position: sticky;
   top: 0;
@@ -594,19 +602,15 @@ aside {
   overflow-y: auto;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
 main::-webkit-scrollbar,
 aside::-webkit-scrollbar {
   display: none;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
 main,
 aside {
   -ms-overflow-style: none;
-  /* IE and Edge */
   scrollbar-width: none;
-  /* Firefox */
 }
 .cust{
   margin-left:20px !important;
