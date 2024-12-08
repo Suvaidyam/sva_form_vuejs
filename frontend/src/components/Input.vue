@@ -40,7 +40,8 @@
     </span>
     <div class="relative">
       <input :id="field.name" :value="displayValue" @input="handleInput" @focusout="handleBlur" :type="inputType"
-        :disabled="field.read_only" :required="isFieldMandatory(field)" :placeholder="field.placeholder" :class="[
+        :disabled="field.read_only" :required="isFieldMandatory(field)" :placeholder="field.placeholder"
+        :min="minMax.min" :max="minMax.max" :class="[
           'w-full h-10 px-3 border rounded-md text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200',
           'dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:focus:ring-blue-400 dark:focus:border-blue-400',
           { 'pr-10': field.fieldtype === 'Password' },
@@ -53,7 +54,7 @@
 </template>
 
 <script setup>
-import { ref, inject, computed } from 'vue'
+import { ref, inject, computed, onMounted } from 'vue'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 import { InfoIcon } from 'lucide-vue-next'
 
@@ -83,6 +84,8 @@ const props = defineProps({
 const error = ref('');
 const emit = defineEmits(['update:modelValue'])
 const saveAsDraft = inject('saveAsDraft')
+const call = inject('$call')
+const minMax = ref({})
 
 const parsedDescription = computed(() => {
   return getString(props.section || "")
@@ -164,7 +167,17 @@ const handleInput = (event) => {
     if (isNaN(numValue) || numValue < 0) {
       error.value = 'Please enter a non-negative integer.';
       emit('update:modelValue', '');
-    } else {
+    }// Check if the value is less than the minimum allowed
+    else if (minMax.value?.min !== undefined && numValue < minMax.value.min) {
+      error.value = `Value should not be less than ${minMax.value.min}.`; // Added error for min value
+      emit('update:modelValue', numValue.toString());
+    }
+    // Check if the value is greater than the maximum allowed
+    else if (minMax.value?.max !== undefined && numValue > minMax.value.max) {
+      error.value = `Value should not exceed ${minMax.value.max}.`; // Added error for max value
+      emit('update:modelValue', numValue.toString());
+    }
+    else {
       error.value = '';
       emit('update:modelValue', numValue.toString());
     }
@@ -188,7 +201,17 @@ const handleBlur = (event) => {
     if (isNaN(numValue) || numValue < 0) {
       error.value = 'Please enter a non-negative integer.';
       emit('update:modelValue', '');
-    } else {
+    }
+    else if (minMax.value?.min !== undefined && numValue < minMax.value.min) {
+      error.value = `Value should not be less than ${minMax.value.min}.`; // Added error for min value
+      emit('update:modelValue', '');
+    }
+    // Check if the value is greater than the maximum allowed
+    else if (minMax.value?.max !== undefined && numValue > minMax.value.max) {
+      error.value = `Value should not exceed ${minMax.value.max}.`; // Added error for max value
+      emit('update:modelValue', '');
+    }
+    else {
       error.value = '';
       emit('update:modelValue', numValue.toString());
     }
@@ -201,6 +224,23 @@ const handleBlur = (event) => {
     saveAsDraft({ [props.field.fieldname]: value })
   }
 }
+
+
+const getMinMax = async () => {
+  const response = await call('sva_form_vuejs.controllers.api.get_min_max_criteria', {
+    filters: { field: props.field.fieldname, ref_doctype: props.field.parent }
+  })
+  if (response) {
+    minMax.value = response
+  }
+  console.log(minMax.value, 'minmax')
+}
+
+onMounted(async () => {
+  if (props.field.fieldtype === 'Int') {
+    await getMinMax()
+  }
+})
 </script>
 
 <style scoped>

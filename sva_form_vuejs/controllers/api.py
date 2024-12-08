@@ -10,6 +10,10 @@ def get_option(filters):
     return frappe.get_all('Field Options',filters=filters, fields=['name', 'label', 'code as level' , 'score','group','depends_on'] , order_by='code asc')
 
 @frappe.whitelist(allow_guest=True)
+def get_criteria(filters):
+    return frappe.get_all('Number field Scoring Logic',filters=filters, fields=['name', 'min', 'max' , 'score','upper_limit','code'] , order_by='score asc')
+
+@frappe.whitelist(allow_guest=True)
 def get_option_with_dt(dt,filters=[]):
     meta = frappe.get_meta(dt).as_dict()
     if meta['title_field']:
@@ -19,8 +23,9 @@ def get_option_with_dt(dt,filters=[]):
     
 
 @frappe.whitelist(allow_guest=True)
-def get_fields():
-    fieldtype= ['Table MultiSelect', 'Link']
+def get_fields(fieldtype):
+    if isinstance(fieldtype, str):
+        fieldtype = json.loads(fieldtype)
     fields = frappe.get_all(
         'DocField',
         filters={
@@ -54,3 +59,13 @@ def delete_many(dt,docs):
     except Exception as e:
         return {"status": "error", "message": str(e)}
     
+
+@frappe.whitelist()
+def get_min_max_criteria(filters):
+    data= frappe.get_all('Number field Scoring Logic',filters=filters, fields=['min', 'max','name'] , order_by='score asc')
+
+    if data:
+        minValue = data[0].min
+        maxValue = data[0].max
+        name = data[0].name
+        return {"min": minValue, "max": maxValue, "name": name}        
