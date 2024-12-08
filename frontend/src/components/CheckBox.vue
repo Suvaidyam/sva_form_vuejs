@@ -49,10 +49,10 @@
     <div v-if="!props.isCard" class="flex flex-wrap ml-3">
       <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses" class="px-2">
         <div v-for="option in columnOptions" :key="option.name" class="flex items-center mb-2 mt-2">
-          <input :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
+          <input v-if="isOptionVisible(option)" :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
             @change="updateValue(option)" :disabled="isOptionDisabled(option)" :required="field.reqd && modelValue.length === 0"
             class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
-          <label :for="`${field.name}-${option.name}`"
+          <label v-if="isOptionVisible(option)" :for="`${field.name}-${option.name}`"
             class="ml-2 block text-sm text-gray-700 dark:text-gray-200 break-words">
             {{ option.label }}
           </label>
@@ -61,7 +61,7 @@
     </div>
     <div v-else class="flex flex-wrap mx-2 px-6">
       <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses" class="px-2">
-        <label v-for="option in columnOptions" :key="option.name" :for="`${field.name}-${option.name}`"
+        <label v-if="isOptionVisible(option)" v-for="option in columnOptions" :key="option.name" :for="`${field.name}-${option.name}`"
           class="flex items-center gap-2 border rounded-md p-2 mb-2">
           <input :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
             @change="updateValue(option)" :disabled="isOptionDisabled(option)"
@@ -168,20 +168,33 @@ const isFieldMandatory = (field) => {
   }
 }
 
+const isOptionVisible = (option) => {
+  if (!option.depends_on) return true
+  const condition = option.depends_on.replace('eval:', '').replace(/doc\./g, 'formData.')
+  try {
+    return new Function('formData', `return ${condition}`)(props.formData)
+  } catch (error) {
+    console.error('Error evaluating option visibility:', error)
+    return false
+  }
+}
+
 const splitOptions = computed(() => {
-  if (options.value.length <= 8) {
-    return [options.value]
+  const visibleOptions = options.value.filter(isOptionVisible)
+  if (visibleOptions.length <= 8) {
+    return [visibleOptions]
   } else {
     const columns = 4
-    const itemsPerColumn = Math.ceil(options.value.length / columns)
+    const itemsPerColumn = Math.ceil(visibleOptions.length / columns)
     return Array.from({ length: columns }, (_, index) =>
-      options.value.slice(index * itemsPerColumn, (index + 1) * itemsPerColumn)
+      visibleOptions.slice(index * itemsPerColumn, (index + 1) * itemsPerColumn)
     )
   }
 })
 
 const columnClasses = computed(() => {
-  if (options.value.length <= 6) {
+  const visibleOptionsCount = options.value.filter(isOptionVisible).length
+  if (visibleOptionsCount <= 6) {
     return 'w-full'
   } else {
     return 'w-full sm:w-1/2 md:w-1/4'
@@ -266,6 +279,11 @@ const updateValue = (option) => {
 }
 
 watch(() => props.field, getOptions, { immediate: true })
+
+watch(() => props.formData, () => {
+  // Re-evaluate visibility when formData changes
+  splitOptions.value
+}, { deep: true })
 </script>
 
 <style scoped>
@@ -291,4 +309,3 @@ p {
   min-width: 500px !important;
 }
 </style>
-
