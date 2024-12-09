@@ -1,12 +1,16 @@
 <template>
   <div v-if="!field.hidden" class="flex flex-col">
     <div :class="props.isCard ? 'gap-2' : ''" class="flex items-center">
+      <p v-if="props.isCard"
+        class="w-7 min-w-7 min-h-7 h-7 rounded-full bg-gray-700 text-white flex justify-center items-center text-sm">
+        {{ 1 }}
+      </p>
       <label :class="!props.isCard ? 'text-md' : 'text-sm'"
         class="font-medium text-gray-700 dark:text-gray-200 break-words">
-        {{ field.label }}{{ fieldParsedDescription.desc }} 
+        {{ field.label }}{{ fieldParsedDescription.desc }}
         <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
-    </div> 
+    </div>
     <div class="flex flex-wrap mx-2 px-6">
       <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses" class="px-2">
         <label v-for="option in columnOptions" :key="option.name" :for="`${field.name}-${option.name}`"
@@ -81,7 +85,7 @@ const getOptions = async () => {
   }
 }
 
-const isChecked = (option) => 
+const isChecked = (option) =>
   Array.isArray(props.modelValue) && props.modelValue.some(item => item.field_options === option.name)
 
 const validateInput = (newValue) => {
