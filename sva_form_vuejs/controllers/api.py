@@ -68,4 +68,6 @@ def get_min_max_criteria(filters):
         minValue = data[0].min
         maxValue = data[0].max
         name = data[0].name
+        if maxValue == 0:
+            return {"min": minValue, "name": name}
         return {"min": minValue, "max": maxValue, "name": name}        
