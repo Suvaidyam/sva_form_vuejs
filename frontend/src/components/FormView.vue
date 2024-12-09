@@ -30,9 +30,10 @@
         </nav>
       </div>
     </aside>
-
+    <!-- Loader -->
+    <Loader v-if="loading" :show="props.isDraft" />
     <!-- Main Content -->
-    <main class="flex-1 w-full ">
+    <main class="flex-1 w-full " v-else>
       <div class="mx-auto px-6 py-8">
         <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
           Assessment Not Found
@@ -62,8 +63,7 @@
                         :matrix="section.is_matrix" :index="fieldIndex" v-model="formData[field.fieldname]"
                         :onfieldChange="props.onfieldChange" :isRow="props.isRow"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
-                        :class="{ 'border-red-500': showErrors && fieldErrors[field.fieldname] }"
-                      />
+                        :class="{ 'border-red-500': showErrors && fieldErrors[field.fieldname] }" />
                       <p v-if="showErrors && fieldErrors[field.fieldname]" class="text-red-500 text-sm mt-1">
                         {{ fieldErrors[field.fieldname] }}
                       </p>
@@ -86,8 +86,7 @@
                         :formData="formData" v-model="formData[field.fieldname]" :isRow="props.isRow"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
                         :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname"
-                        :class="{ 'border-red-500': showErrors && fieldErrors[field.fieldname] }"
-                      />
+                        :class="{ 'border-red-500': showErrors && fieldErrors[field.fieldname] }" />
                       <p v-if="showErrors && fieldErrors[field.fieldname]" class="text-red-500 text-sm mt-1">
                         {{ fieldErrors[field.fieldname] }}
                       </p>
@@ -100,8 +99,8 @@
               </template>
             </div>
             <div class="mt-6 flex justify-end gap-2">
-              <button v-if="!props.section && !isLastTab" @click="nextTab" type="button"
-                :disabled="!isCurrentTabValid" :class="[
+              <button v-if="!props.section && !isLastTab" @click="nextTab" type="button" :disabled="!isCurrentTabValid"
+                :class="[
                   'px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
                   !isCurrentTabValid
                     ? 'bg-gray-300 abc cursor-not-allowed'
@@ -612,7 +611,8 @@ aside {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-.cust{
-  margin-left:20px !important;
+
+.cust {
+  margin-left: 20px !important;
 }
 </style>
