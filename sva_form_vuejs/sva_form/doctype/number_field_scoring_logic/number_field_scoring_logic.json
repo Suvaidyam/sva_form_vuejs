@@ -14,8 +14,10 @@
   "column_break_mcbq",
   "max",
   "section_break_peod",
-  "upper_limit",
+  "lower_limit",
   "column_break_uwsx",
+  "upper_limit",
+  "column_break_qcpw",
   "score"
  ],
  "fields": [
@@ -58,7 +60,7 @@
   {
    "fieldname": "upper_limit",
    "fieldtype": "Float",
-   "label": "Upper Limit",
+   "label": "To",
    "precision": "1"
   },
   {
@@ -77,11 +79,21 @@
    "fieldtype": "Data",
    "label": "Code",
    "reqd": 1
+  },
+  {
+   "fieldname": "lower_limit",
+   "fieldtype": "Float",
+   "label": "From",
+   "precision": "1"
+  },
+  {
+   "fieldname": "column_break_qcpw",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-08 18:38:10.949659",
+ "modified": "2024-12-09 12:05:02.875114",
  "modified_by": "Administrator",
  "module": "sva_form",
  "name": "Number field Scoring Logic",

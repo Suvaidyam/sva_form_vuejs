@@ -8,7 +8,7 @@ app_license = "mit"
 # Apps
 # ------------------
 
-fixtures=["Client Script"]
+fixtures=["Client Script","Number field Scoring Logic"]
 
 # required_apps = []
 

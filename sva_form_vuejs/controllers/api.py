@@ -11,7 +11,7 @@ def get_option(filters):
 
 @frappe.whitelist(allow_guest=True)
 def get_criteria(filters):
-    return frappe.get_all('Number field Scoring Logic',filters=filters, fields=['name', 'min', 'max' , 'score','upper_limit','code'] , order_by='score asc')
+    return frappe.get_all('Number field Scoring Logic',filters=filters, fields=['name', 'min', 'max' , 'score','upper_limit','lower_limit','code'] , order_by='score asc')
 
 @frappe.whitelist(allow_guest=True)
 def get_option_with_dt(dt,filters=[]):
