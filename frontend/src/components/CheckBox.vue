@@ -1,14 +1,10 @@
 <template>
   <div v-if="!field.hidden" class="flex flex-col">
-
-    <!-- multi_matrix -->
-    <!-- {{ multi_matrix }} -->
-    <MultiSelectMatrix v-if="multi_matrix == 'true' ? true : false" :field="field" v-model="fieldValue"
-      :onfieldChange="true" :formData="formData" :section="section" :index="index" />
-
-
-
-    <div v-else>
+    <!-- <div v-if="multi_matrix">
+      <MultiSelectMatrix :field="field" :modelValue="modelValue" :formData="formData" :section="section"
+        :index="index" />
+    </div> -->
+    <div  >
       <span v-if="parsedDescription?.qlable || fieldParsedDescription?.qlable"
         class="text-md font-medium text-gray-700 dark:text-gray-200 block break-words">
         {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
@@ -67,7 +63,6 @@
           </div>
         </div>
       </div>
-
 
       <p v-if="error" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ error }}</p>
     </div>
