@@ -1,79 +1,76 @@
 <template>
   <div v-if="!field.hidden" class="flex flex-col">
-    <span v-if="parsedDescription?.qlable || fieldParsedDescription?.qlable && !props.isCard"
-      class="text-md font-medium text-gray-700 dark:text-gray-200 block break-words">
-      {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
-    </span>
-    <span v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
-      class="text-sm text-gray-500 break-words">
-      {{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
-    </span>
 
-    <div :class="props.isCard ? 'gap-2' : ''" class="flex items-center">
-      <p v-if="props.isCard"
-        class="w-7 min-w-7 min-h-7 h-7 rounded-full bg-gray-700 text-white flex justify-center items-center text-sm">
-        {{ 1 }}
-      </p>
+    <!-- multi_matrix -->
+    <!-- {{ multi_matrix }} -->
+    <MultiSelectMatrix v-if="multi_matrix == 'true' ? true : false" :field="field" v-model="fieldValue"
+      :onfieldChange="true" :formData="formData" :section="section" :index="index" />
 
-      <label :class="!props.isCard ? 'text-md' : 'text-sm'"
-        class="font-medium text-gray-700 dark:text-gray-200 break-words">
-        {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
-      </label>
 
-      <div v-if="parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
-        <Popover v-slot="{ open }" class="relative">
-          <PopoverButton @mouseenter="open = true" @mouseleave="open = false" class="focus:outline-none">
-            <InfoIcon class="w-4 h-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
-          </PopoverButton>
 
-          <transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-1"
-            enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
-            leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
-            <PopoverPanel class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-1/2 left-1/2 sm:px-0 lg:max-w-3xl"
-              @mouseenter="open = true" @mouseleave="open = false">
-              <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                <div class="p-4 bg-white dark:bg-gray-800">
-                  <p class="text-sm text-gray-700 dark:text-gray-300 break-words">
-                    {{ parsedDescription?.info || fieldParsedDescription?.info }}
-                  </p>
+    <div v-else>
+      <span v-if="parsedDescription?.qlable || fieldParsedDescription?.qlable"
+        class="text-md font-medium text-gray-700 dark:text-gray-200 block break-words">
+        {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
+      </span>
+      <span v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo"
+        class="text-sm text-gray-500 break-words">
+        {{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
+      </span>
+
+      <div class="flex items-center">
+
+        <label class="text-md font-medium text-gray-700 dark:text-gray-200 break-words">
+          {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
+        </label>
+
+        <div v-if="parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
+          <Popover v-slot="{ open }" class="relative">
+            <PopoverButton @mouseenter="open = true" @mouseleave="open = false" class="focus:outline-none">
+              <InfoIcon class="w-4 h-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
+            </PopoverButton>
+
+            <transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-1"
+              enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
+              leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
+              <PopoverPanel
+                class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-1/2 left-1/2 sm:px-0 lg:max-w-3xl"
+                @mouseenter="open = true" @mouseleave="open = false">
+                <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                  <div class="p-4 bg-white dark:bg-gray-800">
+                    <p class="text-sm text-gray-700 dark:text-gray-300 break-words">
+                      {{ parsedDescription?.info || fieldParsedDescription?.info }}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </PopoverPanel>
-          </transition>
-        </Popover>
-      </div>
-    </div>
-    <span v-if="parsedDescription?.desc || fieldParsedDescription.desc" class="text-sm text-gray-500 mb-2 break-words">
-      {{ parsedDescription?.desc || fieldParsedDescription?.desc }}
-    </span>
-    <div v-if="!props.isCard" class="flex flex-wrap ml-3">
-      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses" class="px-2">
-        <div v-for="option in columnOptions" :key="option.name" class="flex items-center mb-2 mt-2">
-          <input v-if="isOptionVisible(option)" :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
-            @change="updateValue(option)" :disabled="isOptionDisabled(option)" :required="field.reqd && modelValue.length === 0"
-            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
-          <label v-if="isOptionVisible(option)" :for="`${field.name}-${option.name}`"
-            class="ml-2 block text-sm text-gray-700 dark:text-gray-200 break-words">
-            {{ option.label }}
-          </label>
+              </PopoverPanel>
+            </transition>
+          </Popover>
         </div>
       </div>
-    </div>
-    <div v-else class="flex flex-wrap mx-2 px-6">
-      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses" class="px-2">
-        <label v-if="isOptionVisible(option)" v-for="option in columnOptions" :key="option.name" :for="`${field.name}-${option.name}`"
-          class="flex items-center gap-2 border rounded-md p-2 mb-2">
-          <input :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
-            @change="updateValue(option)" :disabled="isOptionDisabled(option)"
-            :required="isFieldMandatory(field) && modelValue.length === 0"
-            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600 flex-shrink-0" />
-          <p class="ml-2 block text-sm text-gray-700 dark:text-gray-200 break-words">
-            {{ option.label }}
-          </p>
-        </label>
+      <span v-if="parsedDescription?.desc || fieldParsedDescription.desc"
+        class="text-sm text-gray-500 mb-2 break-words">
+        {{ parsedDescription?.desc || fieldParsedDescription?.desc }}
+      </span>
+      <div class="flex flex-wrap ml-3">
+        <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses"
+          class="px-2">
+          <div v-for="option in columnOptions" :key="option.name" class="flex items-center mb-2 mt-2">
+            <input v-if="isOptionVisible(option)" :id="`${field.name}-${option.name}`" :name="field.name"
+              type="checkbox" :checked="isChecked(option)" @change="updateValue(option)"
+              :disabled="isOptionDisabled(option)" :required="field.reqd && modelValue.length === 0"
+              class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
+            <label v-if="isOptionVisible(option)" :for="`${field.name}-${option.name}`"
+              class="ml-2 block text-sm text-gray-700 dark:text-gray-200 break-words">
+              {{ option.label }}
+            </label>
+          </div>
+        </div>
       </div>
+
+
+      <p v-if="error" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ error }}</p>
     </div>
-    <p v-if="error" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ error }}</p>
   </div>
 </template>
 
@@ -81,16 +78,12 @@
 import { ref, watch, inject, computed } from 'vue'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 import { InfoIcon } from 'lucide-vue-next'
+import MultiSelectMatrix from './MultiSelectMatrix.vue'
 
 const props = defineProps({
   field: {
     type: Object,
     required: true
-  },
-  isCard: {
-    type: Boolean,
-    required: false,
-    default: false
   },
   modelValue: {
     type: Array,
@@ -108,6 +101,15 @@ const props = defineProps({
   section: {
     type: String,
     required: false,
+  },
+  multi_matrix: {
+    type: Boolean,
+    required: false,
+  },
+  index: {
+    type: Number,
+    required: false,
+    default: 0
   },
 })
 
@@ -215,8 +217,8 @@ const getOptions = async () => {
     }
 
     const response = await call('sva_form_vuejs.controllers.api.get_option', {
-        filters: filters
-      })
+      filters: filters
+    })
 
     options.value = response;
   } catch (err) {

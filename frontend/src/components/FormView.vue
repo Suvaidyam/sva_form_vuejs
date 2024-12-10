@@ -79,11 +79,13 @@
                   </h3>
                   <div v-if="section.fields && section.fields.length > 0" :aria-labelledby="`section-${index}`"
                     class="space-y-4">
+                    <!-- {{ section }} -->
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
                       <component v-if="isFieldVisible(field)" :section="section.description"
                         :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard"
-                        :dropDownOptions="field.is_dropDown" :matrix="section.is_matrix" :index="fieldIndex"
-                        :formData="formData" v-model="formData[field.fieldname]" :isRow="props.isRow"
+                        :dropDownOptions="field.is_dropDown" :matrix_code="is_matrix_code" :matrix="section.is_matrix"
+                        :multi_matrix="section.is_multi_matrix" :index="fieldIndex" :formData="formData"
+                        v-model="formData[field.fieldname]" :isRow="props.isRow"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
                         :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname"
                         :class="{ 'border-red-500': showErrors && fieldErrors[field.fieldname] }" />
@@ -236,7 +238,7 @@ const activeFieldSections = computed(() => {
       if (currentSection) {
         sections.push(currentSection)
       }
-      currentSection = { label: field.label, fields: [], is_matrix: field.is_matrix, description: field.description }
+      currentSection = { label: field.label, fields: [], is_matrix: field.is_matrix, description: field.description, is_multi_matrix: field.is_multi_matrix, is_matrix_code: field.is_matrix_code }
     } else if (currentSection) {
       currentSection.fields.push(field)
     }
