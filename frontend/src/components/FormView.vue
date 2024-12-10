@@ -59,7 +59,7 @@
                   <div v-show="openSections[index]" class="pl-4">
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.name" class="mb-4">
                       <component :section="section.description" v-if="isFieldVisible(field)"
-                        :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard" :isColumn="props.isColumn"
+                        :is="getFieldComponent(field.fieldtype, section)" :field="field" :isCard="props.isCard" :isColumn="props.isColumn"
                         :matrix="section.is_matrix" :index="fieldIndex" v-model="formData[field.fieldname]"
                         :onfieldChange="props.onfieldChange" :isRow="props.isRow"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
@@ -82,7 +82,7 @@
                     <!-- {{ section }} -->
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
                       <component v-if="isFieldVisible(field)" :section="section.description"
-                        :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard" :isColumn="props.isColumn"
+                        :is="getFieldComponent(field.fieldtype ,section)" :field="field" :isCard="props.isCard" :isColumn="props.isColumn"
                         :dropDownOptions="field.is_dropDown" :matrix_code="is_matrix_code" :matrix="section.is_matrix"
                         :multi_matrix="section.is_multi_matrix" :index="fieldIndex" :formData="formData"
                         v-model="formData[field.fieldname]" :isRow="props.isRow"
@@ -103,7 +103,7 @@
                     <!-- {{ section }} -->
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
                       <component v-if="isFieldVisible(field)" :section="section.description"
-                        :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard" :isColumn="props.isColumn"
+                        :is="getFieldComponent(field.fieldtype, section)" :field="field" :isCard="props.isCard" :isColumn="props.isColumn"
                         :dropDownOptions="field.is_dropDown" :matrix_code="is_matrix_code" :matrix="section.is_matrix"
                         :table_matrix="section.table_matrix"
                         :multi_matrix="section.is_multi_matrix" :index="fieldIndex" :formData="formData"
@@ -167,6 +167,7 @@ import Textarea from './TextareaInput.vue'
 import CheckboxComponent from './CheckboxComponent.vue'
 import percent from './PercentageInput.vue'
 import SaveStatusIcon from './SaveStatusIcon.vue'
+import MultiSelectMatrix from './MultiSelectMatrix.vue'
 
 const props = defineProps({
   doctype: {
@@ -336,11 +337,12 @@ const isSubmitDisabled = computed(() => {
   });
 })
 
-const getFieldComponent = (fieldtype) => {
+const getFieldComponent = (fieldtype, section) => {
+  console.log(section, 'section');
   switch (fieldtype) {
     case 'Link': return props.isTable ? LinkTable : props.isColumn ? LinkPW : Link
     case 'Data': return Input
-    case 'Table MultiSelect': return props.isCard ? CheckBoxPW : CheckBox
+    case 'Table MultiSelect': return props.isCard ? CheckBoxPW : (section.is_multi_matrix ? MultiSelectMatrix :CheckBox)
     case 'Button': return Button
     case 'Attach': return AttachmentUpload
     case 'Date': return DateInput
