@@ -1,13 +1,13 @@
 <template>
   <transition name="fade" mode="in-out">
-    <div v-if="!field.hidden" class="flex flex-col gap-2 pt-2">
+    <div v-if="!field.hidden" class="flex flex-col gap-2 py-2">
         <div class="flex gap-2">
           <div class="w-7 min-w-7 min-h-7 h-7 rounded-full flex items-center justify-center text-xs text-white bg-slate-700">
             {{ index + 1 }}
           </div>
-          <h2 class="text-sebase text-h5">{{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span></h2>
+          <h2 class="text-sebase text-h5">{{ field.label }} {{ field.description }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span></h2>
         </div>
-        <div class="flex h-full flex-col border mt-3 w-full text-sm">
+        <div class="flex h-full flex-col border pl-4 mt-3 w-full text-sm">
           <div class="w-full h-8 bg-tatary min-h-8 border-b flex">
             <div class="w-10 h-full border-r"></div>
             <div class="w-28 border-r flex items-center justify-center">Level</div>

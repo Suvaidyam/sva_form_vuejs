@@ -59,7 +59,7 @@
                   <div v-show="openSections[index]" class="pl-4">
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.name" class="mb-4">
                       <component :section="section.description" v-if="isFieldVisible(field)"
-                        :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard"
+                        :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard" :isColumn="props.isColumn"
                         :matrix="section.is_matrix" :index="fieldIndex" v-model="formData[field.fieldname]"
                         :onfieldChange="props.onfieldChange" :isRow="props.isRow"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
@@ -77,12 +77,12 @@
                     {{ section.label }}
                     <SaveStatusIcon v-if="section.label" class=" mt-2 cust" :status="status" />
                   </h3>
-                  <div v-if="section.fields && section.fields.length > 0" :aria-labelledby="`section-${index}`"
+                  <div v-if="section.fields && section.fields.length > 0 && !section.table_matrix" :aria-labelledby="`section-${index}`"
                     class="space-y-4">
                     <!-- {{ section }} -->
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
                       <component v-if="isFieldVisible(field)" :section="section.description"
-                        :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard"
+                        :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard" :isColumn="props.isColumn"
                         :dropDownOptions="field.is_dropDown" :matrix_code="is_matrix_code" :matrix="section.is_matrix"
                         :multi_matrix="section.is_multi_matrix" :index="fieldIndex" :formData="formData"
                         v-model="formData[field.fieldname]" :isRow="props.isRow"
@@ -94,9 +94,29 @@
                       </p>
                     </div>
                   </div>
-                  <p v-else class="text-gray-500 dark:text-gray-400 italic">
+                  <!-- <p v-else class="text-gray-500 dark:text-gray-400 italic">
                     No fields in this section.
-                  </p>
+                  </p> -->
+                  <!-- new -->
+                  <div v-if="section.fields && section.fields.length > 0 && section.table_matrix" :aria-labelledby="`section-${index}`"
+                    class="space-y-4 flex gap-3 items-center matrix-overflow">
+                    <!-- {{ section }} -->
+                    <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
+                      <component v-if="isFieldVisible(field)" :section="section.description"
+                        :is="getFieldComponent(field.fieldtype)" :field="field" :isCard="props.isCard" :isColumn="props.isColumn"
+                        :dropDownOptions="field.is_dropDown" :matrix_code="is_matrix_code" :matrix="section.is_matrix"
+                        :table_matrix="section.table_matrix"
+                        :multi_matrix="section.is_multi_matrix" :index="fieldIndex" :formData="formData"
+                        v-model="formData[field.fieldname]" :isRow="props.isRow"
+                        @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
+                        :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname"
+                        :class="{ 'border-red-500': showErrors && fieldErrors[field.fieldname] }" />
+                      <p v-if="showErrors && fieldErrors[field.fieldname]" class="text-red-500 text-sm mt-1">
+                        {{ fieldErrors[field.fieldname] }}
+                      </p>
+                    </div>
+                  </div>
+                 
                 </div>
               </template>
             </div>
@@ -135,6 +155,7 @@ import { ref, computed, onMounted, inject, watch, provide } from 'vue'
 import { ChevronDownIcon, LockIcon, CheckCircleIcon, XIcon, MenuIcon, XCircleIcon } from 'lucide-vue-next'
 import Input from './Input.vue'
 import Link from './Link.vue'
+import LinkPW from './LinkPW.vue'
 import LinkTable from './LinkTable.vue'
 import CheckBox from './CheckBox.vue'
 import CheckBoxPW from './CheckBoxPW.vue'
@@ -169,6 +190,10 @@ const props = defineProps({
     default: false
   },
   isRow: {
+    type: Boolean,
+    default: false
+  },
+  isColumn: {
     type: Boolean,
     default: false
   },
@@ -238,7 +263,7 @@ const activeFieldSections = computed(() => {
       if (currentSection) {
         sections.push(currentSection)
       }
-      currentSection = { label: field.label, fields: [], is_matrix: field.is_matrix, description: field.description, is_multi_matrix: field.is_multi_matrix, is_matrix_code: field.is_matrix_code }
+      currentSection = { label: field.label, fields: [], is_matrix: field.is_matrix, description: field.description, is_multi_matrix: field.is_multi_matrix, is_matrix_code: field.is_matrix_code,table_matrix:field.table_matrix }
     } else if (currentSection) {
       currentSection.fields.push(field)
     }
@@ -313,7 +338,7 @@ const isSubmitDisabled = computed(() => {
 
 const getFieldComponent = (fieldtype) => {
   switch (fieldtype) {
-    case 'Link': return props.isTable ? LinkTable : Link
+    case 'Link': return props.isTable ? LinkTable : props.isColumn ? LinkPW : Link
     case 'Data': return Input
     case 'Table MultiSelect': return props.isCard ? CheckBoxPW : CheckBox
     case 'Button': return Button
@@ -579,6 +604,7 @@ watch(formData, () => {
 <style scoped>
 .w-20 {
   width: 15% !important;
+  min-width: 15% !important;
 }
 
 .custom {
@@ -616,5 +642,9 @@ aside {
 
 .cust {
   margin-left: 20px !important;
+}
+.matrix-overflow{
+  overflow-x: scroll !important;
+  overflow-y: hidden !important;
 }
 </style>
