@@ -33,7 +33,7 @@
                     :required="isFieldMandatory"
                     class="h-4 w-4 text-primary border-gray-300 focus:ring-primary dark:border-gray-600 dark:focus:ring-primary" />
                   <label :for="`${field.name}-${option.name}`" class="ml-2 text-sm text-gray-900 dark:text-gray-100">
-                    {{ option.label }}
+                    {{ option.label }} 
                   </label>
                 </div>
               </div>

@@ -78,9 +78,9 @@
                     <SaveStatusIcon v-if="section.label" class=" mt-2 cust" :status="status" />
                   </h3>
                   <div v-if="section.fields && section.fields.length > 0 && !section.table_matrix" :aria-labelledby="`section-${index}`"
-                    class="space-y-4">
+                    class="space-y-5">
                     <!-- {{ section }} -->
-                    <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
+                    <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="">
                       <component v-if="isFieldVisible(field)" :section="section.description"
                         :is="getFieldComponent(field.fieldtype ,section)" :field="field" :isCard="props.isCard" :isColumn="props.isColumn"
                         :dropDownOptions="field.is_dropDown" :matrix_code="is_matrix_code" :matrix="section.is_matrix"

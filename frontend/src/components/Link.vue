@@ -1,6 +1,6 @@
 <template>
   <div v-if="!field.hidden" class="w-full">
-    <div class="flex items-center gap-2">
+    <!-- <div class="flex items-center gap-2">
       <span v-if="index < 1 && !matrix" class="text-md font-medium text-gray-700 dark:text-gray-200 mb-3 block">
         {{ parsedDescription.qlable || fieldParsedDescription.qlable }}
       </span>
@@ -25,14 +25,17 @@
           </transition>
         </Popover>
       </div>
-    </div>
+    </div> -->
 
-    <p v-if="index < 1 && (parsedDescription.cenrieo || fieldParsedDescription.cenrieo) && !isCard"
+     <p v-if="index < 1 " class="text-md font-medium text-gray-700 dark:text-gray-200 mb-1.5 block">
+        {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
+      </p>
+    <p v-if="index < 1 &&  (parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo) && !isCard"
       class="text-sm text-gray-500">
-      {{ parsedDescription.cenrieo || fieldParsedDescription.cenrieo }}
+      {{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
     </p>
-    <p v-if="index < 1 && (parsedDescription.desc || fieldParsedDescription.desc)" class="text-sm text-gray-500 mb-2">
-      {{ parsedDescription.desc || fieldParsedDescription.desc }}
+    <p v-if="index < 1 && matrix && (parsedDescription?.desc || fieldParsedDescription?.desc)" class="text-sm text-gray-500 mb-2">
+      {{ parsedDescriptioxn?.desc || fieldParsedDescription?.desc }}
     </p>
 
 
@@ -46,7 +49,7 @@
       :index="index" />
 
     <template v-else>
-      <div class="flex items-center" :class="isCard ? 'py-2 gap-2' : ''">
+      <div class="flex items-center " :class="isCard ? 'py-2 gap-2' : ''">
         <p v-if="isCard"
           class="w-7 h-7 min-w-7 min-h-7 text-sm flex items-center justify-center rounded-full bg-gray-700 text-white">
           {{ index + 1 }}
@@ -57,7 +60,7 @@
           {{ field.label }}{{ isCard ? fieldParsedDescription.desc : '' }}
           <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
         </label>
-        <div v-if="parsedDescription.info || fieldParsedDescription.info" class="ml-2 relative">
+        <div v-if="parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
           <Popover v-slot="{ open }" class="relative">
             <PopoverButton @mouseenter="open = true" @mouseleave="open = false" class="focus:outline-none">
               <InfoIcon class="w-4 h-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
@@ -71,7 +74,7 @@
                 <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                   <div class="p-4 bg-white dark:bg-gray-800">
                     <p class="text-sm text-gray-700 dark:text-gray-300">
-                      {{ parsedDescription.info || fieldParsedDescription.info }}
+                      {{ parsedDescription?.info || fieldParsedDescription?.info }}
                     </p>
                   </div>
                 </div>
@@ -80,7 +83,9 @@
           </Popover>
         </div>
       </div>
-
+<p v-if="index < 1  && (parsedDescription?.desc || fieldParsedDescription?.desc)" class="text-sm text-gray-500 mb-2">
+      {{ parsedDescriptioxn?.desc || fieldParsedDescription?.desc }}
+    </p>
       <DropdownOptions v-if="dropDownOptions" :field="field" :modelValue="modelValue" @update:modelValue="updateValue"
         :visibleOptions="visibleOptions" :isFieldMandatory="isFieldMandatory(field)" />
 
@@ -99,10 +104,10 @@
           </div>
           <span class="flex-grow">{{ option.label }}</span>
         </label>
-
+  
       </div>
     </template>
-
+ 
     <p v-if="error" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ error }}</p>
   </div>
 </template>
