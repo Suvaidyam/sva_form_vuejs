@@ -7,7 +7,7 @@
           </div>
           <h2 class="text-sebase text-h5">{{ field.label }} {{ field.description }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span></h2>
         </div>
-        <div class="flex h-full flex-col border pl-4 mt-3 w-full text-sm">
+        <div class="flex h-full flex-col border mt-3 w-full text-sm">
           <div class="w-full h-8 bg-tatary min-h-8 border-b flex">
             <div class="w-10 h-full border-r"></div>
             <div class="w-28 border-r flex items-center justify-center">Level</div>

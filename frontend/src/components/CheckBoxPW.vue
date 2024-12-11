@@ -11,20 +11,18 @@
         <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
     </div>
-    <div class="flex gap-6">
+    <div v-if="options.length" class="flex flex-col border pt-2 rounded-sm items-center justify-center">
       <p></p>
-      <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses" >
-        <label v-for="option in columnOptions" :key="option.name" :for="`${field.name}-${option.name}`"
-          class="flex items-center gap-2 border rounded-md p-2 mb-2">
+        <label v-for="option in options" :key="option.name" :for="`${field.name}-${option.name}`"
+          class="w-full flex bg-white items-center gap-2 border rounded-md p-2 mb-2">
           <input :id="`${field.name}-${option.name}`" :name="field.name" type="checkbox" :checked="isChecked(option)"
             @change="updateValue(option)" :disabled="field.read_only"
             :required="isFieldMandatory(field) && modelValue.length === 0"
             class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600 flex-shrink-0" />
           <p class="ml-2 block text-sm text-gray-700 dark:text-gray-200 break-words">
-            {{ option.label }}
+            {{ option.label }}bgh
           </p>
         </label>
-      </div>
     </div>
     <p v-if="error" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ error }}</p>
   </div>
