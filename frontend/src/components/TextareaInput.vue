@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!field.hidden" class="flex flex-col gap-2">
+  <div v-if="!field.hidden" class="flex flex-col ">
     <span v-if="index < 1 && parsedDescription.qlable || fieldParsedDescription.qlable"
       class="text-md font-medium  text-gray-700 dark:text-gray-200  block ">
       {{ parsedDescription.qlable || fieldParsedDescription.qlable }}
@@ -43,7 +43,7 @@
     <textarea :id="field.name" :value="modelValue" @input="handleInput" @blur="handleBlur" :disabled="field.read_only"
       :required="isFieldMandatory(field)" :rows="field.rows || 3" :placeholder="field.placeholder" :class="[
         'px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-        'dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600',
+        'dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 mt-2',
         { 'border-red-500 focus:ring-red-500': error }
       ]"></textarea>
     <p v-if="error" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ error }}</p>

@@ -14,9 +14,9 @@
         {{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
       </span>
 
-      <div class="flex items-center">
+      <div class="flex items-center ">
 
-        <label class="text-md font-medium text-gray-700 dark:text-gray-200 w-96">
+        <label class="text-md font-medium text-gray-700 dark:text-gray-200">
           {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
         </label>
 
@@ -51,7 +51,7 @@
       <div class="flex flex-wrap ml-3">
         <div v-for="(columnOptions, columnIndex) in splitOptions" :key="columnIndex" :class="columnClasses"
           class="px-2">
-          <div v-for="option in columnOptions" :key="option.name" class="flex items-center mb-2 mt-2">
+          <div v-for="option in columnOptions" :key="option.name" class="flex items-center  mt-2">
             <input v-if="isOptionVisible(option)" :id="`${field.name}-${option.name}`" :name="field.name"
               type="checkbox" :checked="isChecked(option)" @change="updateValue(option)"
               :disabled="isOptionDisabled(option)" :required="field.reqd && modelValue.length === 0"

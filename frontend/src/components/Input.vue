@@ -1,14 +1,18 @@
 <template>
-  <div v-if="!field.hidden" class="flex flex-col gap-2">
-    <span v-if="parsedDescription?.qlable || fieldParsedDescription?.qlable"
-      class="text-sm font-medium  text-gray-700 dark:text-gray-200  block ">
+  <div v-if="!field.hidden" class="flex flex-col ">
+  
+       <span v-if="parsedDescription?.qlable || fieldParsedDescription?.qlable"
+      class="text-md font-medium  text-gray-700 dark:text-gray-200  block mb-1.5 ">
       {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
     </span>
     <span v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
-      class="text-sm text-gray-500  ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
+      class="text-sm text-gray-500   ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
     </span>
+ 
+
 
     <div class="flex items-center">
+      
       <label :for="field.name" class="text-md font-medium text-gray-700 dark:text-gray-200">
         {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
@@ -42,7 +46,7 @@
       <input :id="field.name" :value="displayValue" @input="handleInput" @focusout="handleBlur" :type="inputType"
         :disabled="field.read_only" :required="isFieldMandatory(field)" :placeholder="field.placeholder"
         :min="minMax.min" :max="minMax.max" :class="[
-          'w-full h-10 px-3 border rounded-md text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200',
+          'w-full h-10 px-3 mt-2 border rounded-md text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200',
           'dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:focus:ring-blue-400 dark:focus:border-blue-400',
           { 'pr-10': field.fieldtype === 'Password' },
           { 'border-red-500 focus:ring-red-500 focus:border-red-500': error }
