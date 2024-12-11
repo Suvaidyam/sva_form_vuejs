@@ -36,9 +36,11 @@
     </p>
 
 
+   <div class="w-96 min-w-96">
     <Matrix1 v-if="table_matrix && !matrix" :matrix_code="matrix_code" :field="field" :modelValue="modelValue"
       @update:modelValue="updateValue" :visibleOptions="visibleOptions" :isFieldMandatory="isFieldMandatory(field)"
       :index="index" />
+   </div>
     <Matrix v-if="matrix && !table_matrix" :matrix_code="matrix_code" :field="field" :modelValue="modelValue"
       @update:modelValue="updateValue" :visibleOptions="visibleOptions" :isFieldMandatory="isFieldMandatory(field)"
       :index="index" />
@@ -51,7 +53,7 @@
         </p>
         <label :for="`${field.name}-${visibleOptions[0]?.name}`"
           :class="isCard ? 'text-sm' : 'text-md font-medium text-gray-900 dark:text-gray-200'"
-          class="block font-medium text-gray-900 dark:text-gray-200">
+          class="block font-medium text-gray-900 dark:text-gray-200 ">
           {{ field.label }}{{ isCard ? fieldParsedDescription.desc : '' }}
           <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
         </label>

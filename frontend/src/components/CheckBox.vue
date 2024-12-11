@@ -16,7 +16,7 @@
 
       <div class="flex items-center">
 
-        <label class="text-md font-medium text-gray-700 dark:text-gray-200 break-words">
+        <label class="text-md font-medium text-gray-700 dark:text-gray-200 w-96">
           {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
         </label>
 

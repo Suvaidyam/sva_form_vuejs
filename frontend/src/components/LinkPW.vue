@@ -25,10 +25,10 @@
         </select>
       </div>
       <div v-else :class="[
-        isRow ? 'flex-col md:flex-row' : 'flex-col' ,'flex px-6 w-full gap-2'
+        isRow ? 'flex-col md:flex-row' : 'flex-col border py-2 rounded-sm' ,'flex px-3 w-full gap-2'
       ]">
-        <label v-for="option in visibleOptions" :key="option.name" :for="`${field.name}-${option.name}`"
-          :class="[isCard ? 'border p-2 rounded-md shadow-sm' : 'ml-5', isRow ? 'w-full' : '']"
+        <label v-for="option in options" :key="option.name" :for="`${field.name}-${option.name}`"
+          :class="[isCard ? 'border p-2 bg-white rounded-md shadow-sm' : 'ml-5', isRow ? 'w-full' : '']"
           class="flex items-center text-sm cursor-pointer">
           <div class="flex items-center gap-2 w-5 min-w-6 h-5">
             <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
