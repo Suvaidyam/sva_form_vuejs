@@ -33,7 +33,7 @@
     <!-- Loader -->
     <Loader v-if="loading" :show="props.isDraft" />
     <!-- Main Content -->
-    <main class="flex-1 w-75 " v-else>
+    <main :class="[props.width?'w-full':'w-75','flex-1']" v-else>
       <div class="mx-auto px-6 py-8">
         <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
           Assessment Not Found
@@ -221,6 +221,11 @@ const props = defineProps({
   toast: {
     type: Function,
     required: false
+  },
+  width: {
+    type: Function,
+    required: false,
+    default: false
   },
   status: {
     type: String,
