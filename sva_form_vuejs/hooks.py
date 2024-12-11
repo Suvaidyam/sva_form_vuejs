@@ -8,6 +8,8 @@ app_license = "mit"
 # Apps
 # ------------------
 
+fixtures=["Client Script","Number field Scoring Logic"]
+
 # required_apps = []
 
 # Each item in the list will be shown as an app in the apps page

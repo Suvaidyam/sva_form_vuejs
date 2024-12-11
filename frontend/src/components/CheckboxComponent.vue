@@ -2,7 +2,7 @@
   <div v-if="!field.hidden" class="flex flex-col gap-2">
     <div :class="props.isCard ? 'gap-2' : ''" class="flex items-center gap-2">
       <div class="flex items-center">
-        <label :for="field.name" class="ml-2 text-sm text-gray-700 dark:text-gray-200">{{ field.placeholder }}</label>
+        <label :for="field.name" class=" text-sm text-gray-700 dark:text-gray-200">{{ field.placeholder }}</label>
         <input :id="field.name" :name="field.name" type="checkbox" :checked="modelValue" @change="handleChange"
           @blur="handleBlur" :disabled="field.read_only" :required="isFieldMandatory(field)"
           class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600"
@@ -13,7 +13,8 @@
           class="w-6 h-6 rounded-full bg-gray-500 text-white flex justify-center items-center text-sm mr-2">
           {{ 1 }}
         </p>
-        <label :for="field.name" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+        <label :for="field.name" :class="props.isCard ? 'text-sm' : 'text-md'"
+          class=" font-medium text-gray-700 dark:text-gray-200">
           {{ field.label }}
           <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
         </label>
@@ -41,7 +42,7 @@
           </Popover>
         </div>
       </div>
-      
+
     </div>
     <p v-if="error" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ error }}</p>
   </div>
@@ -115,10 +116,11 @@ const isFieldMandatory = (field) => {
 </script>
 
 <style scoped>
- .w-96{
+.w-96 {
   width: 100% !important;
   max-width: 800px !important;
   min-width: 500px !important;
- }
+}
+
 /* Add any additional scoped styles here */
 </style>

@@ -12,6 +12,7 @@
   "label",
   "code",
   "score",
+  "group",
   "depends_on"
  ],
  "fields": [
@@ -51,14 +52,19 @@
    "reqd": 1
   },
   {
+   "fieldname": "group",
+   "fieldtype": "Data",
+   "label": "Group"
+  },
+  {
    "fieldname": "depends_on",
-   "fieldtype": "Small Text",
-   "label": "Display Depends On (JS)"
+   "fieldtype": "Data",
+   "label": "Display Depends On"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-25 17:41:13.959833",
+ "modified": "2024-12-07 15:14:41.021566",
  "modified_by": "Administrator",
  "module": "sva_form",
  "name": "Field Options",
@@ -89,6 +95,16 @@
    "role": "Primary",
    "share": 1,
    "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Support",
+   "select": 1,
+   "share": 1
   }
  ],
  "show_title_field_in_link": 1,
