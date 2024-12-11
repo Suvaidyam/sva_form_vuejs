@@ -27,23 +27,24 @@
       </div>
     </div> -->
 
-     <p v-if="index < 1 " class="text-md font-medium text-gray-700 dark:text-gray-200 mb-1.5 block">
-        {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
-      </p>
-    <p v-if="index < 1 &&  (parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo) && !isCard"
+    <p v-if="index < 1" class="text-md font-medium text-gray-700 dark:text-gray-200 mb-1.5 block">
+      {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
+    </p>
+    <p v-if="index < 1 && (parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo) && !isCard"
       class="text-sm text-gray-500">
       {{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
     </p>
-    <p v-if="index < 1 && matrix && (parsedDescription?.desc || fieldParsedDescription?.desc)" class="text-sm text-gray-500 mb-2">
+    <p v-if="index < 1 && matrix && (parsedDescription?.desc || fieldParsedDescription?.desc)"
+      class="text-sm text-gray-500 mb-2">
       {{ parsedDescriptioxn?.desc || fieldParsedDescription?.desc }}
     </p>
 
 
-   <div class="w-96 min-w-96">
-    <Matrix1 v-if="table_matrix && !matrix" :matrix_code="matrix_code" :field="field" :modelValue="modelValue"
-      @update:modelValue="updateValue" :visibleOptions="visibleOptions" :isFieldMandatory="isFieldMandatory(field)"
-      :index="index" />
-   </div>
+    <div class="w-96 min-w-96">
+      <Matrix1 v-if="table_matrix && !matrix" :matrix_code="matrix_code" :field="field" :modelValue="modelValue"
+        @update:modelValue="updateValue" :visibleOptions="visibleOptions" :isFieldMandatory="isFieldMandatory(field)"
+        :index="index" />
+    </div>
     <Matrix v-if="matrix && !table_matrix" :matrix_code="matrix_code" :field="field" :modelValue="modelValue"
       @update:modelValue="updateValue" :visibleOptions="visibleOptions" :isFieldMandatory="isFieldMandatory(field)"
       :index="index" />
@@ -83,9 +84,10 @@
           </Popover>
         </div>
       </div>
-<p v-if="index < 1  && (parsedDescription?.desc || fieldParsedDescription?.desc)" class="text-sm text-gray-500 mb-2">
-      {{ parsedDescriptioxn?.desc || fieldParsedDescription?.desc }}
-    </p>
+      <p v-if="index < 1 && (parsedDescription?.desc || fieldParsedDescription?.desc)"
+        class="text-sm text-gray-500 mb-2">
+        {{ parsedDescriptioxn?.desc || fieldParsedDescription?.desc }}
+      </p>
       <DropdownOptions v-if="dropDownOptions" :field="field" :modelValue="modelValue" @update:modelValue="updateValue"
         :visibleOptions="visibleOptions" :isFieldMandatory="isFieldMandatory(field)" />
 
@@ -98,16 +100,16 @@
           class="flex items-center text-sm cursor-pointer">
           <div class="flex-shrink-0 w-5 h-5 mr-2">
             <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
-              :checked="modelValue === option.name" @change="updateValue(option.name)" :disabled="field.read_only"
-              :required="isFieldMandatory(field)"
+              :checked="modelValue === option.name" @change="updateValue(option.name)"
+              :disabled="field.read_only || shouldDisableOption(option)" :required="isFieldMandatory(field)"
               class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
           </div>
           <span class="flex-grow">{{ option.label }}</span>
         </label>
-  
+
       </div>
     </template>
- 
+
     <p v-if="error" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ error }}</p>
   </div>
 </template>
@@ -186,6 +188,7 @@ const call = inject('$call')
 const saveAsDraft = inject('saveAsDraft')
 const options = ref([])
 const error = ref('')
+const selectedProgramArea = ref('')
 
 const isFieldMandatory = (field) => {
   if (field.reqd) return true
@@ -287,17 +290,29 @@ const validateInput = (value) => {
   }
 }
 
-const updateValue = (value) => {
-  emit('update:modelValue', value)
-  validateInput(value)
-  if (props.onfieldChange) {
-    saveAsDraft({ [props.field.fieldname]: value })
-  }
+const get_submitted_assessments_for_sector = async () => {
+  const sector = await call('british_asian_trust.my_client.get_submitted_assessments')
+  selectedProgramArea.value = sector[0].selected_program_area
 }
+
+const shouldDisableOption = (option) => {
+  return option.name === selectedProgramArea.value
+};
+
+const updateValue = (value) => {
+    emit('update:modelValue', value)
+    validateInput(value)
+    if (props.onfieldChange) {
+      saveAsDraft({ [props.field.fieldname]: value })
+    }
+}
+
+
 
 watch(() => props.field, getOptions, { immediate: true })
 
-onMounted(() => {
+onMounted(async () => {
+  await get_submitted_assessments_for_sector()
   getOptions()
 })
 </script>

@@ -248,6 +248,7 @@ const fieldErrors = ref({})
 const tabErrors = ref({})
 const showErrors = ref(false)
 
+
 const tabFields = computed(() =>
   docTypeMeta.value?.fields.filter(field => field.fieldtype === 'Tab Break') || []
 )
@@ -477,6 +478,11 @@ const setActiveTab = async (tabName, fromMounted = false) => {
         activeTab.value = tabName
       }
       await fetchTabData(tabName)
+      window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      
     } finally {
       isLoading.value = false
     }
