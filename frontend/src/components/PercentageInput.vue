@@ -41,8 +41,8 @@
     </span>
     <div class="relative flex items-center">
       <input :id="field.name" :value="modelValue" @input="handleInput" @change="handleChange" type="range" min="0"
-        max="100" step="1" :disabled="field.read_only" :required="isFieldMandatory(field)" :class="[
-          'w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700',
+        max="100"  :disabled="field.read_only" :required="isFieldMandatory(field)" :class="[
+          'w-full h-2 bg-gray-200 rounded-lg  cursor-pointer dark:bg-gray-700',
           { 'opacity-50 cursor-not-allowed': field.read_only }
         ]" />
       <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -172,8 +172,8 @@ const validateInput = (value) => {
 
 /* Styling for the range input */
 input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
+
+
   height: 8px;
   background: #ddd;
   outline: none;
