@@ -2,7 +2,7 @@
   <div class="flex w-full h-screen bg-white dark:bg-gray-900">
     <!-- Sidebar -->
     <aside v-if="!props.section" :class="[
-      'sticky top-0 h-full w-20 bg-gray-50 dark:bg-gray-800  overflow-y-auto',
+      'sticky top-0 h-full w-20 bg-gray-50 dark:bg-gray-800',
       isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
       'md:translate-x-0'
     ]">
@@ -33,7 +33,7 @@
     <!-- Loader -->
     <Loader v-if="loading" :show="props.isDraft" />
     <!-- Main Content -->
-    <main class="flex-1 w-full " v-else>
+    <main class="flex-1 w-75 " v-else>
       <div class="mx-auto px-6 py-8">
         <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
           Assessment Not Found
@@ -99,7 +99,7 @@
                   </p> -->
                   <!-- new -->
                   <div v-if="section.fields && section.fields.length > 0 && section.table_matrix" :aria-labelledby="`section-${index}`"
-                    class="space-y-4 flex gap-3 items-center matrix-overflow">
+                    class="flex gap-3  items-center matrix-overflow">
                     <!-- {{ section }} -->
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
                       <component v-if="isFieldVisible(field)" :section="section.description"
@@ -607,6 +607,10 @@ watch(formData, () => {
 .w-20 {
   width: 15% !important;
   min-width: 15% !important;
+}
+.w-75 {
+  width: 75% !important;
+  min-width: 75% !important;
 }
 
 .custom {
