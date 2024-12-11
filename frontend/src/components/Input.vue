@@ -133,15 +133,27 @@ function getString(str) {
 
 
 
-const inputType = computed(() => props.field.fieldtype === 'Int' ? 'number' : 'text')
+const inputType = computed(() => props.field.fieldtype === 'Int' ? 'text' : 'text')
+
+// const displayValue = computed(() => {
+//   if (props.field.fieldtype === 'Int') {
+//     const numValue = parseInt(props.modelValue);
+//     return isNaN(numValue) || numValue < 0 ? '' : props.modelValue;
+//   }
+//   return props.modelValue;
+// })
 
 const displayValue = computed(() => {
   if (props.field.fieldtype === 'Int') {
-    const numValue = parseInt(props.modelValue);
-    return isNaN(numValue) || numValue < 0 ? '' : props.modelValue;
+    const numValue = parseInt(props.modelValue, 10);
+    if (isNaN(numValue) || numValue < 0) {
+      return '';
+    }
+    return new Intl.NumberFormat('en-US').format(numValue);
   }
   return props.modelValue;
-})
+});
+
 
 const isFieldMandatory = (field) => {
   if (field.reqd) return true
@@ -160,70 +172,127 @@ const validateURL = (url) => {
   return urlPattern.test(url);
 };
 
+// const handleInput = (event) => {
+//   let value = event.target.value;
+//   if (props.field.fieldtype === 'Int') {
+//     const numValue = parseInt(value);
+//     if (isNaN(numValue) || numValue < 0) {
+//       error.value = 'Please enter a non-negative integer.';
+//       emit('update:modelValue', '');
+//     }// Check if the value is less than the minimum allowed
+//     else if (minMax.value?.min !== undefined && numValue < minMax.value.min) {
+//       error.value = `Value should not be less than ${minMax.value.min}.`; // Added error for min value
+//       emit('update:modelValue', numValue.toString());
+//     }
+//     // Check if the value is greater than the maximum allowed
+//     else if (minMax.value?.max !== undefined && numValue > minMax.value.max) {
+//       error.value = `Value should not exceed ${minMax.value.max}.`; // Added error for max value
+//       emit('update:modelValue', numValue.toString());
+//     }
+//     else {
+//       error.value = '';
+//       emit('update:modelValue', numValue.toString());
+//     }
+//   } else {
+//     emit('update:modelValue', value);
+//   }
+// }
+
 const handleInput = (event) => {
   let value = event.target.value;
+
   if (props.field.fieldtype === 'Int') {
-    const numValue = parseInt(value);
-    if (isNaN(numValue) || numValue < 0) {
-      error.value = 'Please enter a non-negative integer.';
-      emit('update:modelValue', '');
-    }// Check if the value is less than the minimum allowed
-    else if (minMax.value?.min !== undefined && numValue < minMax.value.min) {
-      error.value = `Value should not be less than ${minMax.value.min}.`; // Added error for min value
-      emit('update:modelValue', numValue.toString());
-    }
-    // Check if the value is greater than the maximum allowed
-    else if (minMax.value?.max !== undefined && numValue > minMax.value.max) {
-      error.value = `Value should not exceed ${minMax.value.max}.`; // Added error for max value
-      emit('update:modelValue', numValue.toString());
-    }
-    else {
+    const rawValue = value.replace(/[^\d]/g, '');
+
+    if (rawValue !== value) {
+      error.value = 'Only integers are allowed.';
+    } else {
       error.value = '';
-      emit('update:modelValue', numValue.toString());
+    }
+
+    const numValue = parseInt(rawValue, 10);
+
+    if (isNaN(numValue) || numValue < 0) {
+      error.value = 'Please enter a valid non-negative integer.';
+      emit('update:modelValue', '');
+      event.target.value = '';
+    } else {
+      error.value = '';
+      emit('update:modelValue', numValue);
+      event.target.value = rawValue;
     }
   } else {
     emit('update:modelValue', value);
   }
-}
+};
 
 const handleBlur = (event) => {
-  const value = event.target.value;
-
-  if (props.field.fieldname === 'organisation_website' && value) {
-    if (!validateURL(value)) {
-      error.value = 'Please enter a valid URL.';
-      return;
-    }
-  }
+  let value = event.target.value;
 
   if (props.field.fieldtype === 'Int') {
-    const numValue = parseInt(value);
+    const inputValue = value.replace(/,/g, '');
+    const numValue = parseInt(inputValue);
+
     if (isNaN(numValue) || numValue < 0) {
-      error.value = 'Please enter a non-negative integer.';
+      error.value = 'Please enter a valid non-negative integer.';
       emit('update:modelValue', '');
-    }
-    else if (minMax.value?.min !== undefined && numValue < minMax.value.min) {
-      error.value = `Value should not be less than ${minMax.value.min}.`; // Added error for min value
+      event.target.value = ''; 
+    } else if (minMax.value?.min !== undefined && numValue < minMax.value.min) {
+      error.value = `Value should not be less than ${minMax.value.min}.`;
       emit('update:modelValue', '');
-    }
-    // Check if the value is greater than the maximum allowed
-    else if (minMax.value?.max !== undefined && numValue > minMax.value.max) {
-      error.value = `Value should not exceed ${minMax.value.max}.`; // Added error for max value
+      event.target.value = '';
+    } else if (minMax.value?.max !== undefined && numValue > minMax.value.max) {
+      error.value = `Value should not exceed ${minMax.value.max}.`;
       emit('update:modelValue', '');
-    }
-    else {
+      event.target.value = '';
+    } else {
       error.value = '';
+      const formattedValue = new Intl.NumberFormat('en-US').format(numValue);
       emit('update:modelValue', numValue.toString());
+      event.target.value = formattedValue; 
+    }
+    if (props.onfieldChange && !error.value) {
+      saveAsDraft({ [props.field.fieldname]: event.target.value.replace(/,/g, '') });
     }
   } else {
     error.value = '';
     emit('update:modelValue', value);
+    if (props.onfieldChange && !error.value) {
+      saveAsDraft({ [props.field.fieldname]: value });
+    }
   }
+};
 
-  if (props.onfieldChange && !error.value) {
-    saveAsDraft({ [props.field.fieldname]: value })
-  }
-}
+
+// const handleBlur = (event) => {
+// if (props.field.fieldtype === 'Int') {
+//   const numValue = parseInt(value);
+//   if (isNaN(numValue) || numValue < 0) {
+//     error.value = 'Please enter a non-negative integer.';
+//     emit('update:modelValue', '');
+//   }
+//   else if (minMax.value?.min !== undefined && numValue < minMax.value.min) {
+//     error.value = `Value should not be less than ${minMax.value.min}.`; // Added error for min value
+//     emit('update:modelValue', '');
+//   }
+//   // Check if the value is greater than the maximum allowed
+//   else if (minMax.value?.max !== undefined && numValue > minMax.value.max) {
+//     error.value = `Value should not exceed ${minMax.value.max}.`; // Added error for max value
+//     emit('update:modelValue', '');
+//   }
+//   else {
+//     error.value = '';
+//     emit('update:modelValue', numValue.toString());
+//   }
+// } else {
+//   error.value = '';
+//   emit('update:modelValue', value);
+
+
+//   if (props.onfieldChange && !error.value) {
+//     saveAsDraft({ [props.field.fieldname]: value })
+//   }
+// }
 
 
 const getMinMax = async () => {

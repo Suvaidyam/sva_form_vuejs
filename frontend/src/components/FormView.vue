@@ -338,7 +338,7 @@ const isSubmitDisabled = computed(() => {
 })
 
 const getFieldComponent = (fieldtype, section) => {
-  console.log(section, 'section');
+  // console.log(section, 'section');
   switch (fieldtype) {
     case 'Link': return props.isTable ? LinkTable : props.isColumn ? LinkPW : Link
     case 'Data': return Input
