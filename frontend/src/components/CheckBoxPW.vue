@@ -6,7 +6,7 @@
         {{ 1 }}
       </p>
       <label :class="!props.isCard ? 'text-md' : 'text-sm'"
-        class="font-medium text-gray-700 dark:text-gray-200 break-words">
+        class="font-medium text-black dark:text-gray-200 break-words">
         {{ field.label }} {{ field.description }}
         <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
@@ -19,8 +19,8 @@
             @change="updateValue(option)" :disabled="field.read_only"
             :required="isFieldMandatory(field) && modelValue.length === 0"
             class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600 flex-shrink-0" />
-          <p class="ml-2 block text-sm text-gray-700 dark:text-gray-200 break-words">
-            {{ option.label }}bgh
+          <p class="ml-2 block text-sm text-black dark:text-gray-200 break-words">
+            {{ option.label }}
           </p>
         </label>
     </div>
