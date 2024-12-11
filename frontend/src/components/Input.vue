@@ -1,18 +1,18 @@
 <template>
   <div v-if="!field.hidden" class="flex flex-col ">
-  
-       <span v-if="parsedDescription?.qlable || fieldParsedDescription?.qlable"
+
+    <span v-if="parsedDescription?.qlable || fieldParsedDescription?.qlable"
       class="text-md font-medium  text-gray-700 dark:text-gray-200  block mb-1.5 ">
       {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
     </span>
     <span v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
       class="text-sm text-gray-500   ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
     </span>
- 
+
 
 
     <div class="flex items-center">
-      
+
       <label :for="field.name" class="text-md font-medium text-gray-700 dark:text-gray-200">
         {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
@@ -233,6 +233,16 @@ const handleInput = (event) => {
 const handleBlur = (event) => {
   let value = event.target.value;
 
+  if (props.field.fieldname === 'organisation_website') {
+    if (!validateURL(value)) {
+      error.value = 'Please enter a valid URL.';
+      emit('update:modelValue', '');
+      return;
+    } else {
+      error.value = '';
+    }
+  }
+
   if (props.field.fieldtype === 'Int') {
     const inputValue = value.replace(/,/g, '');
     const numValue = parseInt(inputValue);
@@ -240,7 +250,7 @@ const handleBlur = (event) => {
     if (isNaN(numValue) || numValue < 0) {
       error.value = 'Please enter a valid non-negative integer.';
       emit('update:modelValue', '');
-      event.target.value = ''; 
+      event.target.value = '';
     } else if (minMax.value?.min !== undefined && numValue < minMax.value.min) {
       error.value = `Value should not be less than ${minMax.value.min}.`;
       emit('update:modelValue', '');
@@ -253,7 +263,7 @@ const handleBlur = (event) => {
       error.value = '';
       const formattedValue = new Intl.NumberFormat('en-US').format(numValue);
       emit('update:modelValue', numValue.toString());
-      event.target.value = formattedValue; 
+      event.target.value = formattedValue;
     }
     if (props.onfieldChange && !error.value) {
       saveAsDraft({ [props.field.fieldname]: event.target.value.replace(/,/g, '') });
