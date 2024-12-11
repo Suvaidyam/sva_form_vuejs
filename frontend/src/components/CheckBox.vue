@@ -109,6 +109,7 @@ const props = defineProps({
     required: false,
     default: 0
   },
+  
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -184,7 +185,7 @@ const splitOptions = computed(() => {
   if (visibleOptions.length <= 8) {
     return [visibleOptions]
   } else {
-    const columns = 4
+    const columns = props.field.option_column || 4
     const itemsPerColumn = Math.ceil(visibleOptions.length / columns)
     return Array.from({ length: columns }, (_, index) =>
       visibleOptions.slice(index * itemsPerColumn, (index + 1) * itemsPerColumn)
