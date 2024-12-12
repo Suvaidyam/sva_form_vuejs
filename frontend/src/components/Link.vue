@@ -91,7 +91,7 @@
 
       <div v-else :class="[
         isCard ? 'px-6' : '',
-        isRow ? 'flex flex-col md:flex-row gap-3 w-full' : 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mt-2'
+        isRow ? 'flex flex-col md:flex-row gap-3 w-full' : 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mt-2 custom'
       ]">
         <label v-for="option in visibleOptions" :key="option.name" :for="`${field.name}-${option.name}`"
           :class="[isCard ? 'border p-2 rounded-md shadow-sm' : ' ml-5', isRow ? 'w-full' : '']"
@@ -307,5 +307,8 @@ onMounted(() => {
   width: 100% !important;
   max-width: 800px !important;
   min-width: 500px !important;
+}
+.custom{
+  margin-left:20px !important;
 }
 </style>
