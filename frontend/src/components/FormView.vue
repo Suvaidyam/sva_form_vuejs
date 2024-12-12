@@ -253,7 +253,7 @@ const isSidebarOpen = ref(false)
 const fieldErrors = ref({})
 const tabErrors = ref({})
 const showErrors = ref(false)
-
+const saveAsDraft = inject('saveAsDraft')
 
 const tabFields = computed(() =>
   docTypeMeta.value?.fields.filter(field => field.fieldtype === 'Tab Break') || []
@@ -316,7 +316,6 @@ const allSections = computed(() => {
       currentSection.fields.push(field)
     }
   })
-  console.log(mismatchedDependsOn, 'mismatchedDependsOn');
 
   if (currentSection) {
     sections.push(currentSection)
@@ -398,6 +397,34 @@ const handleFieldUpdate = (fieldName, value) => {
   if (showErrors.value) {
     validateField(fieldName)
   }
+   // auto calculate
+   let intField = docTypeMeta.value.fields.filter((e) => ['Int', 'Percent','Float'].includes(e.fieldtype));
+  let auto_cal_field = intField.filter((e) => 'auto_calculate' in e);
+
+  auto_cal_field.forEach((fieldMeta) => {
+
+    let formula = fieldMeta.auto_calculate.match(/eval:\(([^)]+)\)/)?.[1];
+    let evaluatedFormula = formula.replace(/\b\w+\b/g, (match) => {
+      return formData.value[match] || 0;
+    });
+
+    let sum;
+    try {
+      sum = eval(evaluatedFormula);
+    } catch (error) {
+      sum = 0;
+      console.error('Error evaluating formula:', formula, error);
+    }
+    if(sum <= 100){
+      formData.value[fieldMeta.fieldname] = sum;
+      saveAsDraft({ [fieldMeta.fieldname]: sum })
+    }else{
+      props.toast.error('sum is greater than 100', {
+      timeout: 5000,
+      closeOnClick: true,
+    }) 
+    }
+  })
 }
 
 const validateField = (fieldName) => {
