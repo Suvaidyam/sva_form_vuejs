@@ -401,7 +401,7 @@ const handleFieldUpdate = (fieldName, value) => {
    let intField = docTypeMeta.value.fields.filter((e) => ['Int', 'Percent','Float'].includes(e.fieldtype));
   let auto_cal_field = intField.filter((e) => 'auto_calculate' in e);
 
-  auto_cal_field.forEach((fieldMeta) => {
+  auto_cal_field.forEach(async(fieldMeta) => {
 
     let formula = fieldMeta.auto_calculate.match(/eval:\(([^)]+)\)/)?.[1];
     let evaluatedFormula = formula.replace(/\b\w+\b/g, (match) => {
@@ -415,14 +415,19 @@ const handleFieldUpdate = (fieldName, value) => {
       sum = 0;
       console.error('Error evaluating formula:', formula, error);
     }
-    if(sum <= 100){
+    const response = await call('sva_form_vuejs.controllers.api.get_min_max_criteria', {
+      filters: { field: fieldMeta.fieldname, ref_doctype: 'Assessment' }
+    }) 
+    if(sum <= (response.max || 100) && sum >= (response.min || 0)){
       formData.value[fieldMeta.fieldname] = sum;
       saveAsDraft({ [fieldMeta.fieldname]: sum })
     }else{
-      props.toast.error('sum is greater than 100', {
-      timeout: 5000,
-      closeOnClick: true,
-    }) 
+      if(response){
+        props.toast.error(`Sum of min ${(response.min || 0)}, max ${(response.max || 100)}`, {
+          timeout: 5000,
+          closeOnClick: true,
+        }) 
+      }
     }
   })
 }
