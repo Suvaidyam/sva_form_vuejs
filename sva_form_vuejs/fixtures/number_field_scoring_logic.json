@@ -21,7 +21,7 @@
   "lower_limit": 0.0,
   "max": 50,
   "min": 40,
-  "modified": "2024-12-09 12:16:26.028933",
+  "modified": "2024-12-12 13:22:05.113269",
   "name": "Assessment-annual_spending_last_year-a",
   "ref_doctype": "Assessment",
   "score": 1.0,
@@ -35,7 +35,7 @@
   "lower_limit": 4.0,
   "max": 50,
   "min": 40,
-  "modified": "2024-12-09 12:16:26.046912",
+  "modified": "2024-12-12 13:22:05.142786",
   "name": "Assessment-annual_spending_last_year-b",
   "ref_doctype": "Assessment",
   "score": 2.0,
@@ -133,11 +133,11 @@
   "lower_limit": 6.0,
   "max": 50,
   "min": 40,
-  "modified": "2024-12-09 12:16:25.971395",
+  "modified": "2024-12-12 13:22:05.151306",
   "name": "Assessment-annual_spending_last_year-c",
   "ref_doctype": "Assessment",
   "score": 4.0,
-  "upper_limit": 8.0
+  "upper_limit": 0.0
  },
  {
   "code": "a",
