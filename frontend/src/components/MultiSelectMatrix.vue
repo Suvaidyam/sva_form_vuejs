@@ -43,7 +43,7 @@
         {{ parsedDescription?.desc || fieldParsedDescription?.desc }}
       </span>
 
-      <div class="overflow-x-auto">
+      <div class="">
         <div class="inline-block min-w-full py-2 align-middle">
           <div class="overflow-hidden rounded-lg">
             <div class="grid gap-x-4" :style="gridTemplateColumns">
