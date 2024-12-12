@@ -34,7 +34,7 @@
     <Loader v-if="loading" :show="props.isDraft" />
     <!-- Main Content -->
     <main :class="[props.width?'w-full':'w-75','flex-1']" v-else>
-      <div class="mx-auto px-6 py-8">
+      <div :class="[section_hidden?'mx-auto py-8':'mx-auto px-6 py-8']">
         <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
           Assessment Not Found
         </div>
@@ -49,6 +49,7 @@
               <template v-if="props.section">
                 <div v-for="(section, index) in allSections" :key="index" class="mb-6 ">
                   <div @click="toggleSection(index)"
+                  :class="[section_hidden?'hidden':'']"
                     class="flex items-center justify-between cursor-pointer bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-2">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                       {{ section.label }}
@@ -176,6 +177,10 @@ const props = defineProps({
     required: true
   },
   section: {
+    type: Boolean,
+    default: false
+  },
+  section_hidden: {
     type: Boolean,
     default: false
   },
