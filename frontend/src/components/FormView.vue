@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full h-screen bg-white dark:bg-gray-900">
+  <div class="flex w-full h-screen  dark:bg-gray-900">
     <!-- Sidebar -->
     <aside v-if="!props.section" :class="[
       'sticky top-0 h-full w-20 bg-gray-50 dark:bg-gray-800',
