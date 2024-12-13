@@ -36,7 +36,7 @@
     <!-- Main Content -->
     <main :class="[props.width?'w-full':'w-75','flex-1']" v-else>
       <MenuIcon class="block md:hidden ml-4 cursor-pointer" @click="open_sidebar"/>
-      <div :class="[section_hidden?'mx-auto py-8':'mx-auto px-6 py-8']">
+      <div :class="[section_hidden?'mx-auto py-8':'mx-auto px-6 pb-8']">
         <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
           Assessment Not Found
         </div>
@@ -46,14 +46,14 @@
             <div class="animate-spin  rounded-full h-32 w-32 border-t-2 border-b-2 border-orange-500"></div>
           </div> -->
 
-          <form @submit.prevent="onSubmit" class="mt-4 md:mt-0">
-            <div class="space-y-6 ">
+          <form @submit.prevent="onSubmit" class=" mt-2">
+            <div class=" ">
               <template v-if="props.section">
-                <div v-for="(section, index) in allSections" :key="index" class="mb-6 ">
+                <div v-for="(section, index) in allSections" :key="index" class="mb-4">
                   <div @click="toggleSection(index)"
                   :class="[section_hidden?'hidden':'']"
-                    class="flex items-center justify-between cursor-pointer bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-2">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    class="flex items-center justify-between cursor-pointer bg-gray-100 dark:bg-gray-700 p-4 rounded-lg  mb-2">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white ">
                       {{ section.label }}
                     </h3>
                     <ChevronDownIcon
@@ -74,14 +74,15 @@
                   </div>
                 </div>
               </template>
-              <template v-else>
-                <div v-for="(section, index) in activeFieldSections" :key="section.name" class="mb-6 ">
-                  <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white mb-4 flex ">
+              <template v-else >
+                
+                <div v-for="(section, index) in activeFieldSections" :key="section.name" class="matrix-overflow1" style= "padding-top:10px" >
+                  <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white mb-4 flex " >
                     {{ section.label }}
                     <SaveStatusIcon v-if="section.label" class=" mt-2 cust" :status="status" />
                   </h3>
                   <div v-if="section.fields && section.fields.length > 0 && !section.table_matrix"
-                    :aria-labelledby="`section-${index}`" class="space-y-5   ">
+                    :aria-labelledby="`section-${index}`" class="space-y-4 mb-4">
                     <!-- {{ section }} -->
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="">
                       <component v-if="isFieldVisible(field)" :section="section.description"
@@ -726,5 +727,11 @@ aside {
 .matrix-overflow{
   overflow-x: scroll !important;
   overflow-y: hidden !important;
+}
+.matrix-overflow1{
+  overflow-x: auto !important;
+  overflow-y: hidden ;
+ 
+  /* overflow-y: auto !important; */
 }
 </style>
