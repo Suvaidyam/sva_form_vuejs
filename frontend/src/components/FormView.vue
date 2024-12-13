@@ -264,6 +264,7 @@ const tabFields = computed(() =>
 
 const activeFieldSections = computed(() => {
   if (!docTypeMeta.value || !activeTab.value) return []
+  console.log(allTabsUnlocked.value,'allTabsUnlocked')
   const fields = docTypeMeta.value.fields
   const startIndex = fields.findIndex(f => f.name === activeTab.value)
   const endIndex = fields.findIndex((f, i) => i > startIndex && f.fieldtype === 'Tab Break')
@@ -281,7 +282,11 @@ const activeFieldSections = computed(() => {
       }
       currentSection = { label: field.label, fields: [], is_matrix: field.is_matrix, description: field.description, is_multi_matrix: field.is_multi_matrix, is_matrix_code: field.is_matrix_code,table_matrix:field.table_matrix }
     } else if (currentSection) {
-      currentSection.fields.push(field)
+      if (allTabsUnlocked.value && activeTab.value === tabFields.value[0]?.name) {
+        currentSection.fields.push({...field,read_only:1})
+      }else{
+        currentSection.fields.push(field)
+      }
     }
   })
 
@@ -495,7 +500,7 @@ const initializeFormData = () => {
   const newFormData = { ...formData.value }
   if (formData.value?.active_tab) {
     const firstTab = tabFields.value[0]?.name
-    if (firstTab != formData.value?.active_tab && !allTabsUnlocked.value) {
+    if (isTabComplete(firstTab) && !allTabsUnlocked.value) {
       allTabsUnlocked.value = true
       setActiveTab(formData.value?.active_tab, true)
     }
