@@ -50,7 +50,7 @@
       :index="index" />
 
     <template v-else>
-      <div class="flex items-center " :class="isCard ? 'py-2 gap-2' : ''">
+      <div class="flex items-center  " :class="isCard ? 'py-2 gap-2' : 'justify-between'">
         <p v-if="isCard"
           class="w-7 h-7 min-w-7 min-h-7 text-sm flex items-center justify-center rounded-full bg-gray-700 text-white">
           {{ index + 1 }}
@@ -61,28 +61,34 @@
           {{ field.label }}{{ isCard ? fieldParsedDescription.desc : '' }}
           <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
         </label>
-        <div v-if="parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
-          <Popover v-slot="{ open }" class="relative">
-            <PopoverButton @mouseenter="open = true" @mouseleave="open = false" class="focus:outline-none">
-              <InfoIcon class="w-4 h-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
-            </PopoverButton>
-            <transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-1"
-              enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
-              leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
-              <PopoverPanel
-                class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-1/2 left-1/2 sm:px-0 lg:max-w-3xl"
-                @mouseenter="open = true" @mouseleave="open = false">
-                <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                  <div class="p-4 bg-white dark:bg-gray-800">
-                    <p class="text-sm text-gray-700 dark:text-gray-300">
-                      {{ parsedDescription?.info || fieldParsedDescription?.info }}
-                    </p>
-                  </div>
-                </div>
-              </PopoverPanel>
-            </transition>
-          </Popover>
+       <div v-if="parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
+  <Popover v-slot="{ open }" class="relative">
+    <PopoverButton class="focus:outline-none">
+      <InfoIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
+    </PopoverButton>
+    <transition
+      enter-active-class="transition duration-200 ease-out"
+      enter-from-class="opacity-0 translate-y-1"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition duration-150 ease-in"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 translate-y-1"
+    >
+      <PopoverPanel
+        class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl"
+      >
+        <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+          <div class="p-4 bg-white dark:bg-gray-800">
+            <p class="text-sm text-gray-700 dark:text-gray-300">
+              {{ parsedDescription?.info || fieldParsedDescription?.info }}
+            </p>
+          </div>
         </div>
+      </PopoverPanel>
+    </transition>
+  </Popover>
+</div>
+
       </div>
       <p v-if="index < 1 && (parsedDescription?.desc || fieldParsedDescription?.desc)"
         class="text-sm text-gray-500 mb-2">
@@ -93,7 +99,7 @@
 
       <div v-else :class="[
         isCard ? 'px-6' : '',
-        isRow ? 'flex flex-col md:flex-row gap-3 w-full' : 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mt-2 custom'
+        isRow ? 'flex flex-col md:flex-row gap-3 w-full' : 'grid  gap-2 mt-2 custom'
       ]">
         <label v-for="option in visibleOptions" :key="option.name" :for="`${field.name}-${option.name}`"
           :class="[isCard ? 'border p-2 rounded-md shadow-sm' : ' ml-5', isRow ? 'w-full' : '']"
