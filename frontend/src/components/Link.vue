@@ -298,7 +298,9 @@ const validateInput = (value) => {
 
 const get_submitted_assessments_for_sector = async () => {
   const sector = await call('british_asian_trust.my_client.get_submitted_assessments')
-  selectedProgramArea.value = sector[0].selected_program_area
+  if(sector.length > 0){
+    selectedProgramArea.value = sector[0].selected_program_area
+  }
 }
 
 const shouldDisableOption = (option) => {

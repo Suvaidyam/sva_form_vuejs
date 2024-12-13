@@ -7,7 +7,7 @@
       'md:translate-x-0'
     ]">
       <div class="flex flex-col h-full bg-gray-50 dark:bg-gray-800 side-bar-scroll">
-        <XIcon class="block md:hidden ml-4 mt-2 cursor-pointer" @click="open_sidebar"/>
+        <XIcon class="block md:hidden ml-4 mt-2 cursor-pointer" @click="open_sidebar" />
         <nav class="flex-1 px-4 py-4">
           <ul class="space-y-2">
             <li v-for="(tab, index) in tabFields" :key="tab.name">
@@ -34,9 +34,9 @@
     <!-- Loader -->
     <Loader v-if="loading" :show="props.isDraft" />
     <!-- Main Content -->
-    <main :class="[props.width?'w-full':'w-75','flex-1']" v-else>
-      <MenuIcon class="block md:hidden ml-4 cursor-pointer" @click="open_sidebar"/>
-      <div :class="[section_hidden?'mx-auto py-8':'mx-auto px-6 pb-8']">
+    <main :class="[props.width ? 'w-full' : 'w-75', 'flex-1']" v-else>
+      <MenuIcon class="block md:hidden ml-4 cursor-pointer" @click="open_sidebar" />
+      <div :class="[section_hidden ? 'mx-auto py-8' : 'mx-auto px-6 pb-8']">
         <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
           Assessment Not Found
         </div>
@@ -50,8 +50,7 @@
             <div class=" ">
               <template v-if="props.section">
                 <div v-for="(section, index) in allSections" :key="index" class="mb-4">
-                  <div @click="toggleSection(index)"
-                  :class="[section_hidden?'hidden':'']"
+                  <div @click="toggleSection(index)" :class="[section_hidden ? 'hidden' : '']"
                     class="flex items-center justify-between cursor-pointer bg-gray-100 dark:bg-gray-700 p-4 rounded-lg  mb-2">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white ">
                       {{ section.label }}
@@ -74,10 +73,11 @@
                   </div>
                 </div>
               </template>
-              <template v-else >
-                
-                <div v-for="(section, index) in activeFieldSections" :key="section.name" class="matrix-overflow1" style= "padding-top:10px" >
-                  <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white mb-4 flex " >
+              <template v-else>
+
+                <div v-for="(section, index) in activeFieldSections" :key="section.name" class="matrix-overflow1"
+                  style="padding-top:10px">
+                  <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white mb-4 flex ">
                     {{ section.label }}
                     <SaveStatusIcon v-if="section.label" class=" mt-2 cust" :status="status" />
                   </h3>
@@ -86,7 +86,7 @@
                     <!-- {{ section }} -->
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="">
                       <component v-if="isFieldVisible(field)" :section="section.description"
-                        :is="getFieldComponent(field.fieldtype ,section)" :field="field" :isCard="props.isCard"
+                        :is="getFieldComponent(field.fieldtype, section)" :field="field" :isCard="props.isCard"
                         :isColumn="props.isColumn" :dropDownOptions="field.is_dropDown"
                         :matrix_code="section.is_matrix_code" :matrix="section.is_matrix"
                         :multi_matrix="section.is_multi_matrix" :index="fieldIndex" :formData="formData"
@@ -264,7 +264,7 @@ const tabFields = computed(() =>
 
 const activeFieldSections = computed(() => {
   if (!docTypeMeta.value || !activeTab.value) return []
-  console.log(allTabsUnlocked.value,'allTabsUnlocked')
+  console.log(allTabsUnlocked.value, 'allTabsUnlocked')
   const fields = docTypeMeta.value.fields
   const startIndex = fields.findIndex(f => f.name === activeTab.value)
   const endIndex = fields.findIndex((f, i) => i > startIndex && f.fieldtype === 'Tab Break')
@@ -280,11 +280,11 @@ const activeFieldSections = computed(() => {
       if (currentSection) {
         sections.push(currentSection)
       }
-      currentSection = { label: field.label, fields: [], is_matrix: field.is_matrix, description: field.description, is_multi_matrix: field.is_multi_matrix, is_matrix_code: field.is_matrix_code,table_matrix:field.table_matrix }
+      currentSection = { label: field.label, fields: [], is_matrix: field.is_matrix, description: field.description, is_multi_matrix: field.is_multi_matrix, is_matrix_code: field.is_matrix_code, table_matrix: field.table_matrix }
     } else if (currentSection) {
       if (allTabsUnlocked.value && activeTab.value === tabFields.value[0]?.name) {
-        currentSection.fields.push({...field,read_only:1})
-      }else{
+        currentSection.fields.push({ ...field, read_only: 1 })
+      } else {
         currentSection.fields.push(field)
       }
     }
@@ -301,6 +301,7 @@ const allSections = computed(() => {
   const sections = []
   let currentSection = null
   let mismatchedDependsOn = []
+  let mislineousDependsOn = []
   docTypeMeta.value.fields.forEach(field => {
     if (field.fieldname === 'amended_from') {
       return
@@ -315,14 +316,19 @@ const allSections = computed(() => {
       currentSection = { label: field.label, fields: [], is_matrix: field.is_matrix, description: field.description }
     } else if (currentSection) {
       if (field.depends_on) {
-        if (field.mandatory_depends_on && field.mandatory_depends_on != field.depends_on) {
+        if ((field.mandatory_depends_on && field.mandatory_depends_on != field.depends_on)) {
           mismatchedDependsOn.push(field.label)
+        }
+        if (field.reqd && field.depends_on){
+          mislineousDependsOn.push(field.label)
         }
       }
 
       currentSection.fields.push(field)
     }
   })
+  console.log(mismatchedDependsOn, 'mismatchedDependsOn')
+  console.log(mislineousDependsOn, 'mislineousDependsOn')
 
   if (currentSection) {
     sections.push(currentSection)
@@ -359,7 +365,7 @@ const getFieldComponent = (fieldtype, section) => {
   switch (fieldtype) {
     case 'Link': return props.isTable ? LinkTable : props.isColumn ? LinkPW : Link
     case 'Data': return Input
-    case 'Table MultiSelect': return props.isCard ? CheckBoxPW : (section.is_multi_matrix ? MultiSelectMatrix :CheckBox)
+    case 'Table MultiSelect': return props.isCard ? CheckBoxPW : (section.is_multi_matrix ? MultiSelectMatrix : CheckBox)
     case 'Button': return Button
     case 'Attach': return AttachmentUpload
     case 'Date': return DateInput
@@ -413,11 +419,11 @@ const handleFieldUpdate = (fieldName, value) => {
   if (showErrors.value) {
     validateField(fieldName)
   }
-   // auto calculate
-   let intField = docTypeMeta.value.fields.filter((e) => ['Int', 'Percent','Float'].includes(e.fieldtype));
+  // auto calculate
+  let intField = docTypeMeta.value.fields.filter((e) => ['Int', 'Percent', 'Float'].includes(e.fieldtype));
   let auto_cal_field = intField.filter((e) => 'auto_calculate' in e);
 
-  auto_cal_field.forEach(async(fieldMeta) => {
+  auto_cal_field.forEach(async (fieldMeta) => {
 
     let formula = fieldMeta.auto_calculate.match(/eval:\(([^)]+)\)/)?.[1];
     let evaluatedFormula = formula.replace(/\b\w+\b/g, (match) => {
@@ -433,17 +439,15 @@ const handleFieldUpdate = (fieldName, value) => {
     }
     const response = await call('sva_form_vuejs.controllers.api.get_min_max_criteria', {
       filters: { field: fieldMeta.fieldname, ref_doctype: 'Assessment' }
-    }) 
-    if(sum <= (response.max || 100) && sum >= (response.min || 0)){
+    })
+    if (sum <= (response?.max || 100) && sum >= (response?.min || 0)) {
       formData.value[fieldMeta.fieldname] = sum;
       saveAsDraft({ [fieldMeta.fieldname]: sum })
-    }else{
-      if(response){
-        props.toast.error(`Sum of min ${(response.min || 0)}, max ${(response.max || 100)}`, {
-          timeout: 5000,
-          closeOnClick: true,
-        }) 
-      }
+    } else {
+      props.toast.error(`Sum of min ${(response?.min || 0)}, max ${(response?.max || 100)}`, {
+        timeout: 5000,
+        closeOnClick: true,
+      })
     }
   })
 }
@@ -533,10 +537,10 @@ const setActiveTab = async (tabName, fromMounted = false) => {
       }
       await fetchTabData(tabName)
       window.scrollTo({
-          top: 0,
-          behavior: 'smooth'
-        });
-      
+        top: 0,
+        behavior: 'smooth'
+      });
+
     } finally {
       isLoading.value = false
     }
@@ -664,11 +668,12 @@ watch(formData, () => {
   min-width: 240px !important;
   /* padding-top: 64px !important; */
 }
+
 .w-75 {
   width: 75% !important;
   /* padding-left: 240px !important; */
   min-width: 75% !important;
-  
+
 }
 
 .custom {
@@ -691,10 +696,12 @@ aside {
   top: 2px;
   height: 100vh;
 }
-.side-bar-scroll{
+
+.side-bar-scroll {
   overflow-y: auto;
 
 }
+
 main::-webkit-scrollbar,
 aside::-webkit-scrollbar {
   display: none;
@@ -706,45 +713,54 @@ aside {
   scrollbar-width: none;
 }
 
-.abcd{
-   overflow-x: scroll !important; /* Hide horizontal scrollbar */
- 
+.abcd {
+  overflow-x: scroll !important;
+  /* Hide horizontal scrollbar */
+
 }
+
 @media screen and (max-width: 768px) {
   aside {
-  position: fixed;
-  top: 0;
-  height: 100vh;
-}
+    position: fixed;
+    top: 0;
+    height: 100vh;
+  }
+
   .hide-sidebar {
     transform: translateX(-100%) !important;
     transition: transform 0.3s ease !important;
-    z-index: 1000 !important; 
+    z-index: 1000 !important;
   }
+
   .show-sidebar {
     transform: translateX(0) !important;
     z-index: 1000 !important;
-    transition: transform 0.3s ease !important; 
+    transition: transform 0.3s ease !important;
   }
-  .w-75{
+
+  .w-75 {
     padding-left: 0px !important;
     overflow-x: auto !important;
   }
-  .w-20{
+
+  .w-20 {
     padding-top: 64px !important;
   }
 }
+
 .cust {
   margin-left: 20px !important;
 }
-.matrix-overflow{
+
+.matrix-overflow {
   overflow-x: scroll !important;
   overflow-y: hidden !important;
 }
-.matrix-overflow1{
+
+.matrix-overflow1 {
   overflow-x: auto !important;
-  overflow-y: hidden ;
- 
+  overflow-y: hidden;
+
   /* overflow-y: auto !important; */
 }
 </style>
