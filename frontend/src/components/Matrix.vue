@@ -1,10 +1,10 @@
 <template>
   <div class="">
-    <div class="inline-block min-w-full py-2 align-middle">
+    <div class="inline-block min-w-full p-2 align-middle">
       <div class="overflow-hidden rounded-lg ">
         <div class="grid gap-x-4" :style="gridTemplateColumns">
           <template v-if="index < 1">
-            <div class="bg-gray-50 dark:bg-gray-800 py-3 text-gray-900 dark:text-gray-100 font-medium">
+            <div class="bg-gray-50 dark:bg-gray-800 p-3  text-gray-900 dark:text-gray-100 font-medium">
               Question
             </div>
             <div v-for="option in visibleOptions" :key="`header-${option.name}`"
@@ -15,7 +15,7 @@
           </template>
 
           <div
-            class="bg-white dark:bg-gray-900 py-2 flex items-start border-t border-gray-200 dark:border-gray-700 min-h-[80px]">
+            class="bg-white dark:bg-gray-900 py-2 px-3 flex items-start border-t border-gray-200 dark:border-gray-700 min-h-[80px]">
             <div class="text-sm text-gray-900 dark:text-gray-100 w-full pr-6">
               <label :for="`${field.name}-${visibleOptions[0]?.name}`" class="flex items-start">
                 <span class="mr-2">{{ field.label }} <span v-if="isFieldMandatory" class="text-red-500">*</span></span>
