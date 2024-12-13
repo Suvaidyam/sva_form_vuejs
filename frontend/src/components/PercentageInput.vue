@@ -5,7 +5,7 @@
       {{ parsedDescription.qlable || fieldParsedDescription.qlable }}
     </span>
     <span v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
-      class="text-sm text-gray-500  ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
+      class="text-sm text-gray-700  ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
     </span>
     <div class="flex items-center justify-between">
       <label :for="field.name" class="text-md font-medium text-gray-700 dark:text-gray-200">
