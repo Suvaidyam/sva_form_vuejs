@@ -290,7 +290,6 @@ const activeFieldSections = computed(() => {
   }
   return sections
 })
-
 const allSections = computed(() => {
   if (!docTypeMeta.value) return []
 
@@ -352,7 +351,6 @@ const isSubmitDisabled = computed(() => {
 })
 
 const getFieldComponent = (fieldtype, section) => {
-  // console.log(section, 'section');
   switch (fieldtype) {
     case 'Link': return props.isTable ? LinkTable : props.isColumn ? LinkPW : Link
     case 'Data': return Input
@@ -378,12 +376,22 @@ const isFieldVisible = (field) => {
     return false
   }
 }
-
+const isFieldMandatory = (field) => {
+  if (field.reqd) return true
+  if (!field.mandatory_depends_on) return false
+  const condition = field.mandatory_depends_on.replace('eval:', '').replace(/doc\./g, 'formData.')
+  try {
+    return new Function('formData', `return ${condition}`)(formData.value)
+  } catch (error) {
+    console.error('Error evaluating field mandatory condition:', error)
+    return false
+  }
+}
 const isTabComplete = (tabName) => {
   const tabFields = getTabFields(tabName)
   return tabFields.every(field => {
     const value = formData.value[field.fieldname]
-    return !field.reqd || (value !== null && value !== '' && (!Array.isArray(value) || value.length > 0))
+    return !isFieldMandatory(field) || (value !== null && value !== '' && (!Array.isArray(value) || value.length > 0))
   })
 }
 
