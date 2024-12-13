@@ -1,24 +1,19 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{ref_doctype}-{field}-{code}",
+ "autoname": "format:{field}",
  "creation": "2024-12-08 17:39:46.666810",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "ref_doctype",
   "field",
-  "code",
   "section_break_ikfp",
   "min",
   "column_break_mcbq",
   "max",
-  "section_break_peod",
-  "lower_limit",
-  "column_break_uwsx",
-  "upper_limit",
-  "column_break_qcpw",
-  "score"
+  "section_break_nsdr",
+  "criteria"
  ],
  "fields": [
   {
@@ -40,10 +35,6 @@
    "label": "Max"
   },
   {
-   "fieldname": "section_break_peod",
-   "fieldtype": "Section Break"
-  },
-  {
    "fieldname": "ref_doctype",
    "fieldtype": "Link",
    "label": "Ref Doctype",
@@ -58,42 +49,19 @@
    "reqd": 1
   },
   {
-   "fieldname": "upper_limit",
-   "fieldtype": "Float",
-   "label": "To",
-   "precision": "1"
+   "fieldname": "section_break_nsdr",
+   "fieldtype": "Section Break"
   },
   {
-   "fieldname": "column_break_uwsx",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "score",
-   "fieldtype": "Float",
-   "label": "Score",
-   "precision": "1",
-   "reqd": 1
-  },
-  {
-   "fieldname": "code",
-   "fieldtype": "Data",
-   "label": "Code",
-   "reqd": 1
-  },
-  {
-   "fieldname": "lower_limit",
-   "fieldtype": "Float",
-   "label": "From",
-   "precision": "1"
-  },
-  {
-   "fieldname": "column_break_qcpw",
-   "fieldtype": "Column Break"
+   "fieldname": "criteria",
+   "fieldtype": "Table",
+   "label": "Criteria",
+   "options": "Scoring Logic Child"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-09 12:05:02.875114",
+ "modified": "2024-12-13 13:56:10.120120",
  "modified_by": "Administrator",
  "module": "sva_form",
  "name": "Number field Scoring Logic",

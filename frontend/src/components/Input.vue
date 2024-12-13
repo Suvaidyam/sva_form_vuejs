@@ -317,12 +317,11 @@ const handleBlur = (event) => {
 
 const getMinMax = async () => {
   const response = await call('sva_form_vuejs.controllers.api.get_min_max_criteria', {
-    filters: { field: props.field.fieldname, ref_doctype: props.field.parent }
+    filters: { field: props.field.fieldname}
   })
   if (response) {
     minMax.value = response
   }
-  console.log(minMax.value, 'minmax')
 }
 
 onMounted(async () => {
