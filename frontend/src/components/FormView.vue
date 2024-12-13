@@ -2,11 +2,12 @@
   <div class="flex w-full h-screen  dark:bg-gray-900">
     <!-- Sidebar -->
     <aside v-if="!props.section" :class="[
-      'sticky top-0 h-full w-20 bg-gray-50 dark:bg-gray-800',
-      isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
+      'sticky top-0 h-full w-20',
+      isSidebarOpen ? 'show-sidebar' : 'hide-sidebar',
       'md:translate-x-0'
     ]">
-      <div class="flex flex-col h-full">
+      <div class="flex flex-col h-full bg-gray-50 dark:bg-gray-800 side-bar-scroll">
+        <XIcon class="block md:hidden ml-4 mt-2 cursor-pointer" @click="open_sidebar"/>
         <nav class="flex-1 px-4 py-4">
           <ul class="space-y-2">
             <li v-for="(tab, index) in tabFields" :key="tab.name">
@@ -34,7 +35,8 @@
     <Loader v-if="loading" :show="props.isDraft" />
     <!-- Main Content -->
     <main :class="[props.width?'w-full':'w-75','flex-1']" v-else>
-      <div :class="[section_hidden?'mx-auto py-8':'mx-auto px-6 py-8']">
+      <MenuIcon class="block md:hidden ml-4 cursor-pointer" @click="open_sidebar"/>
+      <div :class="[section_hidden?'mx-auto py-8':'mx-auto px-6 pb-8']">
         <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
           Assessment Not Found
         </div>
@@ -44,14 +46,14 @@
             <div class="animate-spin  rounded-full h-32 w-32 border-t-2 border-b-2 border-orange-500"></div>
           </div> -->
 
-          <form @submit.prevent="onSubmit" class="mt-16 md:mt-0">
-            <div class="space-y-6 ">
+          <form @submit.prevent="onSubmit" class=" mt-2">
+            <div class=" ">
               <template v-if="props.section">
-                <div v-for="(section, index) in allSections" :key="index" class="mb-6 ">
+                <div v-for="(section, index) in allSections" :key="index" class="mb-4">
                   <div @click="toggleSection(index)"
                   :class="[section_hidden?'hidden':'']"
-                    class="flex items-center justify-between cursor-pointer bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-2">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    class="flex items-center justify-between cursor-pointer bg-gray-100 dark:bg-gray-700 p-4 rounded-lg  mb-2">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white ">
                       {{ section.label }}
                     </h3>
                     <ChevronDownIcon
@@ -72,14 +74,15 @@
                   </div>
                 </div>
               </template>
-              <template v-else>
-                <div v-for="(section, index) in activeFieldSections" :key="section.name" class="mb-6 ">
-                  <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white mb-4 flex ">
+              <template v-else >
+                
+                <div v-for="(section, index) in activeFieldSections" :key="section.name" class="matrix-overflow1" style= "padding-top:10px" >
+                  <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white mb-4 flex " >
                     {{ section.label }}
                     <SaveStatusIcon v-if="section.label" class=" mt-2 cust" :status="status" />
                   </h3>
                   <div v-if="section.fields && section.fields.length > 0 && !section.table_matrix"
-                    :aria-labelledby="`section-${index}`" class="space-y-5   ">
+                    :aria-labelledby="`section-${index}`" class="space-y-4 mb-4">
                     <!-- {{ section }} -->
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="">
                       <component v-if="isFieldVisible(field)" :section="section.description"
@@ -625,20 +628,10 @@ onMounted(() => {
   if (Object.keys(props.initialData).length > 0) {
     formData.value = { ...props.initialData }
   }
-
-  isSidebarOpen.value = window.innerWidth >= 768
-
-  window.addEventListener('resize', () => {
-    isSidebarOpen.value = window.innerWidth >= 768
-  })
-
-  document.addEventListener('click', (event) => {
-    if (isSidebarOpen.value && window.innerWidth < 768 && !event.target.closest('aside') && !event.target.closest('button')) {
-      isSidebarOpen.value = false
-    }
-  })
 })
-
+const open_sidebar = () => {
+  isSidebarOpen.value = !isSidebarOpen.value
+}
 watch(() => props.initialData, (newVal) => {
   formData.value = { ...newVal }
   initializeFormData()
@@ -654,12 +647,15 @@ watch(formData, () => {
 
 <style scoped>
 .w-20 {
-  width: 15% !important;
-  min-width: 15% !important;
+  width: 240px !important;
+  min-width: 240px !important;
+  /* padding-top: 64px !important; */
 }
 .w-75 {
   width: 75% !important;
+  /* padding-left: 240px !important; */
   min-width: 75% !important;
+  
 }
 
 .custom {
@@ -679,11 +675,13 @@ watch(formData, () => {
 
 aside {
   position: sticky;
-  top: 0;
+  top: 2px;
   height: 100vh;
-  overflow-y: auto;
 }
+.side-bar-scroll{
+  overflow-y: auto;
 
+}
 main::-webkit-scrollbar,
 aside::-webkit-scrollbar {
   display: none;
@@ -699,11 +697,41 @@ aside {
    overflow-x: scroll !important; /* Hide horizontal scrollbar */
  
 }
+@media screen and (max-width: 768px) {
+  aside {
+  position: fixed;
+  top: 0;
+  height: 100vh;
+}
+  .hide-sidebar {
+    transform: translateX(-100%) !important;
+    transition: transform 0.3s ease !important;
+    z-index: 1000 !important; 
+  }
+  .show-sidebar {
+    transform: translateX(0) !important;
+    z-index: 1000 !important;
+    transition: transform 0.3s ease !important; 
+  }
+  .w-75{
+    padding-left: 0px !important;
+    overflow-x: auto !important;
+  }
+  .w-20{
+    padding-top: 64px !important;
+  }
+}
 .cust {
   margin-left: 20px !important;
 }
 .matrix-overflow{
   overflow-x: scroll !important;
   overflow-y: hidden !important;
+}
+.matrix-overflow1{
+  overflow-x: auto !important;
+  overflow-y: hidden ;
+ 
+  /* overflow-y: auto !important; */
 }
 </style>
