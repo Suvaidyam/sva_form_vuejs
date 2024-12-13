@@ -1,8 +1,8 @@
 // Copyright (c) 2024, Rahul Sah and contributors
 // For license information, please see license.txt
 
-frappe.ui.form.on("Field Options", {
-    async refresh(frm) {
+frappe.ui.form.on("Number field Scoring Logic", {
+	async refresh(frm) {
  
         //    console.log(frm, "frm");
         if (frm.doc.ref_doctype) {
@@ -12,12 +12,11 @@ frappe.ui.form.on("Field Options", {
                     doctype: frm.doc.ref_doctype
                 },
             })
-            let options = data.message.fields?.filter(f=> ['Link','Table MultiSelect'].includes(f.fieldtype))?.map((field) => { return {value:field.fieldname, label:field.label }});
+            let options = data.message.fields?.filter(f=> ['Float', 'Int', 'Percent'].includes(f.fieldtype))?.map((field) => { return {value:field.fieldname, label:field.label }});
             frm.fields_dict.field.set_data(options); 
         }
- 
- 
     },
+
     ref_doctype: async function (frm) {
         if (frm.doc.ref_doctype) {
             let data = await frappe.call({
@@ -26,7 +25,7 @@ frappe.ui.form.on("Field Options", {
                     doctype: frm.doc.ref_doctype
                 },
             })
-            let options = data.message.fields?.filter(f=> ['Link', 'Table MultiSelect'].includes(f.fieldtype))?.map((field) => { return {value:field.fieldname, label:field.label }});
+            let options = data.message.fields?.filter(f=> ['Float', 'Int', 'Percent'].includes(f.fieldtype))?.map((field) => { return {value:field.fieldname, label:field.label }});
             
             frm.fields_dict.field.set_data(options);
         }
