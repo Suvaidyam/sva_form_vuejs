@@ -1,11 +1,11 @@
 <template>
   <div v-if="!field.hidden" class="flex flex-col ">
 
-    <span v-if="parsedDescription?.qlable || fieldParsedDescription?.qlable"
+    <span v-if="index < 1 && parsedDescription?.qlable || fieldParsedDescription?.qlable"
       class="text-md font-medium  text-gray-700 dark:text-gray-200  block mb-1.5 ">
       {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
     </span>
-    <span v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
+    <span v-if="index < 1 && parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
       class="text-sm text-gray-700   ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
     </span>
 
@@ -17,36 +17,29 @@
         {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
       <div v-if="parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
-  <Popover v-slot="{ open }" class="relative">
-    <PopoverButton class="focus:outline-none">
-      <InfoIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
-    </PopoverButton>
-    <transition
-      enter-active-class="transition duration-200 ease-out"
-      enter-from-class="opacity-0 translate-y-1"
-      enter-to-class="opacity-100 translate-y-0"
-      leave-active-class="transition duration-150 ease-in"
-      leave-from-class="opacity-100 translate-y-0"
-      leave-to-class="opacity-0 translate-y-1"
-    >
-      <PopoverPanel
-        class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl"
-      >
-        <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-          <div class="p-4 bg-white dark:bg-gray-800">
-            <p class="text-sm text-gray-700 dark:text-gray-300">
-              {{ parsedDescription?.info || fieldParsedDescription?.info }}
-            </p>
-          </div>
-        </div>
-      </PopoverPanel>
-    </transition>
-  </Popover>
-</div>
+        <Popover v-slot="{ open }" class="relative">
+          <PopoverButton class="focus:outline-none">
+            <InfoIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
+          </PopoverButton>
+          <transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-1"
+            enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
+            leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
+            <PopoverPanel class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl">
+              <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                <div class="p-4 bg-white dark:bg-gray-800">
+                  <p class="text-sm text-gray-700 dark:text-gray-300">
+                    {{ parsedDescription?.info || fieldParsedDescription?.info }}
+                  </p>
+                </div>
+              </div>
+            </PopoverPanel>
+          </transition>
+        </Popover>
+      </div>
 
     </div>
-    <span v-if="parsedDescription?.desc || fieldParsedDescription?.desc" class="text-sm text-gray-500  ">
-      {{ parsedDescription?.desc || fieldParsedDescription?.desc }}
+    <span v-if="  fieldParsedDescription?.desc" class="text-sm text-gray-500  ">
+      {{  fieldParsedDescription?.desc }}
     </span>
     <div class="relative">
       <input :id="field.name" :value="displayValue" @input="handleInput" @focusout="handleBlur" :type="inputType"

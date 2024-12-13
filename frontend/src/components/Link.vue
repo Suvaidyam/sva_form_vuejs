@@ -1,23 +1,27 @@
 <template>
   <div v-if="!field.hidden" class="w-full">
-    <!-- <div class="flex items-center gap-2">
-      <span v-if="index < 1 && !matrix" class="text-md font-medium text-gray-700 dark:text-gray-200 mb-3 block">
-        {{ parsedDescription.qlable || fieldParsedDescription.qlable }}
-      </span>
-      <div v-if="index < 1 && (parsedDescription.info || fieldParsedDescription.info)" class="relative">
-        <Popover v-slot="{ open }" class="relative z-50">
-          <PopoverButton @mouseenter="open = true" @mouseleave="open = false" class="focus:outline-none">
-            <InfoIcon class="w-4 h-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
+    <div v-if="matrix" class="flex items-center justify-between mb-2">
+      <div>
+        <span v-if="index <1 && parsedDescription.qlable || fieldParsedDescription.qlable" class="text-md font-medium text-gray-700 dark:text-gray-200 block">
+          {{ parsedDescription.qlable || fieldParsedDescription.qlable }}
+        </span>
+        <p v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo" class="text-sm text-gray-700">
+          {{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
+        </p>
+      </div>
+      <div v-if="index <1 && parsedDescription.info || fieldParsedDescription.info" class="relative">
+        <Popover v-slot="{ open }" class="relative">
+          <PopoverButton class="focus:outline-none">
+            <InfoIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
           </PopoverButton>
           <transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-1"
             enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
             leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
-            <PopoverPanel class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-1/2 left-1/2 sm:px-0 lg:max-w-3xl"
-              @mouseenter="open = true" @mouseleave="open = false">
+            <PopoverPanel class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl">
               <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                 <div class="p-4 bg-white dark:bg-gray-800">
                   <p class="text-sm text-gray-700 dark:text-gray-300">
-                    {{ parsedDescription.info || fieldParsedDescription.info }}
+                    {{ parsedDescription?.info || fieldParsedDescription?.info }}
                   </p>
                 </div>
               </div>
@@ -25,20 +29,22 @@
           </transition>
         </Popover>
       </div>
-    </div> -->
+    </div>
 
-    <p v-if="index < 1" class="text-md font-medium text-gray-700 dark:text-gray-200 mb-1.5 block">
-      {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
-    </p>
-    <p v-if="index < 1 && (parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo) && !isCard"
-      class="text-sm text-gray-700">
-      {{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
-    </p>
-    <p v-if="index < 1 && matrix && (parsedDescription?.desc || fieldParsedDescription?.desc)"
-      class="text-sm text-gray-500 mb-2">
-      {{ parsedDescriptioxn?.desc || fieldParsedDescription?.desc }}
-    </p>
-
+    <div v-if="!matrix">
+      <span v-if="index < 1" class="text-md font-medium text-gray-700 dark:text-gray-200 block">
+        {{ parsedDescription.qlable }}
+      </span>
+      <p v-if="index < 1 && parsedDescription?.cenrieo" class="text-sm text-gray-700">
+        {{ parsedDescription?.cenrieo }}
+      </p>
+      <p v-if="fieldParsedDescription?.qlable" class="text-md font-medium text-gray-700 dark:text-gray-200 mb-1.5 block">
+        {{ fieldParsedDescription?.qlable }}
+      </p>
+      <p v-if="fieldParsedDescription?.cenrieo" class="text-sm text-gray-700">
+        {{ fieldParsedDescription?.cenrieo }}
+      </p>
+    </div>
 
     <div class="w-96 min-w-96">
       <Matrix1 v-if="table_matrix && !matrix" :matrix_code="matrix_code" :field="field" :modelValue="modelValue"
@@ -50,60 +56,43 @@
       :index="index" />
 
     <template v-else>
-      <div class="flex items-center  " :class="isCard ? 'py-2 gap-2' : 'justify-between'">
-        <p v-if="isCard"
-          class="w-7 h-7 min-w-7 min-h-7 text-sm flex items-center justify-center rounded-full bg-gray-700 text-white">
-          {{ index + 1 }}
-        </p>
+      <div class="flex items-center justify-between">
         <label :for="`${field.name}-${visibleOptions[0]?.name}`"
-          :class="isCard ? 'text-sm' : 'text-md font-medium text-gray-900 dark:text-gray-200'"
-          class="block font-medium text-gray-900 dark:text-gray-200 ">
-          {{ field.label }}{{ isCard ? fieldParsedDescription.desc : '' }}
+          class="block text-md font-medium text-gray-900 dark:text-gray-200">
+          {{ field.label }}
           <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
         </label>
-       <div v-if="parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
-  <Popover v-slot="{ open }" class="relative">
-    <PopoverButton class="focus:outline-none">
-      <InfoIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
-    </PopoverButton>
-    <transition
-      enter-active-class="transition duration-200 ease-out"
-      enter-from-class="opacity-0 translate-y-1"
-      enter-to-class="opacity-100 translate-y-0"
-      leave-active-class="transition duration-150 ease-in"
-      leave-from-class="opacity-100 translate-y-0"
-      leave-to-class="opacity-0 translate-y-1"
-    >
-      <PopoverPanel
-        class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl"
-      >
-        <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-          <div class="p-4 bg-white dark:bg-gray-800">
-            <p class="text-sm text-gray-700 dark:text-gray-300">
-              {{ parsedDescription?.info || fieldParsedDescription?.info }}
-            </p>
-          </div>
+        <div v-if=" parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
+          <Popover v-slot="{ open }" class="relative">
+            <PopoverButton class="focus:outline-none">
+              <InfoIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
+            </PopoverButton>
+            <transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-1"
+              enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
+              leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
+              <PopoverPanel
+                class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl">
+                <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                  <div class="p-4 bg-white dark:bg-gray-800">
+                    <p class="text-sm text-gray-700 dark:text-gray-300">
+                      {{ parsedDescription?.info || fieldParsedDescription?.info }}
+                    </p>
+                  </div>
+                </div>
+              </PopoverPanel>
+            </transition>
+          </Popover>
         </div>
-      </PopoverPanel>
-    </transition>
-  </Popover>
-</div>
-
       </div>
-      <p v-if="index < 1 && (parsedDescription?.desc || fieldParsedDescription?.desc)"
-        class="text-sm text-gray-500 mb-2">
-        {{ parsedDescriptioxn?.desc || fieldParsedDescription?.desc }}
+      <p v-if="(fieldParsedDescription?.desc)" class="text-sm text-gray-500 mb-2">
+        {{ fieldParsedDescription?.desc }}
       </p>
       <DropdownOptions v-if="dropDownOptions" :field="field" :modelValue="modelValue" @update:modelValue="updateValue"
         :visibleOptions="visibleOptions" :isFieldMandatory="isFieldMandatory(field)" />
 
-      <div v-else :class="[
-        isCard ? 'px-6' : '',
-        isRow ? 'flex flex-col md:flex-row gap-3 w-full' : 'grid  gap-2 mt-2 custom'
-      ]">
+      <div v-else class="grid gap-2 mt-2 custom">
         <label v-for="option in visibleOptions" :key="option.name" :for="`${field.name}-${option.name}`"
-          :class="[isCard ? 'border p-2 rounded-md shadow-sm' : ' ml-5', isRow ? 'w-full' : '']"
-          class="flex items-start text-sm cursor-pointer">
+          class="flex items-start text-sm cursor-pointer ml-5">
           <div class="flex-shrink-0 w-5 h-5 mr-2 pt-1">
             <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
               :checked="modelValue === option.name" @change="updateValue(option.name)"
@@ -112,7 +101,6 @@
           </div>
           <span class="flex-grow">{{ option.label }}</span>
         </label>
-
       </div>
     </template>
 
@@ -148,16 +136,6 @@ const props = defineProps({
     required: false,
     default: false
   },
-  isCard: {
-    type: Boolean,
-    required: false,
-    default: false
-  },
-  isRow: {
-    type: Boolean,
-    required: false,
-    default: false
-  },
   index: {
     type: Number,
     required: false,
@@ -186,7 +164,6 @@ const props = defineProps({
     required: false,
     default: false
   },
-
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -298,7 +275,7 @@ const validateInput = (value) => {
 
 const get_submitted_assessments_for_sector = async () => {
   const sector = await call('british_asian_trust.my_client.get_submitted_assessments')
-  if(sector.length > 0){
+  if (sector.length > 0) {
     selectedProgramArea.value = sector[0].selected_program_area
   }
 }
@@ -308,14 +285,12 @@ const shouldDisableOption = (option) => {
 };
 
 const updateValue = (value) => {
-    emit('update:modelValue', value)
-    validateInput(value)
-    if (props.onfieldChange) {
-      saveAsDraft({ [props.field.fieldname]: value })
-    }
+  emit('update:modelValue', value)
+  validateInput(value)
+  if (props.onfieldChange) {
+    saveAsDraft({ [props.field.fieldname]: value })
+  }
 }
-
-
 
 watch(() => props.field, getOptions, { immediate: true })
 
@@ -331,10 +306,12 @@ onMounted(async () => {
   max-width: 800px !important;
   min-width: 500px !important;
 }
-.custom{
-  margin-left:20px !important;
+
+.custom {
+  margin-left: 20px !important;
 }
-.pt-1{
+
+.pt-1 {
   padding-top: 3px;
 }
 </style>
