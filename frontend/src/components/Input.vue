@@ -240,7 +240,7 @@ const handleBlur = (event) => {
   let value = event.target.value;
 
   if (props.field.fieldname === 'organisation_website') {
-    if (!validateURL(value)) {
+    if (value && !validateURL(value)) {
       error.value = 'Please enter a valid URL.';
       emit('update:modelValue', '');
       return;
