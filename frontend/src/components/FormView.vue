@@ -480,7 +480,7 @@ const getMeta = async () => {
     })
     if (res) {
       docTypeMeta.value = res
-      activeTab.value = tabFields.value[0]?.name || ''
+      activeTab.value = tabFields.value[0]?.name || '82am78mpee'
       openSections.value = new Array(allSections.value.length).fill(true)
       initializeFormData()
       initializeTabCompletionStatus()
