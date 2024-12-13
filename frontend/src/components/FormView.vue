@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full h-screen bg-white dark:bg-gray-900">
+  <div class="flex w-full h-screen  dark:bg-gray-900">
     <!-- Sidebar -->
     <aside v-if="!props.section" :class="[
       'sticky top-0 h-full w-20 bg-gray-50 dark:bg-gray-800',
@@ -79,7 +79,7 @@
                     <SaveStatusIcon v-if="section.label" class=" mt-2 cust" :status="status" />
                   </h3>
                   <div v-if="section.fields && section.fields.length > 0 && !section.table_matrix"
-                    :aria-labelledby="`section-${index}`" class="space-y-5">
+                    :aria-labelledby="`section-${index}`" class="space-y-5   ">
                     <!-- {{ section }} -->
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="">
                       <component v-if="isFieldVisible(field)" :section="section.description"
