@@ -62,7 +62,7 @@
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.name" class="mb-4">
                       <component :section="section.description" v-if="isFieldVisible(field)"
                         :is="getFieldComponent(field.fieldtype, section)" :field="field" :isCard="props.isCard"
-                        :isColumn="props.isColumn" :matrix="section.is_matrix" :index="fieldIndex"
+                        :isColumn="props.isColumn" :matrix="section.is_matrix" :index="field.qno"
                         v-model="formData[field.fieldname]" :onfieldChange="props.onfieldChange" :isRow="props.isRow"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
                         :class="{ 'border-red-500': showErrors && fieldErrors[field.fieldname] }" />
@@ -297,7 +297,7 @@ const activeFieldSections = computed(() => {
 })
 const allSections = computed(() => {
   if (!docTypeMeta.value) return []
-
+  let qno = 0;
   const sections = []
   let currentSection = null
   let mismatchedDependsOn = []
@@ -323,7 +323,8 @@ const allSections = computed(() => {
           mislineousDependsOn.push(field.label)
         }
       }
-
+      field['qno'] = qno;
+      qno++;
       currentSection.fields.push(field)
     }
   })

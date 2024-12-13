@@ -3,7 +3,7 @@
     <div  class="flex items-center gap-2 pb-4 pt-2">
       <p 
         class="w-7 min-w-7 min-h-7 h-7 rounded-full bg-gray-700 text-white flex justify-center items-center text-sm">
-        {{ 1 }}
+        {{ index+1 }}
       </p>
       <label :class="!props.isCard ? 'text-md' : 'text-sm'"
         class="font-medium text-black dark:text-gray-200 break-words">
@@ -33,6 +33,7 @@ import { ref, watch, inject, computed } from 'vue'
 
 const props = defineProps({
   field: { type: Object, required: true },
+  index: { type: Number, required: true },
   isCard: { type: Boolean, default: false },
   modelValue: { type: Array, default: () => [] },
   onfieldChange: { type: Boolean, default: false },
