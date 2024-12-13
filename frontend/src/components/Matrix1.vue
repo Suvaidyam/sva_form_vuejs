@@ -34,7 +34,7 @@
         </div>
   
         <p v-if="index < 1 && (parsedDescription.cenrieo || fieldParsedDescription.cenrieo)"
-            class="text-sm text-gray-500">
+            class="text-sm text-gray-700">
             {{ parsedDescription.cenrieo || fieldParsedDescription.cenrieo }}
         </p>
         <p v-if="index < 1 && (parsedDescription.desc || fieldParsedDescription.desc)"

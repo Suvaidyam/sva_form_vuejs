@@ -31,7 +31,7 @@
       {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
     </p>
     <p v-if="index < 1 && (parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo) && !isCard"
-      class="text-sm text-gray-500">
+      class="text-sm text-gray-700">
       {{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
     </p>
     <p v-if="index < 1 && matrix && (parsedDescription?.desc || fieldParsedDescription?.desc)"
