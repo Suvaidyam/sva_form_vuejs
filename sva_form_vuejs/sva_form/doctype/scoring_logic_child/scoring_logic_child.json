@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "hash",
  "creation": "2024-12-13 11:13:01.881612",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -59,6 +60,7 @@
  "modified_by": "Administrator",
  "module": "sva_form",
  "name": "Scoring Logic Child",
+ "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [],
  "sort_field": "creation",

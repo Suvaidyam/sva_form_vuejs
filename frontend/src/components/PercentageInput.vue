@@ -38,8 +38,9 @@
       {{ fieldParsedDescription.desc }}
     </span>
     <div class="relative flex items-center">
-      <input :id="field.name" :value="modelValue" @input="handleInput" @change="handleChange" type="range" min="0"
-        max="100" :disabled="field.read_only" :required="isFieldMandatory(field)" :class="[
+      <input :id="field.name" class="custom-input-type-range" :value="modelValue ?? 0" @input="handleInput"
+        @change="handleChange" type="range" min="0" max="100" :disabled="field.read_only"
+        :required="isFieldMandatory(field)" :class="[
           'w-full h-2 bg-gray-200 rounded-lg  cursor-pointer dark:bg-gray-700',
           { 'opacity-50 cursor-not-allowed': field.read_only }
         ]" />
@@ -52,7 +53,7 @@
 </template>
 
 <script setup>
-import { ref, inject, computed } from 'vue'
+import { ref, inject, computed, onMounted } from 'vue'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 import { InfoIcon } from 'lucide-vue-next'
 
@@ -141,12 +142,12 @@ const isFieldMandatory = (field) => {
 
 const handleInput = (event) => {
   const value = parseInt(event.target.value, 10)
-  emit('update:modelValue', value)
   validateInput(value)
 }
 
 const handleChange = (event) => {
   const value = parseInt(event.target.value, 10)
+  emit('update:modelValue', value)
   validateInput(value)
   if (props.onfieldChange && !error.value) {
     saveAsDraft({ [props.field.fieldname]: value })
@@ -159,6 +160,21 @@ const validateInput = (value) => {
     error.value = `${props.field.label} is required.`
   }
 }
+onMounted(() => {
+  const rangeInputs = document.querySelectorAll('.custom-input-type-range');
+  rangeInputs.forEach(rangeInput => {
+    rangeInput.addEventListener('mousedown', (event) => {
+      const rect = rangeInput.getBoundingClientRect();
+      const clickX = event.clientX - rect.left;
+      const thumbWidth = 20; 
+      const isOnThumb = Math.abs(clickX - rangeInput.offsetWidth * (rangeInput.value - rangeInput.min) / (rangeInput.max - rangeInput.min)) < thumbWidth;
+
+      if (!isOnThumb) {
+        event.preventDefault();
+      }
+    });
+  });
+});
 </script>
 
 <style scoped>

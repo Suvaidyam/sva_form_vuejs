@@ -7,8 +7,8 @@
       'md:translate-x-0'
     ]">
       <div class="flex flex-col h-full bg-gray-50 dark:bg-gray-800 side-bar-scroll">
-        <XIcon class="block md:hidden ml-4 mt-2 cursor-pointer" @click="open_sidebar" />
-        <nav class="flex-1 px-4 py-4">
+        <nav class="flex-1 px-4 py-4 relative">
+          <XIcon class="block fixed right-0 top-11 md:hidden mr-2 cursor-pointer" @click="open_sidebar" />
           <ul class="space-y-2">
             <li v-for="(tab, index) in tabFields" :key="tab.name">
               <button @click="setActiveTab(tab.name)" :disabled="index > 0 && !allTabsUnlocked" :class="[
@@ -76,7 +76,7 @@
               <template v-else>
 
                 <div v-for="(section, index) in activeFieldSections" :key="section.name" :class="section.is_matrix ||section.is_multi_matrix  ? 'matrix-overflow1' : ''">
-                  <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white mb-4 flex "   :class="section.label? 'padding' : ''">
+                  <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white  flex "   :class="section.label? 'padding' : 'mb-4'">
                     {{ section.label }}
                     <SaveStatusIcon v-if="section.label" class=" mt-2 cust" :status="status" />
                   </h3>
@@ -441,11 +441,11 @@ const handleFieldUpdate = (fieldName, value) => {
       const response = await call('sva_form_vuejs.controllers.api.get_min_max_criteria', {
         filters: { field: fieldMeta.fieldname }
       })
-      if (sum <= (response?.max || 100) && sum >= (response?.min || 0)) {
+      if (sum <= (response?.max || 10000000000000) && sum >= (response?.min || 0)) {
         formData.value[fieldMeta.fieldname] = sum;
         saveAsDraft({ [fieldMeta.fieldname]: sum })
       } else {
-        props.toast.error(`Sum of min ${(response?.min || 0)}, max ${(response?.max || 100)}`, {
+        props.toast.error(`The last input will not be accepted if the total of all options exceeds 100%.`, {
           timeout: 5000,
           closeOnClick: true,
         })
@@ -744,7 +744,9 @@ aside {
     padding-left: 0px !important;
     overflow-x: auto !important;
   }
-
+  .top-11{
+    top: 60px !important;
+  }
   .w-20 {
     padding-top: 64px !important;
   }
@@ -765,6 +767,7 @@ aside {
 }
 .padding{
   padding-top:30px !important;
+  padding-bottom:4px !important;
 }
 
 .matrix-overflow1 {
