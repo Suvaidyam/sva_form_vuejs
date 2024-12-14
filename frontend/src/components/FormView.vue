@@ -439,16 +439,16 @@ const handleFieldUpdate = (fieldName, value) => {
       console.error('Error evaluating formula:', formula, error);
     }
     const response = await call('sva_form_vuejs.controllers.api.get_min_max_criteria', {
-      filters: { field: fieldMeta.fieldname, ref_doctype: 'Assessment' }
+      filters: { field: fieldMeta.fieldname }
     })
     if (sum <= (response?.max || 100) && sum >= (response?.min || 0)) {
       formData.value[fieldMeta.fieldname] = sum;
       saveAsDraft({ [fieldMeta.fieldname]: sum })
     } else {
-      props.toast.error(`Sum of min ${(response?.min || 0)}, max ${(response?.max || 100)}`, {
-        timeout: 5000,
-        closeOnClick: true,
-      })
+      // props.toast.error(`Sum of min ${(response?.min || 0)}, max ${(response?.max || 100)}`, {
+      //   timeout: 5000,
+      //   closeOnClick: true,
+      // })
     }
   })
 }
