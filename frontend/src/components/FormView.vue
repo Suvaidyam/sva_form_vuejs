@@ -7,8 +7,8 @@
       'md:translate-x-0'
     ]">
       <div class="flex flex-col h-full bg-gray-50 dark:bg-gray-800 side-bar-scroll">
-        <XIcon class="block md:hidden ml-4 mt-2 cursor-pointer" @click="open_sidebar" />
-        <nav class="flex-1 px-4 py-4">
+        <nav class="flex-1 px-4 py-4 relative">
+          <XIcon class="block fixed right-0 top-11 md:hidden mr-2 cursor-pointer" @click="open_sidebar" />
           <ul class="space-y-2">
             <li v-for="(tab, index) in tabFields" :key="tab.name">
               <button @click="setActiveTab(tab.name)" :disabled="index > 0 && !allTabsUnlocked" :class="[
@@ -744,7 +744,9 @@ aside {
     padding-left: 0px !important;
     overflow-x: auto !important;
   }
-
+  .top-11{
+    top: 60px !important;
+  }
   .w-20 {
     padding-top: 64px !important;
   }
