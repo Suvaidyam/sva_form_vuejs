@@ -55,11 +55,16 @@ def add_criteria(data):
             new_doc.min = data.get('min')
             new_doc.max = data.get('max')
             new_doc.criteria = []
+            # print(data.get('criteria'),'criteria==========================================')
             if data.get('criteria') and len(data.get('criteria')):
                 for item in data.get('criteria'):
-                    new_doc.append('criteria', item)
-            new_doc.save(ignore_permissions=True
-            )
+                    new_doc.append('criteria', {
+                        'code': item.get('code'),
+                        'lower_limit': item.get('lower_limit'),
+                        'upper_limit': item.get('upper_limit'),
+                        'score': item.get('score')
+                    })
+            new_doc.save(ignore_permissions=True)
             return frappe.msgprint('Criteria added successfully')
         else:
             new_doc = frappe.new_doc('Number field Scoring Logic')
