@@ -141,12 +141,12 @@ const isFieldMandatory = (field) => {
 
 const handleInput = (event) => {
   const value = parseInt(event.target.value, 10)
-  emit('update:modelValue', value)
   validateInput(value)
 }
 
-const handleChange = (event) => {
+const handleChange = (event) => { 
   const value = parseInt(event.target.value, 10)
+  emit('update:modelValue', value)
   validateInput(value)
   if (props.onfieldChange && !error.value) {
     saveAsDraft({ [props.field.fieldname]: value })
