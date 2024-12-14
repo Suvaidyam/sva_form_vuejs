@@ -89,4 +89,12 @@ const getOptions = async () => {
 }
 
 watch(() => props.field, getOptions, { immediate: true })
+document.addEventListener('focusin', (e) => {
+  if (e.target.tagName === 'INPUT' && e.target.validationMessage) {
+    const rect = e.target.getBoundingClientRect();
+    if (rect.top < 215) { 
+      window.scrollBy(0, rect.top -215);
+    }
+  }
+});
 </script>

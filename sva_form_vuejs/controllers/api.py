@@ -70,8 +70,12 @@ def add_criteria(data):
 
 @frappe.whitelist()
 def get_min_max_criteria(filters):
-    data= frappe.get_doc('Number field Scoring Logic',filters)
-    if data.max == 0:
-        return {'min':data.min}
+    exits = frappe.get_list('Number field Scoring Logic',filters=filters,fields=['field'],ignore_permissions=True)
+    if len(exits) == 0:
+        return {'min':0}
     else:
-        return {'min':data.min,'max':data.max}
+        data= frappe.get_doc('Number field Scoring Logic',filters)
+        if data.max == 0:
+            return {'min':data.min}
+        else:
+            return {'min':data.min,'max':data.max}
