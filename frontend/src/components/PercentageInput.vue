@@ -38,7 +38,7 @@
       {{ fieldParsedDescription.desc }}
     </span>
     <div class="relative flex items-center">
-      <input :id="field.name" class="custom-input-type-range" :value="modelValue" @input="handleInput"
+      <input :id="field.name" class="custom-input-type-range" :value="modelValue ?? 0" @input="handleInput"
         @change="handleChange" type="range" min="0" max="100" :disabled="field.read_only"
         :required="isFieldMandatory(field)" :class="[
           'w-full h-2 bg-gray-200 rounded-lg  cursor-pointer dark:bg-gray-700',
