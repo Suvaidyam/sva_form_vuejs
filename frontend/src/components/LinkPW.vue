@@ -218,6 +218,15 @@ watch(() => props.modelValue, (newValue) => {
 onMounted(() => {
   getOptions()
 })
+document.addEventListener('focusin', (e) => {
+  if (e.target.tagName === 'INPUT' && e.target.validationMessage) {
+    const rect = e.target.getBoundingClientRect();
+    if (rect.top < 150) { 
+      window.scrollBy(0, rect.top - 150);
+    }
+  }
+});
+
 </script>
 
 <style scoped>

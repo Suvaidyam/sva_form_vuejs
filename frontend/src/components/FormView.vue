@@ -35,8 +35,8 @@
     <Loader v-if="loading" :show="props.isDraft" />
     <!-- Main Content -->
     <main :class="[props.width ? 'w-full' : 'w-75', 'flex-1']" v-else>
-      <MenuIcon class="block md:hidden ml-4 cursor-pointer" @click="open_sidebar" />
-      <div :class="[section_hidden ? 'mx-auto py-8' : 'mx-auto px-6 pb-8']">
+      <MenuIcon v-if="!props.isCard" class="block md:hidden ml-4 cursor-pointer" @click="open_sidebar" />
+      <div :class="[section_hidden ? 'mx-auto pb-8' : 'mx-auto px-6 pb-8']">
         <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
           Assessment Not Found
         </div>
@@ -319,7 +319,7 @@ const allSections = computed(() => {
         if ((field.mandatory_depends_on && field.mandatory_depends_on != field.depends_on)) {
           mismatchedDependsOn.push(field.label)
         }
-        if (field.reqd && field.depends_on){
+        if (field.reqd && field.depends_on) {
           mislineousDependsOn.push(field.label)
         }
       }
@@ -416,41 +416,43 @@ const getTabFields = (tabName) => {
 }
 
 const handleFieldUpdate = (fieldName, value) => {
+  let field = docTypeMeta.value.fields.find(f => f.fieldname === fieldName)
+
   formData.value[fieldName] = value
   if (showErrors.value) {
     validateField(fieldName)
   }
   // auto calculate
-  let intField = docTypeMeta.value.fields.filter((e) => ['Int', 'Percent', 'Float'].includes(e.fieldtype));
-  let auto_cal_field = intField.filter((e) => 'auto_calculate' in e);
+  if (['Int', 'Percent', 'Float'].includes(field.fieldtype)) {
+    let auto_cal_field = docTypeMeta.value.fields.filter((e) => 'auto_calculate' in e && e.auto_calculate.includes(fieldName));
+    auto_cal_field.forEach(async (fieldMeta) => {
 
-  auto_cal_field.forEach(async (fieldMeta) => {
+      let formula = fieldMeta.auto_calculate.match(/eval:\(([^)]+)\)/)?.[1];
+      let evaluatedFormula = formula.replace(/\b\w+\b/g, (match) => {
+        return formData.value[match] || 0;
+      });
 
-    let formula = fieldMeta.auto_calculate.match(/eval:\(([^)]+)\)/)?.[1];
-    let evaluatedFormula = formula.replace(/\b\w+\b/g, (match) => {
-      return formData.value[match] || 0;
-    });
-
-    let sum;
-    try {
-      sum = eval(evaluatedFormula);
-    } catch (error) {
-      sum = 0;
-      console.error('Error evaluating formula:', formula, error);
-    }
-    const response = await call('sva_form_vuejs.controllers.api.get_min_max_criteria', {
-      filters: { field: fieldMeta.fieldname }
+      let sum;
+      try {
+        sum = eval(evaluatedFormula);
+      } catch (error) {
+        sum = 0;
+        console.error('Error evaluating formula:', formula, error);
+      }
+      const response = await call('sva_form_vuejs.controllers.api.get_min_max_criteria', {
+        filters: { field: fieldMeta.fieldname }
+      })
+      if (sum <= (response?.max || 100) && sum >= (response?.min || 0)) {
+        formData.value[fieldMeta.fieldname] = sum;
+        saveAsDraft({ [fieldMeta.fieldname]: sum })
+      } else {
+        props.toast.error(`Sum of min ${(response?.min || 0)}, max ${(response?.max || 100)}`, {
+          timeout: 5000,
+          closeOnClick: true,
+        })
+      }
     })
-    if (sum <= (response?.max || 100) && sum >= (response?.min || 0)) {
-      formData.value[fieldMeta.fieldname] = sum;
-      saveAsDraft({ [fieldMeta.fieldname]: sum })
-    } else {
-      // props.toast.error(`Sum of min ${(response?.min || 0)}, max ${(response?.max || 100)}`, {
-      //   timeout: 5000,
-      //   closeOnClick: true,
-      // })
-    }
-  })
+  }
 }
 
 const validateField = (fieldName) => {
