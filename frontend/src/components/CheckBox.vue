@@ -56,7 +56,7 @@
               :disabled="isOptionDisabled(option) || field.read_only" :required="field.reqd && modelValue.length === 0"
               class="h-4 mt-1 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
             <label v-if="isOptionVisible(option)" :for="`${field.name}-${option.name}`"
-              class="ml-2 block text-sm text-gray-700 dark:text-gray-200 break-words">
+              class="ml-2 block text-sm  break-words">
               <span v-for="(line, index) in option.labels" :key="index" class="block">
                 {{ line }}
               </span>
