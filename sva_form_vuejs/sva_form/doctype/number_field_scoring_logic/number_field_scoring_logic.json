@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "format:{field}",
  "creation": "2024-12-08 17:39:46.666810",
@@ -61,7 +62,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-13 13:56:10.120120",
+ "modified": "2024-12-14 08:11:00.901347",
  "modified_by": "Administrator",
  "module": "sva_form",
  "name": "Number field Scoring Logic",
