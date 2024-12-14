@@ -76,7 +76,7 @@
               <template v-else>
 
                 <div v-for="(section, index) in activeFieldSections" :key="section.name" :class="section.is_matrix ||section.is_multi_matrix  ? 'matrix-overflow1' : ''">
-                  <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white mb-4 flex ">
+                  <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white mb-4 flex "   :class="section.label? 'padding' : ''">
                     {{ section.label }}
                     <SaveStatusIcon v-if="section.label" class=" mt-2 cust" :status="status" />
                   </h3>
@@ -762,6 +762,9 @@ aside {
 .matrix-overflow {
   overflow-x: scroll !important;
   overflow-y: hidden !important;
+}
+.padding{
+  padding-top:30px !important;
 }
 
 .matrix-overflow1 {
