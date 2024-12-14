@@ -41,7 +41,7 @@
   </Popover>
 </div>
     </div>
-    <span v-if="parsedDescription?.desc || fieldParsedDescription?.desc" class="text-sm text-gray-500  ">
+    <span v-if="parsedDescription?.desc || fieldParsedDescription?.desc" class="text-sm text-gray-700   ">
       {{ parsedDescription?.desc || fieldParsedDescription?.desc }}
     </span>
 

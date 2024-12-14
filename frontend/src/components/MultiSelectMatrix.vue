@@ -8,7 +8,7 @@
         {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
       </span>
       <span v-if="index < 1 && parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo"
-        class="text-sm text-gray-700 break-words">
+        class="text-sm text-gray-700  break-words">
         {{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
       </span>
 
@@ -37,7 +37,7 @@
       </div>
 
       <span v-if=" fieldParsedDescription.desc"
-        class="text-sm text-gray-500 mb-2 break-words">
+        class="text-sm text-gray-700 mb-2 break-words">
         {{  fieldParsedDescription?.desc }}
       </span>
 
@@ -47,7 +47,7 @@
             <div class="grid gap-x-4" :style="gridTemplateColumns">
               <template v-if="index < 1">
                 <div
-                  class="bg-gray-50 dark:bg-gray-800 p-4 text-gray-900 dark:text-gray-100 font-medium sticky left-0 z-10">
+                  class="bg-gray dark:bg-gray-800 p-4 text-gray-900 dark:text-gray-100 font-medium sticky left-0 z-10">
                   Question
                 </div>
                 <div v-for="option in visibleOptions" :key="`header-${option.name}`"
@@ -58,7 +58,7 @@
               </template>
 
               <div
-                class="bg-white dark:bg-gray-900 p-4 flex items-start border-t border-gray-200 dark:border-gray-700 min-h-[80px] sticky left-0 z-10">
+                class="bg-white font-medium dark:bg-gray-900 p-4 flex items-start border-t border-gray-200 dark:border-gray-700 min-h-[80px] sticky left-0 z-10">
                 <div class="text-sm text-gray-900 dark:text-gray-100 w-full pr-6">
                   <label :for="`${field.name}-${visibleOptions[0]?.name}`" class="flex items-start">
                     <span class="mr-2">{{ field.label }} <span v-if="isFieldMandatory"
@@ -297,6 +297,9 @@ p {
   max-width: calc(100% - 1.5rem);
   word-wrap: break-word;
   overflow-wrap: break-word;
+}
+.bg-gray{
+  background-color:#F9FAFB !important;
 }
 
 .w-96 {

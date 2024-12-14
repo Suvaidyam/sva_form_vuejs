@@ -11,7 +11,7 @@
       </span>
 
       <span v-if="index < 1 && parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && index < 1"
-        class="text-sm text-gray-700 break-words">
+        class="text-sm text-gray-700  break-words">
         {{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
       </span>
 
@@ -44,7 +44,7 @@
         </div>
       </div>
       <span v-if="index < 1 &&  fieldParsedDescription.desc"
-        class="text-sm text-gray-500 mb-2 break-words">
+        class="text-sm text-gray-700 mb-2 break-words">
         {{  fieldParsedDescription?.desc }}
       </span>
       <div class="flex flex-wrap ml-3">
