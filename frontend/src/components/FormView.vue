@@ -2,13 +2,13 @@
   <div class="flex w-full h-screen  dark:bg-gray-900">
     <!-- Sidebar -->
     <aside v-if="!props.section" :class="[
-      'sticky top-0 h-full w-20',
+      'sticky flex top-0 h-full w-20',
       isSidebarOpen ? 'show-sidebar' : 'hide-sidebar',
       'md:translate-x-0'
     ]">
       <div class="flex flex-col h-full bg-gray-50 dark:bg-gray-800 side-bar-scroll">
         <nav class="flex-1 px-4 py-4 relative">
-          <XIcon class="block fixed right-0 top-11 md:hidden mr-2 cursor-pointer" @click="open_sidebar" />
+          <!-- <XIcon class="block fixed right-0 top-11 md:hidden mr-2 cursor-pointer" @click="toggleSidebar" /> -->
           <ul class="space-y-2">
             <li v-for="(tab, index) in tabFields" :key="tab.name">
               <button @click="setActiveTab(tab.name)" :disabled="index > 0 && !allTabsUnlocked" :class="[
@@ -29,13 +29,22 @@
             </li>
           </ul>
         </nav>
+        <span @click="toggleSidebar" class="fixed border md:hidden h-full w-1 max-w-[2px] z-50"
+          :style="{left: isSidebarOpen ? '170px !important' : '180px !important',borderColor:'#9ca3af !important',paddingTop:'5px !important'}">
+          <span v-if="isSidebarOpen" class="w-6 h-6 flex items-center justify-center shadow-lg shadow-gray-400 rounded-full bg-white absolute top-[15%] text-gray-500" style="left: -12px;">
+            <CircleChevronLeft class="w-4 h-4 text-gray-700"/>
+          </span>
+          <span v-else class="w-6 h-6 flex items-center justify-center shadow-lg shadow-gray-400 rounded-full bg-white absolute top-[15%] text-gray-500" style="left: -12px;">
+            <CircleChevronRight class="w-4 h-4 text-gray-500"/>
+          </span>
+        </span>
       </div>
     </aside>
     <!-- Loader -->
     <Loader v-if="loading" :show="props.isDraft" />
     <!-- Main Content -->
     <main :class="[props.width ? 'w-full' : 'w-75', 'flex-1']" v-else>
-      <MenuIcon v-if="!props.isCard" class="block md:hidden ml-4 cursor-pointer" @click="open_sidebar" />
+      <!-- <MenuIcon v-if="!props.isCard" class="block md:hidden ml-4 cursor-pointer" @click="open_sidebar" /> -->
       <div :class="[section_hidden ? 'mx-auto pb-8' : 'mx-auto px-6 pb-8']">
         <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
           Assessment Not Found
@@ -75,8 +84,10 @@
               </template>
               <template v-else>
 
-                <div v-for="(section, index) in activeFieldSections" :key="section.name" :class="section.is_matrix ||section.is_multi_matrix  ? 'matrix-overflow1' : ''">
-                  <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white  flex "   :class="section.label? 'padding' : 'mb-4'">
+                <div v-for="(section, index) in activeFieldSections" :key="section.name"
+                  :class="section.is_matrix || section.is_multi_matrix ? 'matrix-overflow1' : ''">
+                  <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white  flex "
+                    :class="section.label ? 'padding' : 'mb-4'">
                     {{ section.label }}
                     <SaveStatusIcon v-if="section.label" class=" mt-2 cust" :status="status" />
                   </h3>
@@ -105,60 +116,67 @@
                   <div v-if="section.fields && section.fields.length > 0 && section.table_matrix"
                     :aria-labelledby="`section-${index}`">
                     <!-- {{ section }} -->
-                    <div v-if="section.table_matrix" class="flex justify-between items_center">
-                      <div v-if="(getString(section?.description).qlable || getString(section?.description)?.cenrieo || getString(section.fields[0]?.description)?.qlable || getString(section.fields[0]?.description)?.cenrieo)">
-                        <span v-if="getString(section?.description).qlable" class="text-md font-medium text-gray-700 dark:text-gray-200 block">
+                    <div v-if="section.fields.every((field) => {return isFieldVisible(field)}) && section.table_matrix" class="flex justify-between items_center">
+                      <div
+                        v-if="(getString(section?.description).qlable || getString(section?.description)?.cenrieo || getString(section.fields[0]?.description)?.qlable || getString(section.fields[0]?.description)?.cenrieo)">
+                        <span v-if="getString(section?.description).qlable"
+                          class="text-md font-medium text-gray-700 dark:text-gray-200 block">
                           {{ getString(section?.description)?.qlable }}
                         </span>
                         <p v-if="getString(section?.description)?.cenrieo" class="text-sm text-gray-700 ">
                           {{ getString(section?.description)?.cenrieo }}
                         </p>
-                        <p v-if="getString(section.fields[0]?.description)?.qlable" class="text-md font-medium text-gray-700 dark:text-gray-200 mb-1.5 block">
+                        <p v-if="getString(section.fields[0]?.description)?.qlable"
+                          class="text-md font-medium text-gray-700 dark:text-gray-200 mb-1.5 block">
                           {{ getString(section.fields[0]?.description)?.qlable }}
                         </p>
                         <p v-if="getString(section.fields[0]?.description)?.cenrieo" class="text-sm text-gray-700 ">
                           {{ getString(section.fields[0]?.description)?.cenrieo }}
                         </p>
                       </div>
-                      <div v-if="(getString(section.fields[0]?.description)?.info || getString(section?.description)?.info)" class="relative">
+                      <div
+                        v-if="(getString(section.fields[0]?.description)?.info || getString(section?.description)?.info)"
+                        class="relative">
                         <Popover v-slot="{ open }" class="relative">
                           <PopoverButton class="focus:outline-none">
-                          <InfoIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
-                        </PopoverButton>
-                          <transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-1"
-                            enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
+                            <InfoIcon
+                              class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
+                          </PopoverButton>
+                          <transition enter-active-class="transition duration-200 ease-out"
+                            enter-from-class="opacity-0 translate-y-1" enter-to-class="opacity-100 translate-y-0"
+                            leave-active-class="transition duration-150 ease-in"
                             leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
                             <PopoverPanel
                               class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl">
                               <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                                 <div class="p-4 bg-white dark:bg-gray-800">
                                   <p class="text-sm text-gray-700 dark:text-gray-300">
-                                      {{ getString(section.fields[0]?.description)?.info || getString(section?.description)?.info }}
-                                    </p>
-                                  </div>
+                                    {{ getString(section.fields[0]?.description)?.info ||
+                                      getString(section?.description)?.info }}
+                                  </p>
                                 </div>
-                              </PopoverPanel>
-                            </transition>
+                              </div>
+                            </PopoverPanel>
+                          </transition>
                         </Popover>
+                      </div>
                     </div>
-                    </div>
-                    
-                    <div class="flex gap-3 items-center " 
-                    :class="section.table_matrix ? ``:`` ">
-                    <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
-                      <component v-if="isFieldVisible(field)" :section="section.description"
-                        :is="getFieldComponent(field.fieldtype, section)" :field="field" :isCard="props.isCard"
-                        :isColumn="props.isColumn" :dropDownOptions="field.is_dropDown"
-                        :matrix_code="section.is_matrix_code" :matrix="false"
-                        :table_matrix="section.table_matrix" :multi_matrix="section.is_multi_matrix" :index="fieldIndex"
-                        :formData="formData" v-model="formData[field.fieldname]" :isRow="props.isRow"
-                        @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
-                        :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname"
-                        :class="{ 'border-red-500': showErrors && fieldErrors[field.fieldname] }" />
-                      <p v-if="showErrors && fieldErrors[field.fieldname]" class="text-red-500 text-sm mt-1">
-                        {{ fieldErrors[field.fieldname] }}
-                      </p>
-                    </div>
+
+                    <div class="flex gap-3 items-center " :class="section.table_matrix ? `` : ``">
+                      <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
+                        <component v-if="isFieldVisible(field)" :section="section.description"
+                          :is="getFieldComponent(field.fieldtype, section)" :field="field" :isCard="props.isCard"
+                          :isColumn="props.isColumn" :dropDownOptions="field.is_dropDown"
+                          :matrix_code="section.is_matrix_code" :matrix="false" :table_matrix="section.table_matrix"
+                          :multi_matrix="section.is_multi_matrix" :index="fieldIndex" :formData="formData"
+                          v-model="formData[field.fieldname]" :isRow="props.isRow"
+                          @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
+                          :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname"
+                          :class="{ 'border-red-500': showErrors && fieldErrors[field.fieldname] }" />
+                        <p v-if="showErrors && fieldErrors[field.fieldname]" class="text-red-500 text-sm mt-1">
+                          {{ fieldErrors[field.fieldname] }}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -204,7 +222,7 @@ import LinkTable from './LinkTable.vue'
 import CheckBox from './CheckBox.vue'
 import CheckBoxPW from './CheckBoxPW.vue'
 import Button from './Button.vue'
-import Loader from './Loader.vue' 
+import Loader from './Loader.vue'
 import AttachmentUpload from './AttachmentUpload.vue'
 import DateInput from './DateInput.vue'
 import Textarea from './TextareaInput.vue'
@@ -213,7 +231,7 @@ import percent from './PercentageInput.vue'
 import SaveStatusIcon from './SaveStatusIcon.vue'
 import MultiSelectMatrix from './MultiSelectMatrix.vue'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
-import { InfoIcon } from 'lucide-vue-next'
+import { InfoIcon, CircleChevronRight, CircleChevronLeft } from 'lucide-vue-next'
 
 const props = defineProps({
   doctype: {
@@ -418,7 +436,7 @@ const isFirstTab = computed(() => {
 
 const isCurrentTabValid = computed(() => {
   const currentTabFields = getTabFields(activeTab.value)
-  return currentTabFields.filter(f => !["Section Break","Column Break"].includes(f.fieldtype)).every(field => {
+  return currentTabFields.filter(f => !["Section Break", "Column Break"].includes(f.fieldtype)).every(field => {
     const value = formData.value[field.fieldname]
     return !isFieldMandatory(field) || (value != null && value != undefined && value != '' && (!Array.isArray(value) || value.length > 0))
   })
@@ -470,7 +488,7 @@ const isFieldMandatory = (field) => {
 }
 const isTabComplete = (tabName) => {
   const tabFields = getTabFields(tabName)
-  return tabFields.filter(f => !["Section Break","Column Break"].includes(f.fieldtype)).every(field => {
+  return tabFields.filter(f => !["Section Break", "Column Break"].includes(f.fieldtype)).every(field => {
     const value = formData.value[field.fieldname]
     return !isFieldMandatory(field) || (value !== null && value !== undefined && value !== '' && (!Array.isArray(value) || value.length > 0))
   })
@@ -718,7 +736,7 @@ onMounted(() => {
     formData.value = { ...props.initialData }
   }
 })
-const open_sidebar = () => {
+const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
 }
 watch(() => props.initialData, (newVal) => {
@@ -799,7 +817,7 @@ aside {
   }
 
   .hide-sidebar {
-    transform: translateX(-100%) !important;
+    transform: translateX(-70%) !important;
     transition: transform 0.3s ease !important;
     z-index: 1000 !important;
   }
@@ -814,17 +832,19 @@ aside {
     padding-left: 0px !important;
     overflow-x: auto !important;
   }
-  .top-11{
+
+  .top-11 {
     top: 60px !important;
   }
+
   .w-20 {
     padding-top: 64px !important;
   }
 
   .matrix-overflow1 {
-  overflow-x: scroll !important;
-  
-}
+    overflow-x: scroll !important;
+
+  }
 }
 
 .cust {
@@ -835,15 +855,16 @@ aside {
   overflow-x: scroll !important;
   overflow-y: hidden !important;
 }
-.padding{
-  padding-top:30px !important;
-  padding-bottom:4px !important;
+
+.padding {
+  padding-top: 30px !important;
+  padding-bottom: 4px !important;
 }
 
 .matrix-overflow1 {
   overflow-x: auto !important;
   overflow-y: hidden;
 
-  
+
 }
 </style>
