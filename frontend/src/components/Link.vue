@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <div v-if="!matrix">
+    <div v-if="!matrix && !table_matrix">
       <span v-if="index < 1" class="text-md font-medium text-gray-700 dark:text-gray-200 block">
         {{ parsedDescription.qlable }}
       </span>
@@ -46,11 +46,11 @@
       </p>
     </div>
 
-    <div class="w-96 min-w-96">
-      <Matrix1 v-if="table_matrix && !matrix" :matrix_code="matrix_code" :field="field" :modelValue="modelValue"
+    <!-- <div class="w-96 min-w-96"> -->
+      <!-- <Matrix1 v-if="table_matrix && !matrix" :matrix_code="matrix_code" :field="field" :modelValue="modelValue"
         @update:modelValue="updateValue" :visibleOptions="visibleOptions" :isFieldMandatory="isFieldMandatory(field)"
-        :index="index" />
-    </div>
+        :index="index" /> -->
+    <!-- </div> -->
     <Matrix v-if="matrix && !table_matrix" :matrix_code="matrix_code" :field="field" :modelValue="modelValue"
       @update:modelValue="updateValue" :visibleOptions="visibleOptions" :isFieldMandatory="isFieldMandatory(field)"
       :index="index" />
@@ -62,7 +62,7 @@
           {{ field.label }}
           <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
         </label>
-        <div v-if=" parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
+        <div v-if="(parsedDescription?.info || fieldParsedDescription?.info) && !table_matrix" class="ml-2 relative">
           <Popover v-slot="{ open }" class="relative">
             <PopoverButton class="focus:outline-none">
               <InfoIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />

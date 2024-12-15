@@ -103,13 +103,53 @@
                   </p> -->
                   <!-- new -->
                   <div v-if="section.fields && section.fields.length > 0 && section.table_matrix"
-                    :aria-labelledby="`section-${index}`" class="flex gap-3  items-center matrix-overflow">
+                    :aria-labelledby="`section-${index}`">
                     <!-- {{ section }} -->
+                    <div v-if="section.table_matrix" class="flex justify-between items_center">
+                      <div v-if="(getString(section?.description).qlable || getString(section?.description)?.cenrieo || getString(section.fields[0]?.description)?.qlable || getString(section.fields[0]?.description)?.cenrieo)">
+                        <span v-if="getString(section?.description).qlable" class="text-md font-medium text-gray-700 dark:text-gray-200 block">
+                          {{ getString(section?.description)?.qlable }}
+                        </span>
+                        <p v-if="getString(section?.description)?.cenrieo" class="text-sm text-gray-700 ">
+                          {{ getString(section?.description)?.cenrieo }}
+                        </p>
+                        <p v-if="getString(section.fields[0]?.description)?.qlable" class="text-md font-medium text-gray-700 dark:text-gray-200 mb-1.5 block">
+                          {{ getString(section.fields[0]?.description)?.qlable }}
+                        </p>
+                        <p v-if="getString(section.fields[0]?.description)?.cenrieo" class="text-sm text-gray-700 ">
+                          {{ getString(section.fields[0]?.description)?.cenrieo }}
+                        </p>
+                      </div>
+                      <div v-if="(getString(section.fields[0]?.description)?.info || getString(section?.description)?.info)" class="relative">
+                        <Popover v-slot="{ open }" class="relative">
+                          <PopoverButton class="focus:outline-none">
+                          <InfoIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
+                        </PopoverButton>
+                          <transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-1"
+                            enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
+                            leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
+                            <PopoverPanel
+                              class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl">
+                              <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                                <div class="p-4 bg-white dark:bg-gray-800">
+                                  <p class="text-sm text-gray-700 dark:text-gray-300">
+                                      {{ getString(section.fields[0]?.description)?.info || getString(section?.description)?.info }}
+                                    </p>
+                                  </div>
+                                </div>
+                              </PopoverPanel>
+                            </transition>
+                        </Popover>
+                    </div>
+                    </div>
+                    
+                    <div class="flex gap-3 items-center " 
+                    :class="section.table_matrix ? ``:`` ">
                     <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
                       <component v-if="isFieldVisible(field)" :section="section.description"
                         :is="getFieldComponent(field.fieldtype, section)" :field="field" :isCard="props.isCard"
                         :isColumn="props.isColumn" :dropDownOptions="field.is_dropDown"
-                        :matrix_code="section.is_matrix_code" :matrix="section.is_matrix"
+                        :matrix_code="section.is_matrix_code" :matrix="false"
                         :table_matrix="section.table_matrix" :multi_matrix="section.is_multi_matrix" :index="fieldIndex"
                         :formData="formData" v-model="formData[field.fieldname]" :isRow="props.isRow"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
@@ -119,8 +159,8 @@
                         {{ fieldErrors[field.fieldname] }}
                       </p>
                     </div>
+                    </div>
                   </div>
-
                 </div>
               </template>
             </div>
@@ -164,7 +204,7 @@ import LinkTable from './LinkTable.vue'
 import CheckBox from './CheckBox.vue'
 import CheckBoxPW from './CheckBoxPW.vue'
 import Button from './Button.vue'
-import Loader from './Loader.vue'
+import Loader from './Loader.vue' 
 import AttachmentUpload from './AttachmentUpload.vue'
 import DateInput from './DateInput.vue'
 import Textarea from './TextareaInput.vue'
@@ -172,6 +212,8 @@ import CheckboxComponent from './CheckboxComponent.vue'
 import percent from './PercentageInput.vue'
 import SaveStatusIcon from './SaveStatusIcon.vue'
 import MultiSelectMatrix from './MultiSelectMatrix.vue'
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
+import { InfoIcon } from 'lucide-vue-next'
 
 const props = defineProps({
   doctype: {
@@ -257,6 +299,34 @@ const tabErrors = ref({})
 const showErrors = ref(false)
 const saveAsDraft = inject('saveAsDraft')
 
+function getString(str) {
+  let desc = "";
+  let info = "";
+  let qlable = "";
+  let cenrieo = "";
+
+  const match = str.match(/\{([^}]+)\}/)
+  if (match) {
+    info = match[1]
+    str = str.replace(match[0], "").trim()
+  }
+
+  const cenrieoSplit = str.split("@@")
+  if (cenrieoSplit.length > 1) {
+    cenrieo = cenrieoSplit[1].trim()
+    str = cenrieoSplit[0].trim()
+  }
+
+  const parts = str.split("$$")
+  if (parts.length > 1) {
+    qlable = parts[1].trim()
+    str = parts[0].trim()
+  }
+
+  desc = str.trim()
+
+  return { desc, info, qlable, cenrieo }
+}
 const tabFields = computed(() =>
   docTypeMeta.value?.fields.filter(field => field.fieldtype === 'Tab Break') || []
 )
@@ -774,6 +844,6 @@ aside {
   overflow-x: auto !important;
   overflow-y: hidden;
 
-  /* overflow-y: auto !important; */
+  
 }
 </style>
