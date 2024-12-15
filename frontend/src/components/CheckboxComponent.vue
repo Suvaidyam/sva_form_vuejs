@@ -37,7 +37,7 @@
       >
         <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
           <div class="p-4 bg-white dark:bg-gray-800">
-            <p class="text-sm text-gray-700 dark:text-gray-300">
+            <p class="text-md font-medium text-gray-900 dark:text-gray-200 block">
               {{ field.description }}
             </p>
           </div>

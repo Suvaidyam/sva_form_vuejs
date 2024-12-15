@@ -16,9 +16,9 @@
 
           <div
             class="bg-white font-medium dark:bg-gray-900 py-2 px-3 flex items-start border-t border-gray-200 dark:border-gray-700 min-h-[80px]">
-            <div class="text-sm text-gray-900 dark:text-gray-100 w-full pr-6">
+            <div class=" w-full pr-6">
               <label :for="`${field.name}-${visibleOptions[0]?.name}`" class="flex items-start">
-                <span class="mr-2">{{ field.label }} <span v-if="isFieldMandatory" class="text-red-500">*</span></span>
+                <span class="mr-2 text-md font-medium text-gray-900 dark:text-gray-200 block">{{ field.label }} <span v-if="isFieldMandatory" class="text-red-500">*</span></span>
               </label>
             </div>
           </div>
@@ -32,7 +32,7 @@
                     :checked="modelValue === option.name" @change="updateValue(option.name)" :disabled="field.read_only"
                     :required="isFieldMandatory"
                     class="h-4 w-4 text-primary border-gray-300  focus:ring-primary dark:border-gray-600 dark:focus:ring-primary" />
-                  <label :for="`${field.name}-${option.name}`" class="ml-2 text-sm text-gray-900 dark:text-gray-100">
+                  <label :for="`${field.name}-${option.name}`" class="ml-2 text-[16px]">
                     {{ option.label }} 
                   </label>
                 </div>
