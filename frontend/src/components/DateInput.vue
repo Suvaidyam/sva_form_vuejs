@@ -2,7 +2,7 @@
   <div v-if="!field.hidden" class="flex flex-col gap-2">
 
     <span v-if="index < 1 &&  parsedDescription.qlable || fieldParsedDescription.qlable"
-      class="text-md font-medium  text-gray-700 dark:text-gray-200  block ">
+      class="text-md font-medium text-gray-900 dark:text-gray-200 block block ">
       {{ parsedDescription.qlable || fieldParsedDescription.qlable }}
     </span>
     <span v-if="index < 1 && parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
@@ -35,7 +35,7 @@
         </Popover>
       </div>
     </div>
-    <span v-if=" fieldParsedDescription.desc" class="text-sm text-gray-700  ">
+    <span v-if=" fieldParsedDescription.desc" class="text-md font-medium text-gray-900 dark:text-gray-200 block">
       {{  fieldParsedDescription.desc }}
     </span>
     <div class="relative">

@@ -1,16 +1,16 @@
 <template>
   <div v-if="!field.hidden" class="flex flex-col ">
     <span v-if="index < 1 && parsedDescription.qlable || fieldParsedDescription.qlable"
-      class="text-md font-medium  text-gray-700 dark:text-gray-200  block ">
+      class="text-md font-medium text-gray-900 dark:text-gray-200 block ">
       {{ parsedDescription.qlable || fieldParsedDescription.qlable }}
     </span>
     <span v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
-      class="text-sm text-gray-700  ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
+      class="text-md font-medium text-gray-900 dark:text-gray-200 block ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
     </span>
 
     <!-- <p v-if="index < 1">{{ section }}</p> -->
     <div class="flex items-center justify-between">
-      <label :for="field.name" class="text-md font-medium text-gray-700 dark:text-gray-200">
+      <label :for="field.name" class="text-md font-medium text-gray-900 dark:text-gray-200 block">
         {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
      <div v-if="parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
@@ -41,7 +41,7 @@
   </Popover>
 </div>
     </div>
-    <span v-if="parsedDescription?.desc || fieldParsedDescription?.desc" class="text-sm text-gray-700   ">
+    <span v-if="parsedDescription?.desc || fieldParsedDescription?.desc" class="text-md font-medium text-gray-900 dark:text-gray-200 block  ">
       {{ parsedDescription?.desc || fieldParsedDescription?.desc }}
     </span>
 
