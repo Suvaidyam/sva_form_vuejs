@@ -143,27 +143,25 @@
                         v-if="(getString(section.fields[0]?.description)?.info || getString(section?.description)?.info)"
                         class="relative">
                         <Popover v-slot="{ open }" class="relative">
-                          <PopoverButton class="focus:outline-none">
-                            <InfoIcon
-                              class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
-                          </PopoverButton>
-                          <transition enter-active-class="transition duration-200 ease-out"
-                            enter-from-class="opacity-0 translate-y-1" enter-to-class="opacity-100 translate-y-0"
-                            leave-active-class="transition duration-150 ease-in"
-                            leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
-                            <PopoverPanel
-                              class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl">
-                              <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                                <div class="p-4 bg-white dark:bg-gray-800">
-                                  <p class="text-sm text-gray-700 dark:text-gray-300">
-                                    {{ getString(section.fields[0]?.description)?.info ||
+            <PopoverButton class="focus:outline-none">
+              <InfoIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
+            </PopoverButton>
+            <transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-1"
+              enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
+              leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
+              <PopoverPanel
+                class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl">
+                <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                  <div class="p-4 bg-white dark:bg-gray-800">
+                    <p class="text-sm text-gray-700 dark:text-gray-300">
+                    {{ getString(section.fields[0]?.description)?.info ||
                                       getString(section?.description)?.info }}
-                                  </p>
-                                </div>
-                              </div>
-                            </PopoverPanel>
-                          </transition>
-                        </Popover>
+                    </p>
+                  </div>
+                </div>
+              </PopoverPanel>
+            </transition>
+          </Popover>
                       </div>
                     </div>
 
@@ -813,7 +811,9 @@ aside {
   /* Hide horizontal scrollbar */
 
 }
-
+.w-96{
+  min-width:400px !important;
+}
 @media screen and (max-width: 768px) {
   aside {
     position: fixed;
