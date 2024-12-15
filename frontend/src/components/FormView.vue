@@ -318,7 +318,7 @@ const allSections = computed(() => {
         if ((field.mandatory_depends_on && field.mandatory_depends_on != field.depends_on)) {
           mismatchedDependsOn.push(field.label)
         }
-        if (field.reqd && field.depends_on) {
+        if (field.reqd && (field.depends_on || field.hidden)) {
           mislineousDependsOn.push(field.label)
         }
       }
@@ -348,9 +348,9 @@ const isFirstTab = computed(() => {
 
 const isCurrentTabValid = computed(() => {
   const currentTabFields = getTabFields(activeTab.value)
-  return currentTabFields.every(field => {
+  return currentTabFields.filter(f => !["Section Break","Column Break"].includes(f.fieldtype)).every(field => {
     const value = formData.value[field.fieldname]
-    return !isFieldMandatory(field) || (value !== null && value !== '' && (!Array.isArray(value) || value.length > 0))
+    return !isFieldMandatory(field) || (value != null && value != undefined && value != '' && (!Array.isArray(value) || value.length > 0))
   })
 })
 
@@ -400,9 +400,9 @@ const isFieldMandatory = (field) => {
 }
 const isTabComplete = (tabName) => {
   const tabFields = getTabFields(tabName)
-  return tabFields.every(field => {
+  return tabFields.filter(f => !["Section Break","Column Break"].includes(f.fieldtype)).every(field => {
     const value = formData.value[field.fieldname]
-    return !isFieldMandatory(field) || (value !== null && value !== '' && (!Array.isArray(value) || value.length > 0))
+    return !isFieldMandatory(field) || (value !== null && value !== undefined && value !== '' && (!Array.isArray(value) || value.length > 0))
   })
 }
 
