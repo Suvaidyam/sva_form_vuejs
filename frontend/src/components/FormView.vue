@@ -116,7 +116,7 @@
                   <div v-if="section.fields && section.fields.length > 0 && section.table_matrix"
                     :aria-labelledby="`section-${index}`">
                     <!-- {{ section }} -->
-                    <div v-if="section.table_matrix" class="flex justify-between items_center">
+                    <div v-if="section.fields.every((field) => {return isFieldVisible(field)}) && section.table_matrix" class="flex justify-between items_center">
                       <div
                         v-if="(getString(section?.description).qlable || getString(section?.description)?.cenrieo || getString(section.fields[0]?.description)?.qlable || getString(section.fields[0]?.description)?.cenrieo)">
                         <span v-if="getString(section?.description).qlable"
