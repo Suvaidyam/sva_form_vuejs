@@ -2,7 +2,7 @@
   <div class="flex w-full h-screen  dark:bg-gray-900">
     <!-- Sidebar -->
     <aside v-if="!props.section" :class="[
-      'sticky flex md:block top-0 h-full w-20',
+      'sticky top-0 h-full w-20',
       isSidebarOpen ? 'show-sidebar' : 'hide-sidebar',
       'md:translate-x-0'
     ]">
@@ -30,7 +30,7 @@
           </ul>
         </nav>
         <span @click="toggleSidebar" class="fixed border md:hidden h-full w-1 max-w-[2px] z-50"
-          :style="{left: isSidebarOpen ? '170px !important' : '180px !important',borderColor:'#9ca3af !important',paddingTop:'5px !important'}">
+          :style="{left: isSidebarOpen ? '240px !important' : '250px !important',borderColor:'#9ca3af !important',paddingTop:'5px !important'}">
           <span v-if="isSidebarOpen" class="w-6 h-6 flex items-center justify-center shadow-lg shadow-gray-400 rounded-full bg-white absolute top-[15%] text-gray-500" style="left: -12px;">
             <CircleChevronLeft class="w-4 h-4 text-gray-700"/>
           </span>
@@ -817,7 +817,7 @@ aside {
   }
 
   .hide-sidebar {
-    transform: translateX(-70%) !important;
+    transform: translateX(-100%) !important;
     transition: transform 0.3s ease !important;
     z-index: 1000 !important;
   }
