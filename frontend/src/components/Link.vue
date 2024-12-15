@@ -5,7 +5,7 @@
         <span v-if="index <1 && parsedDescription.qlable || fieldParsedDescription.qlable" class="text-md font-medium text-gray-700 dark:text-gray-200 block">
           {{ parsedDescription.qlable || fieldParsedDescription.qlable }}
         </span>
-        <p v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo" class="text-sm text-gray-700">
+        <p v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo" class="text-sm text-gray-700 ">
           {{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
         </p>
       </div>
@@ -35,13 +35,13 @@
       <span v-if="index < 1" class="text-md font-medium text-gray-700 dark:text-gray-200 block">
         {{ parsedDescription.qlable }}
       </span>
-      <p v-if="index < 1 && parsedDescription?.cenrieo" class="text-sm text-gray-700">
+      <p v-if="index < 1 && parsedDescription?.cenrieo" class="text-sm text-gray-700 ">
         {{ parsedDescription?.cenrieo }}
       </p>
       <p v-if="fieldParsedDescription?.qlable" class="text-md font-medium text-gray-700 dark:text-gray-200 mb-1.5 block">
         {{ fieldParsedDescription?.qlable }}
       </p>
-      <p v-if="fieldParsedDescription?.cenrieo" class="text-sm text-gray-700">
+      <p v-if="fieldParsedDescription?.cenrieo" class="text-sm text-gray-700 ">
         {{ fieldParsedDescription?.cenrieo }}
       </p>
     </div>
@@ -84,7 +84,7 @@
           </Popover>
         </div>
       </div>
-      <p v-if="(fieldParsedDescription?.desc)" class="text-sm text-gray-500 mb-2">
+      <p v-if="(fieldParsedDescription?.desc)" class="text-sm text-gray-700 mb-2">
         {{ fieldParsedDescription?.desc }}
       </p>
       <DropdownOptions v-if="dropDownOptions" :field="field" :modelValue="modelValue" @update:modelValue="updateValue"

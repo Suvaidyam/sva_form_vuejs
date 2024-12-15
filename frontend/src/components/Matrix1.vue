@@ -34,17 +34,17 @@
         </div>
   
         <p v-if="index < 1 && (parsedDescription.cenrieo || fieldParsedDescription.cenrieo)"
-            class="text-sm text-gray-700">
+            class="text-sm text-gray-700 font-medium">
             {{ parsedDescription.cenrieo || fieldParsedDescription.cenrieo }}
         </p>
         <p v-if="index < 1 && (parsedDescription.desc || fieldParsedDescription.desc)"
-            class="text-sm text-gray-500 mb-2">
+            class="text-sm text-gray-700 mb-2">
             {{ parsedDescription.desc || fieldParsedDescription.desc }}
         </p>
   
         <div class="flex items-center matrix-label-row">
             <label :for="`${field.name}-${visibleOptions[0]?.name}`"
-                class="block text-md font-medium text-gray-900 dark:text-gray-200">
+                class="block text-md font-medium  text-gray-700 dark:text-gray-200">
                 {{ field.label }}
                 <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
             </label>
