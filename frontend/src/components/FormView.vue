@@ -263,7 +263,7 @@ const tabFields = computed(() =>
 
 const activeFieldSections = computed(() => {
   if (!docTypeMeta.value || !activeTab.value) return []
-  console.log(allTabsUnlocked.value, 'allTabsUnlocked')
+  //console.log(allTabsUnlocked.value, 'allTabsUnlocked')
   const fields = docTypeMeta.value.fields
   const startIndex = fields.findIndex(f => f.name === activeTab.value)
   const endIndex = fields.findIndex((f, i) => i > startIndex && f.fieldtype === 'Tab Break')
@@ -350,7 +350,7 @@ const isCurrentTabValid = computed(() => {
   const currentTabFields = getTabFields(activeTab.value)
   return currentTabFields.every(field => {
     const value = formData.value[field.fieldname]
-    return !field.reqd || (value !== null && value !== '' && (!Array.isArray(value) || value.length > 0))
+    return !isFieldMandatory(field) || (value !== null && value !== '' && (!Array.isArray(value) || value.length > 0))
   })
 })
 
