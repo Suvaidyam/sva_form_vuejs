@@ -39,6 +39,28 @@ def get_fields(fieldtype):
     )
     return fields
 
+@frappe.whitelist()
+def update_many(dt,docs):
+    try:
+        docs_list = json.loads(docs)
+        for doc in docs_list:
+            updated_doc = frappe.get_doc(dt, doc['name'])
+            updated_doc.update(doc)
+            updated_doc.save(ignore_permissions=True)
+        return {"status": "success", "message": "Updated successfully.", "data": docs}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@frappe.whitelist()
+def delete_many(dt,docs):
+    try:
+        docs_list = json.loads(docs)
+        for doc in docs_list:
+            frappe.delete_doc(dt, doc['name'], ignore_permissions=True)
+        return {"status": "success", "message": "Deleted successfully.", "data": docs}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 @frappe.whitelist(allow_guest=True)
 def add_criteria(data):
     data = json.loads(data)
