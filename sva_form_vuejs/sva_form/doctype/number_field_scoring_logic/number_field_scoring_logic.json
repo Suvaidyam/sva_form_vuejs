@@ -1,0 +1,88 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "format:{field}",
+ "creation": "2024-12-08 17:39:46.666810",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "ref_doctype",
+  "field",
+  "section_break_ikfp",
+  "min",
+  "column_break_mcbq",
+  "max",
+  "section_break_nsdr",
+  "criteria"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_ikfp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "min",
+   "fieldtype": "Int",
+   "label": "Min"
+  },
+  {
+   "fieldname": "column_break_mcbq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "max",
+   "fieldtype": "Int",
+   "label": "Max"
+  },
+  {
+   "fieldname": "ref_doctype",
+   "fieldtype": "Link",
+   "label": "Ref Doctype",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "fieldname": "field",
+   "fieldtype": "Autocomplete",
+   "in_list_view": 1,
+   "label": "Field",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_nsdr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "criteria",
+   "fieldtype": "Table",
+   "label": "Criteria",
+   "options": "Scoring Logic Child"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-14 08:11:00.901347",
+ "modified_by": "Administrator",
+ "module": "sva_form",
+ "name": "Number field Scoring Logic",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
