@@ -2,7 +2,7 @@
   <div class="flex w-full h-screen  dark:bg-gray-900">
     <!-- Sidebar -->
     <aside v-if="!props.section" :class="[
-      'sticky flex top-0 h-full w-20',
+      'sticky flex md:block top-0 h-full w-20',
       isSidebarOpen ? 'show-sidebar' : 'hide-sidebar',
       'md:translate-x-0'
     ]">
