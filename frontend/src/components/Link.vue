@@ -2,14 +2,15 @@
   <div v-if="!field.hidden" class="w-full">
     <div v-if="matrix" class="flex items-center justify-between mb-2">
       <div>
-        <span v-if="index <1 && parsedDescription.qlable || fieldParsedDescription.qlable" class="text-md font-medium text-gray-700 dark:text-gray-200 block">
+        <span v-if="index < 1 && parsedDescription.qlable || fieldParsedDescription.qlable"
+          class="text-md font-medium text-gray-700 dark:text-gray-200 block">
           {{ parsedDescription.qlable || fieldParsedDescription.qlable }}
         </span>
         <p v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo" class="text-sm text-gray-700 ">
           {{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
         </p>
       </div>
-      <div v-if="index <1 && parsedDescription.info || fieldParsedDescription.info" class="relative">
+      <div v-if="index < 1 && parsedDescription.info || fieldParsedDescription.info" class="relative">
         <Popover v-slot="{ open }" class="relative">
           <PopoverButton class="focus:outline-none">
             <InfoIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
@@ -38,7 +39,8 @@
       <p v-if="index < 1 && parsedDescription?.cenrieo" class="text-sm text-gray-700 ">
         {{ parsedDescription?.cenrieo }}
       </p>
-      <p v-if="fieldParsedDescription?.qlable" class="text-md font-medium text-gray-700 dark:text-gray-200 mb-1.5 block">
+      <p v-if="fieldParsedDescription?.qlable"
+        class="text-md font-medium text-gray-700 dark:text-gray-200 mb-1.5 block">
         {{ fieldParsedDescription?.qlable }}
       </p>
       <p v-if="fieldParsedDescription?.cenrieo" class="text-sm text-gray-700 ">
@@ -47,7 +49,7 @@
     </div>
 
     <!-- <div class="w-96 min-w-96"> -->
-      <!-- <Matrix1 v-if="table_matrix && !matrix" :matrix_code="matrix_code" :field="field" :modelValue="modelValue"
+    <!-- <Matrix1 v-if="table_matrix && !matrix" :matrix_code="matrix_code" :field="field" :modelValue="modelValue"
         @update:modelValue="updateValue" :visibleOptions="visibleOptions" :isFieldMandatory="isFieldMandatory(field)"
         :index="index" /> -->
     <!-- </div> -->
@@ -96,7 +98,7 @@
           <div class="flex-shrink-0 w-5 h-5 mr-2 pt-1">
             <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
               :checked="modelValue === option.name" @change="updateValue(option.name)"
-              :disabled="field.read_only || shouldDisableOption(option)" 
+              :disabled="field.read_only || shouldDisableOption(option)"
               class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
           </div>
           <span class="flex-grow">{{ option.label }}</span>
@@ -105,6 +107,8 @@
     </template>
 
     <p v-if="error" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ error }}</p>
+    <DisclaimerPopup v-if="disclaimerPopup" :fieldValue="newProgramArea"
+      @proceedChanging="proceedChangingProgramArea($event)" />
   </div>
 </template>
 
@@ -115,6 +119,7 @@ import { InfoIcon } from 'lucide-vue-next'
 import Matrix from './Matrix.vue'
 import DropdownOptions from './DropdownOptions.vue'
 import Matrix1 from './Matrix1.vue'
+import DisclaimerPopup from './DisclaimerPopUp.vue'
 
 const props = defineProps({
   field: {
@@ -164,6 +169,11 @@ const props = defineProps({
     required: false,
     default: false
   },
+  allTabsUnlocked: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -171,7 +181,11 @@ const call = inject('$call')
 const saveAsDraft = inject('saveAsDraft')
 const options = ref([])
 const error = ref('')
+// disclaimer popup
 const selectedProgramArea = ref('')
+const disclaimerPopup = ref(false)
+const newProgramArea = ref('')
+const prevProgramArea = ref('')
 
 const isFieldMandatory = (field) => {
   if (field.reqd) return true
@@ -285,13 +299,35 @@ const shouldDisableOption = (option) => {
 };
 
 const updateValue = (value) => {
-  emit('update:modelValue', value)
-  validateInput(value)
-  if (props.onfieldChange) {
-    saveAsDraft({ [props.field.fieldname]: value })
+  if (props.allTabsUnlocked && props.field.fieldname === 'selected_program_area') {
+    disclaimerPopup.value = true
+    prevProgramArea.value = props.modelValue
+    newProgramArea.value = value
+  } else {
+    validateInput(value)
+    emit('update:modelValue', value)
+    if (props.onfieldChange) {
+      saveAsDraft({ [props.field.fieldname]: value })
+    }
   }
 }
-
+const proceedChangingProgramArea = (newValue) => {
+  if (newValue) {
+    validateInput(newValue)
+    emit('update:modelValue', newValue)
+    if (props.onfieldChange) {
+      saveAsDraft({ [props.field.fieldname]: newValue })
+    }
+    disclaimerPopup.value = false
+    prevProgramArea.value = ''
+    newProgramArea.value = ''
+  }else{
+    document.getElementById(`${props.field.name}-${prevProgramArea.value}`).checked = true
+    disclaimerPopup.value = false
+    newProgramArea.value = ''
+    prevProgramArea.value = ''
+  }
+}
 watch(() => props.field, getOptions, { immediate: true })
 
 onMounted(async () => {

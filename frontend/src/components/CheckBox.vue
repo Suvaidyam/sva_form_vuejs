@@ -43,7 +43,7 @@
           </Popover>
         </div>
       </div>
-      <span v-if="index < 1 &&  fieldParsedDescription.desc"
+      <span v-if="  fieldParsedDescription.desc "
         class="text-sm text-gray-700 mb-2 break-words">
         {{  fieldParsedDescription?.desc }}
       </span>
