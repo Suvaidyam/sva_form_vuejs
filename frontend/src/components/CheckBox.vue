@@ -53,7 +53,7 @@
           <div v-for="option in columnOptions" :key="option.name" class="flex mt-2">
             <input v-if="isOptionVisible(option)" :id="`${field.name}-${option.name}`" :name="field.name"
               type="checkbox" :checked="isChecked(option)" @change="updateValue(option)"
-              :disabled="isOptionDisabled(option) || field.read_only" :required="field.reqd && modelValue.length === 0"
+              :disabled="isOptionDisabled(option) || field.read_only"
               class="h-4 mt-1 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
             <label v-if="isOptionVisible(option)" :for="`${field.name}-${option.name}`"
               class="ml-2 block text-sm  break-words">
