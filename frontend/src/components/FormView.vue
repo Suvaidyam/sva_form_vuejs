@@ -474,7 +474,12 @@ const isFieldVisible = (field) => {
   if (!field.depends_on) return true
   const condition = field.depends_on.replace('eval:', '').replace(/doc\./g, 'formData.')
   try {
-    return new Function('formData', `return ${condition}`)(formData.value)
+    let status = new Function('formData', `return ${condition}`)(formData.value)
+    if (!status ){
+     formData.value[field.fieldname]= Array.isArray(formData.value[field.fieldname])?[]:""
+    }
+    return status
+    // return new Function('formData', `return ${condition}`)(formData.value)
   } catch (error) {
     console.error('Error evaluating field visibility:', error)
     return false
