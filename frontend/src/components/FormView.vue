@@ -62,13 +62,15 @@
           <form @submit.prevent="onSubmit" class=" mt-2">
             <div class=" ">
               <template v-if="props.section">
-                <div v-for="(section, index) in allSections" :key="index" class="mb-4">
+                <div v-for="(section, index) in allSections" :key="index" class="mb-4 mt-2">
                   <div @click="toggleSection(index)" :class="[section_hidden ? 'hidden' : '']"
                     class="flex items-center justify-between cursor-pointer bg-gray-100 dark:bg-gray-700 p-4 rounded-lg  mb-2">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white ">
                       {{ section.label }}
                     </h3>
-                    <ChevronDownIcon
+                    <ChevronDownIcon v-if="!openSections[index]"
+                      :class="['w-5 h-5 transition-transform', { 'transform rotate-180': openSections[index] }]" />
+                    <ChevronUpIcon v-if="openSections[index]"
                       :class="['w-5 h-5 transition-transform', { 'transform rotate-180': openSections[index] }]" />
                   </div>
                   <div v-show="openSections[index]" class="pl-4">
@@ -217,7 +219,7 @@
 
 <script setup>
 import { ref, computed, onMounted, inject, watch, provide } from 'vue'
-import { ChevronDownIcon, LockIcon, CheckCircleIcon, XCircleIcon } from 'lucide-vue-next'
+import { ChevronDownIcon, LockIcon, CheckCircleIcon, XCircleIcon, ChevronUpIcon } from 'lucide-vue-next'
 import Input from './Input.vue'
 import Link from './Link.vue'
 import LinkPW from './LinkPW.vue'
