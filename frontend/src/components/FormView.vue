@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full h-screen  dark:bg-gray-900">
+  <div class="flex w-full h-screen dark:bg-gray-900">
     <!-- Sidebar -->
     <aside v-if="!props.section" :class="[
       'sticky top-0 h-full w-20',
@@ -8,7 +8,6 @@
     ]">
       <div class="flex flex-col h-full bg-gray-50 dark:bg-gray-800 side-bar-scroll">
         <nav class="flex-1 px-4 py-4 relative">
-          <!-- <XIcon class="block fixed right-0 top-11 md:hidden mr-2 cursor-pointer" @click="toggleSidebar" /> -->
           <ul class="space-y-2">
             <li v-for="(tab, index) in tabFields" :key="tab.name">
               <button @click="setActiveTab(tab.name)" :disabled="index > 0 && !allTabsUnlocked" :class="[
@@ -29,8 +28,11 @@
             </li>
           </ul>
         </nav>
-        <span @click="toggleSidebar" class="fixed border md:hidden h-full w-1 max-w-[2px] z-50"
-          :style="{ left: isSidebarOpen ? '240px !important' : '250px !important', borderColor: '#9ca3af !important', paddingTop: '5px !important' }">
+        <span @click="toggleSidebar" class="fixed border md:hidden h-full w-1 max-w-[2px] z-50" :style="{
+          left: isSidebarOpen ? '240px !important' : '250px !important',
+          borderColor: '#9ca3af !important',
+          paddingTop: '5px !important'
+        }">
           <span v-if="isSidebarOpen"
             class="w-6 h-6 flex items-center justify-center shadow-lg shadow-gray-400 rounded-full bg-white absolute top-[15%] text-gray-500"
             style="left: -12px;">
@@ -44,28 +46,24 @@
         </span>
       </div>
     </aside>
+
     <!-- Loader -->
     <Loader v-if="loading" :show="props.isDraft" />
+
     <!-- Main Content -->
     <main :class="[props.width ? 'w-full' : 'w-75', 'flex-1']" v-else>
-      <!-- <MenuIcon v-if="!props.isCard" class="block md:hidden ml-4 cursor-pointer" @click="open_sidebar" /> -->
       <div :class="[section_hidden ? 'mx-auto pb-8' : 'mx-auto px-6 pb-8']">
         <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
           Assessment Not Found
         </div>
         <div v-else>
-          <!-- Loader -->
-          <!-- <div v-if="isLoading" class=" bg-white  inset-0 bg-opacity-50 flex items-center justify-center z-50">
-            <div class="animate-spin  rounded-full h-32 w-32 border-t-2 border-b-2 border-orange-500"></div>
-          </div> -->
-
-          <form @submit.prevent="onSubmit" class=" mt-2">
-            <div class=" ">
+          <form @submit.prevent="onSubmit" class="mt-2">
+            <div>
               <template v-if="props.section">
                 <div v-for="(section, index) in allSections" :key="index" class="mb-4 mt-2">
                   <div @click="toggleSection(index)" :class="[section_hidden ? 'hidden' : '']"
-                    class="flex items-center justify-between cursor-pointer bg-gray-100 dark:bg-gray-700 p-4 rounded-lg  mb-2">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white ">
+                    class="flex items-center justify-between cursor-pointer bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-2">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                       {{ section.label }}
                     </h3>
                     <ChevronDownIcon v-if="!openSections[index]"
@@ -89,92 +87,83 @@
                 </div>
               </template>
               <template v-else>
-
                 <div v-for="(section, index) in activeFieldSections" :key="section.name"
                   :class="section.is_matrix || section.is_multi_matrix ? 'matrix-overflow1' : ''">
-                  <h3 :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white  flex "
+                  <h3 v-if="section?.label " :id="`section-${index}`" class="text-2xl font-semibold custom dark:text-white flex"
                     :class="section.label ? 'padding' : 'mb-4'">
                     {{ section.label }}
-                    <SaveStatusIcon v-if="section.label" class=" mt-2 cust" :status="status" />
+                    <SaveStatusIcon v-if="section.label" class="mt-2 cust" :status="status" />
                   </h3>
-                  <div v-if="section.fields && section.fields.length > 0 && !section.table_matrix"
-                    :aria-labelledby="`section-${index}`" class="space-y-4 mb-4">
-                    <!-- {{ section }} -->
-                    <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="">
+                  <!-- section.fields.every((field) => {return isFieldVisible(field)}) && -->
+                  <div v-if="isFieldVisible(section) && ( section.fields.some((field) => { return isFieldVisible(field) }) && 
+                    getString(section?.description).qlable ||
+                    getString(section?.description)?.cenrieo ||
+                    getString(section?.description)?.info)
+                  " class="flex justify-between items-center ">
+                    <div
+                      v-if="getString(section?.description).qlable || getString(section?.description)?.cenrieo">
+
+                      <span v-if="getString(section?.description).qlable"
+                        class="text-md font-medium text-gray-900 dark:text-gray-200 block">
+                        {{ getString(section?.description)?.qlable }}
+                      </span>
+                      <p v-if="getString(section?.description)?.cenrieo"
+                        class="text-md font-medium text-gray-900 dark:text-gray-200 block">
+                        {{ getString(section?.description)?.cenrieo }}
+                      </p>
+                    </div>
+
+                    <div v-if=" getString(section?.description)?.info" class="relative">
+                      <Popover v-slot="{ open }" class="relative">
+                        <PopoverButton class="focus:outline-none">
+                          <InfoIcon
+                            class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
+                        </PopoverButton>
+                        <transition enter-active-class="transition duration-200 ease-out"
+                          enter-from-class="opacity-0 translate-y-1" enter-to-class="opacity-100 translate-y-0"
+                          leave-active-class="transition duration-150 ease-in"
+                          leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
+                          <PopoverPanel
+                            class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl">
+                            <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                              <div class="p-4 bg-white dark:bg-gray-800">
+                                <p class="text-sm text-gray-700 dark:text-gray-200 block">
+                                  {{ getString(section?.description)?.info }}
+                                </p>
+                              </div>
+                            </div>
+                          </PopoverPanel>
+                        </transition>
+                      </Popover>
+                    </div>
+                  </div>
+                  <div v-if=" section.fields && section.fields.length > 0 && section.fields.some((field) => { return isFieldVisible(field) }) " :aria-labelledby="`section-${index}`"
+                    class="space-y-4 mb-4">
+
+                    <div v-if="!section.table_matrix" v-for="(field, fieldIndex) in section.fields"
+                      :key="field.fieldname" class="">
                       <component v-if="isFieldVisible(field)" :section="section.description"
-                        :is="getFieldComponent(field.fieldtype, section)" :allTabsUnlocked="allTabsUnlocked" :field="field" :isCard="props.isCard"
-                        :isColumn="props.isColumn" :dropDownOptions="field.is_dropDown"
-                        :matrix_code="section.is_matrix_code" :matrix="section.is_matrix"
-                        :multi_matrix="section.is_multi_matrix" :index="fieldIndex" :formData="formData"
-                        v-model="formData[field.fieldname]" :isRow="props.isRow"
+                        :is="getFieldComponent(field.fieldtype, section)" :allTabsUnlocked="allTabsUnlocked"
+                        :field="field" :isCard="props.isCard" :isColumn="props.isColumn"
+                        :dropDownOptions="field.is_dropDown" :matrix_code="section.is_matrix_code"
+                        :matrix="section.is_matrix" :multi_matrix="section.is_multi_matrix" :index="fieldIndex"
+                        :formData="formData" v-model="formData[field.fieldname]" :isRow="props.isRow"
                         @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
                         :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname"
                         :class="{ 'border-red-500': showErrors && fieldErrors[field.fieldname] }" />
                       <p v-if="showErrors && fieldErrors[field.fieldname]" class="text-red-500 text-sm mt-1">
                         {{ fieldErrors[field.fieldname] }}
                       </p>
-                    </div>
-                  </div>
-                  <!-- <p v-else class="text-gray-500 dark:text-gray-400 italic">
-                    No fields in this section.
-                  </p> -->
-                  <!-- new -->
-                  <div v-if="section.fields && section.fields.length > 0 && section.table_matrix"
-                    :aria-labelledby="`section-${index}`">
-                    <!-- {{ section }} -->
-                    <div v-if="section.fields.every((field) => { return isFieldVisible(field) }) && section.table_matrix"
-                      class="flex justify-between items_center">
-                      <div
-                        v-if="(getString(section?.description).qlable || getString(section?.description)?.cenrieo || getString(section.fields[0]?.description)?.qlable || getString(section.fields[0]?.description)?.cenrieo)">
-                        <span v-if="getString(section?.description).qlable"
-                          class="text-md font-medium text-gray-900 dark:text-gray-200 block">
-                          {{ getString(section?.description)?.qlable }}
-                        </span>
-                        <p v-if="getString(section?.description)?.cenrieo" class="text-md font-medium text-gray-900 dark:text-gray-200 block ">
-                          {{ getString(section?.description)?.cenrieo }}
-                        </p>
-                        <p v-if="getString(section.fields[0]?.description)?.qlable"
-                          class="text-md font-medium text-gray-700 dark:text-gray-200 mb-1.5 block">
-                          {{ getString(section.fields[0]?.description)?.qlable }}
-                        </p>
-                        <p v-if="getString(section.fields[0]?.description)?.cenrieo" class="text-md font-medium text-gray-900 dark:text-gray-200 block ">
-                          {{ getString(section.fields[0]?.description)?.cenrieo }}
-                        </p>
-                      </div>
-                      <div
-                        v-if="(getString(section.fields[0]?.description)?.info || getString(section?.description)?.info)"
-                        class="relative">
-                        <Popover v-slot="{ open }" class="relative">
-            <PopoverButton class="focus:outline-none">
-              <InfoIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
-            </PopoverButton>
-            <transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-1"
-              enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
-              leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
-              <PopoverPanel
-                class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl">
-                <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                  <div class="p-4 bg-white dark:bg-gray-800">
-                    <p class="text-md font-medium text-gray-900 dark:text-gray-200 block">
-                    {{ getString(section.fields[0]?.description)?.info ||
-                                      getString(section?.description)?.info }}
-                    </p>
-                  </div>
-                </div>
-              </PopoverPanel>
-            </transition>
-          </Popover>
-                      </div>
-                    </div>
 
-                    <div class="flex gap-3 items-center " :class="section.table_matrix ? `` : ``">
-                      <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname" class="mb-4">
+                    </div>
+                    <div v-if="section.table_matrix" class="flex">
+                      <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname">
                         <component v-if="isFieldVisible(field)" :section="section.description"
-                          :is="getFieldComponent(field.fieldtype, section)" :field="field" :isCard="props.isCard"
-                          :isColumn="props.isColumn" :dropDownOptions="field.is_dropDown"
-                          :matrix_code="section.is_matrix_code" :matrix="false" :table_matrix="section.table_matrix"
-                          :multi_matrix="section.is_multi_matrix" :index="fieldIndex" :formData="formData"
-                          v-model="formData[field.fieldname]" :isRow="props.isRow"
+                          :is="getFieldComponent(field.fieldtype, section)" :allTabsUnlocked="allTabsUnlocked"
+                          :field="field" :isCard="props.isCard" :isColumn="props.isColumn"
+                          :dropDownOptions="field.is_dropDown" :matrix_code="section.is_matrix_code"
+                          :matrix="section.is_matrix" :multi_matrix="section.is_multi_matrix" :index="fieldIndex"
+                          :formData="formData" v-model="formData[field.fieldname]" :isRow="props.isRow"
                           @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
                           :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname"
                           :class="{ 'border-red-500': showErrors && fieldErrors[field.fieldname] }" />
@@ -183,10 +172,13 @@
                         </p>
                       </div>
                     </div>
+
+
                   </div>
                 </div>
               </template>
             </div>
+
             <div class="mt-6 flex justify-end gap-2">
               <button v-if="!props.section && !isLastTab" @click="nextTab" type="button" :disabled="!isCurrentTabValid"
                 :class="[
@@ -216,6 +208,7 @@
     </main>
   </div>
 </template>
+
 
 <script setup>
 import { ref, computed, onMounted, inject, watch, provide } from 'vue'
@@ -372,7 +365,7 @@ const activeFieldSections = computed(() => {
       if (currentSection) {
         sections.push(currentSection)
       }
-      currentSection = { label: field.label, fields: [], is_matrix: field.is_matrix, description: field.description, is_multi_matrix: field.is_multi_matrix, is_matrix_code: field.is_matrix_code, table_matrix: field.table_matrix }
+      currentSection = { label: field.label, fields: [], is_matrix: field.is_matrix, depends_on:field.depends_on, description: field.description, is_multi_matrix: field.is_multi_matrix, is_matrix_code: field.is_matrix_code, table_matrix: field.table_matrix }
     } else if (currentSection) {
       // if (allTabsUnlocked.value && activeTab.value === tabFields.value[0]?.name) {
       //  currentSection.fields.push({ ...field, read_only: 1 })
@@ -475,8 +468,8 @@ const isFieldVisible = (field) => {
   const condition = field.depends_on.replace('eval:', '').replace(/doc\./g, 'formData.')
   try {
     let status = new Function('formData', `return ${condition}`)(formData.value)
-    if (!status ){
-     formData.value[field.fieldname]= Array.isArray(formData.value[field.fieldname])?[]:""
+    if (!status) {
+      formData.value[field.fieldname] = Array.isArray(formData.value[field.fieldname]) ? [] : ""
     }
     return status
     // return new Function('formData', `return ${condition}`)(formData.value)
@@ -818,9 +811,11 @@ aside {
   /* Hide horizontal scrollbar */
 
 }
-.w-96{
-  min-width:400px !important;
+
+.w-96 {
+  min-width: 400px !important;
 }
+
 @media screen and (max-width: 768px) {
   aside {
     position: fixed;
