@@ -1,18 +1,18 @@
 <template>
   <div class="w-full">
     <div class="flex items-center justify-between mb-2">
-      <span v-if="parsedDescription.qlable || fieldParsedDescription.qlable"
+      <span v-if=" fieldParsedDescription.qlable"
         class="text-md font-medium text-gray-900 dark:text-gray-200 block ">
-        {{ parsedDescription.qlable || fieldParsedDescription.qlable }}
+        {{  fieldParsedDescription.qlable }}
       </span>
-      <span v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
-        class="text-md font-medium text-gray-900 dark:text-gray-200 block">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
+      <span v-if=" fieldParsedDescription?.cenrieo && !props.isCard"
+        class="text-md font-medium text-gray-900 dark:text-gray-200 block">{{  fieldParsedDescription?.cenrieo }}
       </span>
 
       <label :for="field.fieldname" class="text-md font-medium text-gray-900 dark:text-gray-200 block">
         {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
-     <div v-if="parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
+     <div v-if=" fieldParsedDescription?.info" class="ml-2 relative">
   <Popover v-slot="{ open }" class="relative">
     <PopoverButton class="focus:outline-none">
       <InfoIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
@@ -31,7 +31,7 @@
         <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
           <div class="p-4 bg-white dark:bg-gray-800">
             <p class="text-sm text-gray-700 dark:text-gray-300">
-              {{ parsedDescription?.info || fieldParsedDescription?.info }}
+              {{  fieldParsedDescription?.info }}
             </p>
           </div>
         </div>
@@ -40,8 +40,8 @@
   </Popover>
 </div>
     </div>
-    <span v-if="parsedDescription.desc || fieldParsedDescription.desc" class="text-md font-medium text-gray-900 dark:text-gray-200 block ">
-      {{ parsedDescription.desc || fieldParsedDescription.desc }}
+    <span v-if="fieldParsedDescription.desc" class="text-md font-medium text-gray-900 dark:text-gray-200 block ">
+      {{ fieldParsedDescription.desc }}
     </span>
 
     <div class="mt-1 border-2 py-2 rounded-md hover:border-gray-400 transition-colors duration-200"
@@ -110,11 +110,7 @@ const props = defineProps({
     required: false,
     default: () => ({})
   },
-  section: {
-    type: String,
-    required: false,
-    default: ''
-  }
+ 
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -127,11 +123,6 @@ const acceptedFileTypes = '.pdf,.docx';
 const maxFileSize = 10 * 1024 * 1024; // 10MB
 
 
-const parsedDescription = computed(() => {
-  return getString(props.section || "")
-
-
-})
 const fieldParsedDescription = computed(() => {
   return getString(props.field.description || "")
 })

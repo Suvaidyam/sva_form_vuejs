@@ -3,17 +3,17 @@
 
 
     <div>
-      <span v-if="index < 1 && parsedDescription?.qlable || fieldParsedDescription?.qlable"
+      <span v-if="index < 1 && fieldParsedDescription?.qlable"
         class="text-md font-medium text-gray-900 dark:text-gray-200 block break-words">
-        {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
+        {{ fieldParsedDescription?.qlable }}
       </span>
-      <span v-if="index < 1 && parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo"
+      <span v-if="index < 1 &&  fieldParsedDescription?.cenrieo"
         class="text-md font-medium text-gray-900 dark:text-gray-200 block break-words">
-        {{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
+        {{  fieldParsedDescription?.cenrieo }}
       </span>
 
       <div class="flex items-center justify-between">
-        <div v-if="index < 1 && parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
+        <div v-if="index < 1 &&  fieldParsedDescription?.info" class="ml-2 relative">
           <Popover v-slot="{ open }" class="relative">
             <PopoverButton class="focus:outline-none">
               <InfoIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
@@ -26,7 +26,7 @@
                 <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                   <div class="p-4 bg-white dark:bg-gray-800">
                     <p class="text-sm text-gray-700 dark:text-gray-300">
-                      {{ parsedDescription?.info || fieldParsedDescription?.info }}
+                      {{  fieldParsedDescription?.info }}
                     </p>
                   </div>
                 </div>
@@ -152,8 +152,6 @@ const saveAsDraft = inject('saveAsDraft')
 const options = ref([])
 const error = ref('')
 
-
-const parsedDescription = computed(() => getString(props.section || ""))
 const fieldParsedDescription = computed(() => getString(props.field.description || ""))
 
 function getString(str) {

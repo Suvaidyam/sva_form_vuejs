@@ -78,10 +78,7 @@ const props = defineProps({
     type: Object,
     default: () => ({})
   },
-  section: {
-    type: String,
-    default: ''
-  }
+  
 })
 
 const error = ref('');
@@ -90,11 +87,7 @@ const saveAsDraft = inject('saveAsDraft')
 const call = inject('$call')
 const minMax = ref({})
 
-const parsedDescription = computed(() => {
-  return getString(props.section || "")
 
-
-})
 const fieldParsedDescription = computed(() => {
   return getString(props.field.description || "")
 })
