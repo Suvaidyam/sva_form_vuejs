@@ -7,7 +7,7 @@ def get_meta(doctype):
 
 @frappe.whitelist(allow_guest=True)
 def get_option(filters):
-    return frappe.get_all('Field Options',filters=filters, fields=['name', 'label', 'code as level' , 'score','group','depends_on'] , order_by='code asc')
+    return frappe.get_all('Field Options',filters=filters, fields=['name', 'label', 'code as level' , 'score','group','depends_on','desc'] , order_by='code asc')
 
 @frappe.whitelist(allow_guest=True)
 def get_criteria(filters):
