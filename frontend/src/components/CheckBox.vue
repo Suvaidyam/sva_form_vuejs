@@ -6,18 +6,18 @@
     </div> -->
     <div>
       <span v-if="index < 1 && parsedDescription?.qlable || fieldParsedDescription?.qlable "
-        class="text-md font-medium text-gray-700 dark:text-gray-200 block break-words">
+        class="text-md font-medium text-gray-900 dark:text-gray-200 block break-words">
         {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
       </span>
 
       <span v-if="index < 1 && parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && index < 1"
-        class="text-sm text-gray-700  break-words">
+        class="text-md font-medium text-gray-900 dark:text-gray-200 block break-words">
         {{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
       </span>
 
       <div class="flex items-center justify-between ">
 
-        <label class="text-md font-medium text-gray-700 dark:text-gray-200">
+        <label class="text-md font-medium text-gray-900 dark:text-gray-200 block">
           {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
         </label>
 
@@ -43,8 +43,8 @@
           </Popover>
         </div>
       </div>
-      <span v-if="index < 1 &&  fieldParsedDescription.desc"
-        class="text-sm text-gray-700 mb-2 break-words">
+      <span v-if="  fieldParsedDescription.desc "
+        class="text-md font-medium text-gray-900 dark:text-gray-200 block mb-2 break-words">
         {{  fieldParsedDescription?.desc }}
       </span>
       <div class="flex flex-wrap ml-3">
@@ -56,7 +56,7 @@
               :disabled="isOptionDisabled(option) || field.read_only"
               class="h-4 mt-1 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
             <label v-if="isOptionVisible(option)" :for="`${field.name}-${option.name}`"
-              class="ml-2 block text-sm  break-words">
+              class="ml-2 block text-[16px]  break-words">
               <span v-for="(line, index) in option.labels" :key="index" class="block">
                 {{ line }}
               </span>

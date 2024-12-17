@@ -4,11 +4,11 @@
 
     <div>
       <span v-if="index < 1 && parsedDescription?.qlable || fieldParsedDescription?.qlable"
-        class="text-md font-medium text-gray-700 dark:text-gray-200 block break-words">
+        class="text-md font-medium text-gray-900 dark:text-gray-200 block break-words">
         {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
       </span>
       <span v-if="index < 1 && parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo"
-        class="text-sm text-gray-700  break-words">
+        class="text-md font-medium text-gray-900 dark:text-gray-200 block break-words">
         {{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
       </span>
 
@@ -37,7 +37,7 @@
       </div>
 
       <span v-if=" fieldParsedDescription.desc"
-        class="text-sm text-gray-700 mb-2 break-words">
+        class="text-md font-medium text-gray-900 dark:text-gray-200 block mb-2 break-words">
         {{  fieldParsedDescription?.desc }}
       </span>
 
@@ -59,9 +59,9 @@
 
               <div
                 class="bg-white font-medium dark:bg-gray-900 p-4 flex items-start border-t border-gray-200 dark:border-gray-700 min-h-[80px] sticky left-0 z-10">
-                <div class="text-sm text-gray-900 dark:text-gray-100 w-full pr-6">
+                <div class=" w-full pr-6">
                   <label :for="`${field.name}-${visibleOptions[0]?.name}`" class="flex items-start">
-                    <span class="mr-2">{{ field.label }} <span v-if="isFieldMandatory"
+                    <span class="mr-2 text-md font-medium text-gray-900 dark:text-gray-200 block">{{ field.label }} <span v-if="isFieldMandatory"
                         class="text-red-500">*</span></span>
                   </label>
                 </div>
@@ -77,7 +77,7 @@
                         :required="field.reqd && modelValue.length === 0"
                         class="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary dark:border-gray-600 dark:focus:ring-primary" />
                       <label :for="`${field.name}-${option.name}`"
-                        class="ml-2 text-sm text-gray-900 dark:text-gray-100">
+                        class="ml-2 text-[16px] ">
                         {{ option.label }}
                       </label>
                     </div>

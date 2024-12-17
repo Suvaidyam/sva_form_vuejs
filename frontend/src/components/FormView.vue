@@ -62,13 +62,15 @@
           <form @submit.prevent="onSubmit" class=" mt-2">
             <div class=" ">
               <template v-if="props.section">
-                <div v-for="(section, index) in allSections" :key="index" class="mb-4">
+                <div v-for="(section, index) in allSections" :key="index" class="mb-4 mt-2">
                   <div @click="toggleSection(index)" :class="[section_hidden ? 'hidden' : '']"
                     class="flex items-center justify-between cursor-pointer bg-gray-100 dark:bg-gray-700 p-4 rounded-lg  mb-2">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white ">
                       {{ section.label }}
                     </h3>
-                    <ChevronDownIcon
+                    <ChevronDownIcon v-if="!openSections[index]"
+                      :class="['w-5 h-5 transition-transform', { 'transform rotate-180': openSections[index] }]" />
+                    <ChevronUpIcon v-if="openSections[index]"
                       :class="['w-5 h-5 transition-transform', { 'transform rotate-180': openSections[index] }]" />
                   </div>
                   <div v-show="openSections[index]" class="pl-4">
@@ -125,17 +127,17 @@
                       <div
                         v-if="(getString(section?.description).qlable || getString(section?.description)?.cenrieo || getString(section.fields[0]?.description)?.qlable || getString(section.fields[0]?.description)?.cenrieo)">
                         <span v-if="getString(section?.description).qlable"
-                          class="text-md font-medium text-gray-700 dark:text-gray-200 block">
+                          class="text-md font-medium text-gray-900 dark:text-gray-200 block">
                           {{ getString(section?.description)?.qlable }}
                         </span>
-                        <p v-if="getString(section?.description)?.cenrieo" class="text-sm text-gray-700 ">
+                        <p v-if="getString(section?.description)?.cenrieo" class="text-md font-medium text-gray-900 dark:text-gray-200 block ">
                           {{ getString(section?.description)?.cenrieo }}
                         </p>
                         <p v-if="getString(section.fields[0]?.description)?.qlable"
                           class="text-md font-medium text-gray-700 dark:text-gray-200 mb-1.5 block">
                           {{ getString(section.fields[0]?.description)?.qlable }}
                         </p>
-                        <p v-if="getString(section.fields[0]?.description)?.cenrieo" class="text-sm text-gray-700 ">
+                        <p v-if="getString(section.fields[0]?.description)?.cenrieo" class="text-md font-medium text-gray-900 dark:text-gray-200 block ">
                           {{ getString(section.fields[0]?.description)?.cenrieo }}
                         </p>
                       </div>
@@ -143,27 +145,25 @@
                         v-if="(getString(section.fields[0]?.description)?.info || getString(section?.description)?.info)"
                         class="relative">
                         <Popover v-slot="{ open }" class="relative">
-                          <PopoverButton class="focus:outline-none">
-                            <InfoIcon
-                              class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
-                          </PopoverButton>
-                          <transition enter-active-class="transition duration-200 ease-out"
-                            enter-from-class="opacity-0 translate-y-1" enter-to-class="opacity-100 translate-y-0"
-                            leave-active-class="transition duration-150 ease-in"
-                            leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
-                            <PopoverPanel
-                              class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl">
-                              <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                                <div class="p-4 bg-white dark:bg-gray-800">
-                                  <p class="text-sm text-gray-700 dark:text-gray-300">
-                                    {{ getString(section.fields[0]?.description)?.info ||
+            <PopoverButton class="focus:outline-none">
+              <InfoIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
+            </PopoverButton>
+            <transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-1"
+              enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
+              leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
+              <PopoverPanel
+                class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl">
+                <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                  <div class="p-4 bg-white dark:bg-gray-800">
+                    <p class="text-md font-medium text-gray-900 dark:text-gray-200 block">
+                    {{ getString(section.fields[0]?.description)?.info ||
                                       getString(section?.description)?.info }}
-                                  </p>
-                                </div>
-                              </div>
-                            </PopoverPanel>
-                          </transition>
-                        </Popover>
+                    </p>
+                  </div>
+                </div>
+              </PopoverPanel>
+            </transition>
+          </Popover>
                       </div>
                     </div>
 
@@ -219,7 +219,7 @@
 
 <script setup>
 import { ref, computed, onMounted, inject, watch, provide } from 'vue'
-import { ChevronDownIcon, LockIcon, CheckCircleIcon, XCircleIcon } from 'lucide-vue-next'
+import { ChevronDownIcon, LockIcon, CheckCircleIcon, XCircleIcon, ChevronUpIcon } from 'lucide-vue-next'
 import Input from './Input.vue'
 import Link from './Link.vue'
 import LinkPW from './LinkPW.vue'
@@ -328,25 +328,25 @@ function getString(str) {
   let qlable = "";
   let cenrieo = "";
 
-  const match = str.match(/\{([^}]+)\}/)
+  const match = str?.match(/\{([^}]+)\}/)
   if (match) {
     info = match[1]
     str = str.replace(match[0], "").trim()
   }
 
-  const cenrieoSplit = str.split("@@")
-  if (cenrieoSplit.length > 1) {
+  const cenrieoSplit = str?.split("@@")
+  if (cenrieoSplit?.length > 1) {
     cenrieo = cenrieoSplit[1].trim()
     str = cenrieoSplit[0].trim()
   }
 
-  const parts = str.split("$$")
-  if (parts.length > 1) {
+  const parts = str?.split("$$")
+  if (parts?.length > 1) {
     qlable = parts[1].trim()
     str = parts[0].trim()
   }
 
-  desc = str.trim()
+  desc = str?.trim()
 
   return { desc, info, qlable, cenrieo }
 }
@@ -474,7 +474,12 @@ const isFieldVisible = (field) => {
   if (!field.depends_on) return true
   const condition = field.depends_on.replace('eval:', '').replace(/doc\./g, 'formData.')
   try {
-    return new Function('formData', `return ${condition}`)(formData.value)
+    let status = new Function('formData', `return ${condition}`)(formData.value)
+    if (!status ){
+     formData.value[field.fieldname]= Array.isArray(formData.value[field.fieldname])?[]:""
+    }
+    return status
+    // return new Function('formData', `return ${condition}`)(formData.value)
   } catch (error) {
     console.error('Error evaluating field visibility:', error)
     return false
@@ -813,7 +818,9 @@ aside {
   /* Hide horizontal scrollbar */
 
 }
-
+.w-96{
+  min-width:400px !important;
+}
 @media screen and (max-width: 768px) {
   aside {
     position: fixed;

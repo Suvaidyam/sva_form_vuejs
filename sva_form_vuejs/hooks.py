@@ -10,7 +10,7 @@ app_license = "mit"
 
 fixtures=[
     "Client Script",
-    # "Number field Scoring Logic"
+#    "Number field Scoring Logic"
     ]
 
 # required_apps = []
