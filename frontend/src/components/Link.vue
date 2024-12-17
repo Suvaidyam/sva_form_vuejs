@@ -1,7 +1,7 @@
 <template>
   <div v-if="!field.hidden" class="w-full">
     <div v-if="!matrix && !table_matrix">
-      <span v-if="index < 1" class="text-md font-medium text-gray-900 dark:text-gray-200 block">
+      <span class="text-md font-medium text-gray-900 dark:text-gray-200 block">
         {{ fieldParsedDescription.qlable }}
       </span>
       <p v-if="fieldParsedDescription?.cenrieo" class="text-md font-medium text-gray-900 dark:text-gray-200">
