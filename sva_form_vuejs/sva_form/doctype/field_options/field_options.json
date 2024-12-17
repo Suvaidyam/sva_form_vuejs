@@ -62,7 +62,7 @@
   },
   {
    "fieldname": "depends_on",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Display Depends On"
   },
   {
@@ -85,7 +85,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-17 11:27:00.056887",
+ "modified": "2024-12-17 12:09:33.601413",
  "modified_by": "Administrator",
  "module": "sva_form",
  "name": "Field Options",
