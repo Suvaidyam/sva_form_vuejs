@@ -468,8 +468,9 @@ const isFieldVisible = (field) => {
   const condition = field.depends_on.replace('eval:', '').replace(/doc\./g, 'formData.')
   try {
     let status = new Function('formData', `return ${condition}`)(formData.value)
-    if (!status) {
-      formData.value[field.fieldname] = Array.isArray(formData.value[field.fieldname]) ? [] : ""
+    if (!status && (Array.isArray(formData.value[field.fieldname]) ? formData.value[field.fieldname].length > 0 : formData.value[field.fieldname])){
+      saveAsDraft({ [field.fieldname]: Array.isArray(formData.value[field.fieldname])?[]:"" })
+      handleFieldUpdate(field.fieldname,Array.isArray(formData.value[field.fieldname])?[]:"")
     }
     return status
     // return new Function('formData', `return ${condition}`)(formData.value)
