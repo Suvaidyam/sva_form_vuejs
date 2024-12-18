@@ -1,6 +1,6 @@
 <template>
   <div v-if="!field.hidden" class="w-full">
-    <div v-if="!matrix && !table_matrix">
+    <div v-if="!matrix ">
       <span class="text-md font-medium text-gray-900 dark:text-gray-200 block">
         {{ fieldParsedDescription.qlable }}
       </span>
@@ -8,19 +8,25 @@
         {{ fieldParsedDescription?.cenrieo }}
       </p>
     </div>
-
-    <Matrix v-if="matrix && !table_matrix" :matrix_code="matrix_code" :field="field" :modelValue="modelValue"
+    <Matrix v-if="matrix " :matrix_code="matrix_code" :field="field" :modelValue="modelValue"
       @update:modelValue="updateValue" :visibleOptions="visibleOptions" :isFieldMandatory="isFieldMandatory(field)"
       :index="index" />
+      <!-- {{field}} -->
+      
+      <Matrix1 v-if="is_matrix_transpose  " :matrix_code="matrix_code" :field="field" :modelValue="modelValue"
+      @update:modelValue="updateValue" :visibleOptions="visibleOptions" :isFieldMandatory="isFieldMandatory(field)"
+      :index="index" />
+      
 
-    <template v-else>
-      <div class="flex items-center justify-between">
-        <label :for="`${field.name}-${visibleOptions[0]?.name}`"
+    <template  v-else>
+      <div :class="table_matrix? `border-b mx-0`:``" class="flex items-center justify-between">
+        <label :class="table_matrix? ` my-2 `:``" v-if="!is_matrix_transpose && !matrix "   :for="`${field.name}-${visibleOptions[0]?.name}`"
+        
           class="block text-md font-medium text-gray-900 dark:text-gray-200">
           {{ field.label }}
           <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
         </label>
-        <div v-if="fieldParsedDescription?.info && !table_matrix" class="ml-2 relative">
+        <div v-if="fieldParsedDescription?.info  " class="ml-2 relative">
           <Popover v-slot="{ open }" class="relative">
             <PopoverButton class="focus:outline-none">
               <InfoIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
@@ -49,7 +55,7 @@
         :visibleOptions="visibleOptions" :isFieldMandatory="isFieldMandatory(field)" />
 
       <div v-else class="grid gap-2 mt-2 custom">
-        <label v-for="option in visibleOptions" :key="option.name" :for="`${field.name}-${option.name}`"
+        <label v-if="!is_matrix_transpose && !matrix" v-for="option in visibleOptions" :key="option.name" :for="`${field.name}-${option.name}`"
           class="flex items-start text-sm cursor-pointer ml-5">
           <div class="flex-shrink-0 w-5 h-5 mr-2 pt-1">
             <input :id="`${field.name}-${option.name}`" :name="field.name" type="radio" :value="option.name"
@@ -57,7 +63,7 @@
               :disabled="field.read_only || shouldDisableOption(option)"
               class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600" />
           </div>
-          <span class="flex-grow  text-[16px]">{{ option.label }}</span>
+          <span class="flex-grow  text-[15px]">{{ option.label }}</span>
         </label>
       </div>
     </template>
@@ -118,6 +124,16 @@ const props = defineProps({
     required: true
   },
   matrix_code: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+   table_matrix: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  is_matrix_transpose: {
     type: Boolean,
     required: false,
     default: false
