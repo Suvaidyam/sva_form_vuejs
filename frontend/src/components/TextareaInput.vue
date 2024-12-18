@@ -46,7 +46,7 @@
     </span>
 
     <textarea :id="field.name" :value="modelValue" @input="handleInput" @blur="handleBlur" :disabled="field.read_only"
-      :required="isFieldMandatory(field)" :rows="field.rows || 3" :placeholder="field.placeholder" :class="[
+      :required="isFieldMandatory(field)" :rows="field.rows || 4" :placeholder="field.placeholder" :class="[
         'px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
         'dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 mt-2',
         { 'border-red-500 focus:ring-red-500': error }
@@ -161,8 +161,18 @@ const handleBlur = () => {
 
 const validateInput = (value) => {
   error.value = ''
+
+  // Check if field is required and empty
   if (props.field.reqd && !value.trim()) {
     error.value = `${props.field.label} is required.`
+    return
+  }
+
+  // Check for maximum word limit
+  const wordCount = value.trim().split(/\s+/).length
+  if (wordCount > 200) {
+    error.value = `${props.field.label} cannot exceed 200 words. Currently, it has ${wordCount} words.`
+    return
   }
 }
 </script>
