@@ -59,7 +59,7 @@
                     :checked="modelValue === option.name" @change="updateValue(option.name)" :disabled="field.read_only"
                     :required="isFieldMandatory"
                     class="h-4 w-4 text-primary border-gray-300  focus:ring-primary dark:border-gray-600 dark:focus:ring-primary" />
-                  <label :for="`${field.name}-${option.name}`" class="ml-2 text-[16px]">
+                  <label :for="`${field.name}-${option.name}`" class="ml-2 text-[15px]">
                     {{ option.label }} 
                   </label>
                 </div>

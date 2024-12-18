@@ -52,7 +52,7 @@
 
     <!-- Main Content -->
     <main :class="[props.width ? 'w-full' : 'w-75', 'flex-1']" v-else>
-      <div :class="[section_hidden ? 'mx-auto pb-8' : 'mx-auto px-6 pb-8']">
+      <div :class="[section_hidden ? 'mx-auto pb-8' : 'mx-auto pb-8']">
         <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
           Assessment Not Found
         </div>
@@ -140,7 +140,7 @@
                   <div v-if=" section.fields && section.fields.length > 0 && section.fields.some((field) => { return isFieldVisible(field) }) " :aria-labelledby="`section-${index}`"
                     class="space-y-4 mb-4">
 
-                    <div v-if="!section.table_matrix" v-for="(field, fieldIndex) in section.fields"
+                    <div v-if="!section.table_matrix && !section.is_matrix_transpose" v-for="(field, fieldIndex) in section.fields"
                       :key="field.fieldname" class="">
                       <component v-if="isFieldVisible(field)" :section="section.description"
                         :is="getFieldComponent(field.fieldtype, section)" :allTabsUnlocked="allTabsUnlocked"
@@ -156,12 +156,13 @@
                       </p>
 
                     </div>
-                    <div v-if="section.table_matrix" class="flex">
-                      <div v-for="(field, fieldIndex) in section.fields" :key="field.fieldname">
-                        <component v-if="isFieldVisible(field)" :section="section.description"
+                    <div v-if="section.table_matrix" class="flex ">
+                      <div  v-for="(field, fieldIndex) in section.fields" :key="field.fieldname">
+                        <component class=" border p-2 mt-2 "   v-if="isFieldVisible(field)" :section="section.description"
                           :is="getFieldComponent(field.fieldtype, section)" :allTabsUnlocked="allTabsUnlocked"
                           :field="field" :isCard="props.isCard" :isColumn="props.isColumn"
                           :dropDownOptions="field.is_dropDown" :matrix_code="section.is_matrix_code"
+                          :table_matrix="section.table_matrix"
                           :matrix="section.is_matrix" :multi_matrix="section.is_multi_matrix" :index="fieldIndex"
                           :formData="formData" v-model="formData[field.fieldname]" :isRow="props.isRow"
                           @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
@@ -171,10 +172,31 @@
                           {{ fieldErrors[field.fieldname] }}
                         </p>
                       </div>
+                    </div> 
+                   
+                    <div v-if="section.is_matrix_transpose" class="flex mt-2">
+                       <div  v-for="(field, fieldIndex) in section.fields"
+                      :key="field.fieldname" class="">
+                    
+                      <component v-if="isFieldVisible(field)" :section="section.description"
+                        :is="getFieldComponent(field.fieldtype, section)" :allTabsUnlocked="allTabsUnlocked"
+                        :field="field" :isCard="props.isCard" :isColumn="props.isColumn"
+                        :dropDownOptions="field.is_dropDown" :matrix_code="section.is_matrix_code"
+                        :is_matrix_transpose="section.is_matrix_transpose"
+                        :matrix="section.is_matrix" :multi_matrix="section.is_multi_matrix" :index="fieldIndex"
+                        :formData="formData" v-model="formData[field.fieldname]" :isRow="props.isRow"
+                        @update:modelValue="handleFieldUpdate(field.fieldname, $event)"
+                        :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname"
+                        :class="{ 'border-red-500': showErrors && fieldErrors[field.fieldname] }" />
+                      <p v-if="showErrors && fieldErrors[field.fieldname]" class="text-red-500 text-sm mt-1">
+                        {{ fieldErrors[field.fieldname] }}
+                      </p>
+
                     </div>
-
-
+                    </div>
                   </div>
+
+                
                 </div>
               </template>
             </div>
@@ -365,7 +387,7 @@ const activeFieldSections = computed(() => {
       if (currentSection) {
         sections.push(currentSection)
       }
-      currentSection = { label: field.label, fields: [], is_matrix: field.is_matrix, depends_on:field.depends_on, description: field.description, is_multi_matrix: field.is_multi_matrix, is_matrix_code: field.is_matrix_code, table_matrix: field.table_matrix }
+      currentSection = { label: field.label, fields: [], is_matrix: field.is_matrix, is_matrix_transpose:field.is_matrix_transpose, depends_on:field.depends_on, description: field.description, is_multi_matrix: field.is_multi_matrix, is_matrix_code: field.is_matrix_code, table_matrix: field.table_matrix }
     } else if (currentSection) {
       // if (allTabsUnlocked.value && activeTab.value === tabFields.value[0]?.name) {
       //  currentSection.fields.push({ ...field, read_only: 1 })
