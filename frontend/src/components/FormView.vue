@@ -52,7 +52,7 @@
 
     <!-- Main Content -->
     <main :class="[props.width ? 'w-full' : 'w-75', 'flex-1']" v-else>
-      <div :class="[section_hidden ? 'mx-auto pb-8' : 'mx-auto px-6 pb-8']">
+      <div :class="[section_hidden ? 'mx-auto pb-8' : 'mx-auto pb-8']">
         <div v-if="allSections.length === 0" class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
           Assessment Not Found
         </div>
