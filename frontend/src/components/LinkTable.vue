@@ -22,9 +22,9 @@
               leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
               <PopoverPanel
                 class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl">
-                <div class="overflow-hidden rounded-lg border-2 shadow-lg ring-1 ring-black ring-opacity-5">
-                  <div class="p-4 bg-white dark:bg-gray-800">
-                    <p class="text-sm text-gray-900 dark:text-gray-300">
+                <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                  <div class="p-4 text-white bg-[#255B97]">
+                    <p class="text-sm">
                       {{ fieldParsedDescription?.info }}
                     </p>
                   </div>
@@ -65,10 +65,10 @@
                   leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100 translate-y-0"
                   leave-to-class="opacity-0 translate-y-1">
                   <PopoverPanel
-                    class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl">
-                    <div class="overflow-hidden border-2 border-gray-700 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                      <div class="p-4 bg-white dark:bg-gray-800">
-                        <p class="text-sm text-gray-900 dark:text-gray-300">
+                    class="absolute z-10 w-96 px-4 mt-2 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl">
+                    <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                      <div class="p-4 text-white bg-[#255B97]">
+                        <p class="text-sm ">
                           {{ option?.desc }}
                         </p>
                       </div>
