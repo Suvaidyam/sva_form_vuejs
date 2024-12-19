@@ -13,7 +13,7 @@
 
     <div class="flex items-center justify-between">
 
-      <label :for="field.name" class="text-md font-medium text-gray-700 dark:text-gray-200">
+      <label :for="field.name" class="text-md font-medium text-gray-900 dark:text-gray-200">
         {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
       <div v-if="parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
@@ -78,10 +78,7 @@ const props = defineProps({
     type: Object,
     default: () => ({})
   },
-  section: {
-    type: String,
-    default: ''
-  }
+  
 })
 
 const error = ref('');
@@ -90,11 +87,7 @@ const saveAsDraft = inject('saveAsDraft')
 const call = inject('$call')
 const minMax = ref({})
 
-const parsedDescription = computed(() => {
-  return getString(props.section || "")
 
-
-})
 const fieldParsedDescription = computed(() => {
   return getString(props.field.description || "")
 })
