@@ -1,11 +1,11 @@
 <template>
   <div v-if="!field.hidden" class="flex flex-col ">
-    <span v-if="index < 1 && parsedDescription.qlable || fieldParsedDescription.qlable"
+    <span v-if="index < 1 &&  fieldParsedDescription.qlable"
       class="text-md font-medium text-gray-900 dark:text-gray-200 block ">
-      {{ parsedDescription.qlable || fieldParsedDescription.qlable }}
+      {{  fieldParsedDescription.qlable }}
     </span>
-    <span v-if="parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
-      class="text-md font-medium text-gray-900 dark:text-gray-200 block ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
+    <span v-if="fieldParsedDescription?.cenrieo && !props.isCard"
+      class="text-md font-medium text-gray-900 dark:text-gray-200 block ">{{ fieldParsedDescription?.cenrieo }}
     </span>
 
     <!-- <p v-if="index < 1">{{ section }}</p> -->
@@ -13,7 +13,7 @@
       <label :for="field.name" class="text-md font-medium text-gray-900 dark:text-gray-200 block">
         {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
-     <div v-if="parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
+     <div v-if=" fieldParsedDescription?.info" class="ml-2 relative">
   <Popover v-slot="{ open }" class="relative">
     <PopoverButton class="focus:outline-none">
       <InfoIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
@@ -32,7 +32,7 @@
         <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
           <div class="p-4 bg-white dark:bg-gray-800">
             <p class="text-sm text-gray-700 dark:text-gray-300">
-              {{ parsedDescription?.info || fieldParsedDescription?.info }}
+              {{ fieldParsedDescription?.info }}
             </p>
           </div>
         </div>
@@ -41,12 +41,12 @@
   </Popover>
 </div>
     </div>
-    <span v-if="parsedDescription?.desc || fieldParsedDescription?.desc" class="text-md font-medium text-gray-900 dark:text-gray-200 block  ">
-      {{ parsedDescription?.desc || fieldParsedDescription?.desc }}
+    <span v-if=" fieldParsedDescription?.desc" class="text-md font-medium text-gray-900 dark:text-gray-200 block  ">
+      {{  fieldParsedDescription?.desc }}
     </span>
 
-    <textarea :id="field.name" :value="modelValue" @input="handleInput" @blur="handleBlur" :disabled="field.read_only"
-      :required="isFieldMandatory(field)" :rows="field.rows || 3" :placeholder="field.placeholder" :class="[
+    <textarea :id="field.name"  :value="modelValue" @input="handleInput" @blur="handleBlur" :disabled="field.read_only"
+      :required="isFieldMandatory(field)" :rows="field.rows || 4" :placeholder="field.placeholder" :class="[
         'px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
         'dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 mt-2',
         { 'border-red-500 focus:ring-red-500': error }
@@ -93,11 +93,7 @@ const saveAsDraft = inject('saveAsDraft')
 const error = ref('')
 
 
-const parsedDescription = computed(() => {
-  return getString(props.section || "")
 
-
-})
 const fieldParsedDescription = computed(() => {
   return getString(props.field.description || "")
 })
@@ -136,13 +132,23 @@ function getString(str) {
   return { desc, info, qlable, cenrieo };
 }
 
-
-
 const handleInput = (event) => {
-  const value = event.target.value
-  emit('update:modelValue', value)
-  validateInput(value)
-}
+  let value = event.target.value;
+  const wordArray = value.trim().split(/\s+/); // Split words by whitespace
+  const wordCount = wordArray.length;
+
+  if (wordCount > 200) {
+    error.value = `${props.field.label} cannot exceed 200 words. Currently, it has ${wordCount} words.`;
+    value = wordArray.split(/\s+/).slice(0, 200).join('') // Keep only the first 200 words
+    event.target.value = value; // Update the textarea value directly
+  } else {
+    error.value = '';
+  }
+
+  emit('update:modelValue', value);
+  validateInput(value);
+};
+
 
 const isFieldMandatory = (field) => {
   if (field.reqd) return true
@@ -165,9 +171,15 @@ const handleBlur = () => {
 
 const validateInput = (value) => {
   error.value = ''
+
+  // Check if field is required and empty
   if (props.field.reqd && !value.trim()) {
     error.value = `${props.field.label} is required.`
+    return
   }
+
+  // Check for maximum word limit
+  
 }
 </script>
 
