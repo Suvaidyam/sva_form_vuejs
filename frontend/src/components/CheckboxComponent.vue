@@ -5,7 +5,7 @@
         <label :for="field.name" class="text-sm text-gray-900 dark:text-gray-200">{{ field.placeholder }}</label>
         <input :id="field.name" :name="field.name" type="checkbox" :checked="modelValue" @change="handleChange"
           @blur="handleBlur" :disabled="field.read_only" :required="isFieldMandatory(field)"
-          class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600"
+          class="h-4 w-4 mr-2 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600"
           :class="{ 'border-red-500 focus:ring-red-500': error }" />
       </div>
       <div class="flex items-center justify-between">

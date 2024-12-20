@@ -48,7 +48,7 @@
 						<!-- static info box this text ⓘ Please add any collaborators to complete the survey, if you haven't already done so. -->
 						<div class="mt-6">
 	
-	<i class="text-gray-900 text-[14px] ">
+	<i class="text-gray-700 text-[14px] ">
 		<span class="block"> ⓘ Please add any collaborators to complete the survey, if you haven't already done so.</span>
 	</i>
 </div>
