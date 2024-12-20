@@ -1,14 +1,14 @@
 <template>
   <div v-if="!field.hidden" class="flex flex-col gap-2">
-    <span v-if="index < 1 && parsedDescription.qlable || fieldParsedDescription.qlable"
-      class="text-md font-medium  text-gray-700 dark:text-gray-200  block ">
-      {{ parsedDescription.qlable || fieldParsedDescription.qlable }}
+    <span v-if="index < 1 &&  fieldParsedDescription.qlable"
+      class="text-md font-medium text-gray-900 dark:text-gray-200 block  block ">
+      {{  fieldParsedDescription.qlable }}
     </span>
-    <span v-if="index < 1 && parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
-      class="text-sm text-gray-700  ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
+    <span v-if="index < 1 &&  fieldParsedDescription?.cenrieo && !props.isCard"
+      class="text-md font-medium text-gray-900 dark:text-gray-200 block  ">{{  fieldParsedDescription?.cenrieo }}
     </span>
     <div class="flex items-center justify-between">
-      <label :for="field.name" class="text-md font-medium text-gray-700 dark:text-gray-200">
+      <label :for="field.name" class="text-md font-medium text-gray-900 dark:text-gray-200 block">
         {{ field.label }}
         <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
@@ -24,7 +24,7 @@
               <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                 <div class="p-4 bg-white dark:bg-gray-800">
                   <p class="text-sm text-gray-700 dark:text-gray-300">
-                    {{ parsedDescription?.info || fieldParsedDescription?.info }}
+                    {{  fieldParsedDescription?.info }}
                   </p>
                 </div>
               </div>
@@ -34,12 +34,12 @@
       </div>
     </div>
 
-    <span v-if="fieldParsedDescription.desc" class="text-sm text-gray-500  ">
+    <span v-if="fieldParsedDescription.desc" class="text-md font-medium text-gray-900 dark:text-gray-200 block ">
       {{ fieldParsedDescription.desc }}
     </span>
     <div class="relative flex items-center">
       <input :id="field.name" class="custom-input-type-range" :value="modelValue ?? 0" @input="handleInput"
-        @change="handleChange" type="range" min="0" max="100" :disabled="field.read_only"
+        @change="handleChange" type="range" min="0" max="100"  :disabled="field.read_only"
         :required="isFieldMandatory(field)" :class="[
           'w-full h-2 bg-gray-200 rounded-lg  cursor-pointer dark:bg-gray-700',
           { 'opacity-50 cursor-not-allowed': field.read_only }

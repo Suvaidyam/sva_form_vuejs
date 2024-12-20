@@ -2,18 +2,18 @@
   <div v-if="!field.hidden" class="flex flex-col ">
 
     <span v-if="index < 1 && parsedDescription?.qlable || fieldParsedDescription?.qlable"
-      class="text-md font-medium  text-gray-700 dark:text-gray-200  block mb-1.5 ">
+      class="text-md font-medium text-gray-900 dark:text-gray-200 block  block mb-1.5 ">
       {{ parsedDescription?.qlable || fieldParsedDescription?.qlable }}
     </span>
     <span v-if="index < 1 && parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo && !props.isCard"
-      class="text-sm text-gray-700   ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
+      class="text-md font-medium text-gray-900 dark:text-gray-200 block ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
     </span>
 
 
 
     <div class="flex items-center justify-between">
 
-      <label :for="field.name" class="text-md font-medium text-gray-700 dark:text-gray-200">
+      <label :for="field.name" class="text-md font-medium text-gray-900 dark:text-gray-200">
         {{ field.label }} <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
       <div v-if="parsedDescription?.info || fieldParsedDescription?.info" class="ml-2 relative">
@@ -38,7 +38,7 @@
       </div>
 
     </div>
-    <span v-if="  fieldParsedDescription?.desc" class="text-sm text-gray-700  ">
+    <span v-if="  fieldParsedDescription?.desc" class="text-md font-medium text-gray-900 dark:text-gray-200 block  ">
       {{  fieldParsedDescription?.desc }}
     </span>
     <div class="relative">
@@ -78,10 +78,7 @@ const props = defineProps({
     type: Object,
     default: () => ({})
   },
-  section: {
-    type: String,
-    default: ''
-  }
+  
 })
 
 const error = ref('');
@@ -90,11 +87,7 @@ const saveAsDraft = inject('saveAsDraft')
 const call = inject('$call')
 const minMax = ref({})
 
-const parsedDescription = computed(() => {
-  return getString(props.section || "")
 
-
-})
 const fieldParsedDescription = computed(() => {
   return getString(props.field.description || "")
 })
