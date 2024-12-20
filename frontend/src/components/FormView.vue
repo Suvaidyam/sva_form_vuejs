@@ -24,7 +24,7 @@
 									index > 0 && !allTabsUnlocked
 										? 'opacity-50 cursor-not-allowed'
 										: '',
-									showErrors && tabErrors[tab.name]
+									showErrors && tabErrors[tab.name] && !isTabComplete(tab.name)
 										? 'border-2 border-red-500'
 										: '',
 								]"
@@ -37,7 +37,7 @@
 										class="w-4 h-4 text-green-500"
 									/>
 									<XCircleIcon
-										v-if="showErrors && tabErrors[tab.name]"
+										v-if="showErrors && tabErrors[tab.name] && !isTabComplete(tab.name)"
 										class="w-4 h-4 text-red-500"
 									/>
 								</span>
@@ -557,7 +557,6 @@ const tabFields = computed(
 
 const activeFieldSections = computed(() => {
 	if (!docTypeMeta.value || !activeTab.value) return [];
-	//console.log(allTabsUnlocked.value, 'allTabsUnlocked')
 	const fields = docTypeMeta.value.fields;
 	const startIndex = fields.findIndex((f) => f.name === activeTab.value);
 	const endIndex = fields.findIndex((f, i) => i > startIndex && f.fieldtype === "Tab Break");
@@ -820,13 +819,11 @@ const handleFieldUpdate = (fieldName, value) => {
 const validateField = (fieldName) => {
 	const field = docTypeMeta.value.fields.find((f) => f.fieldname === fieldName);
 	if (!field) return;
-
-	if (field.reqd && (!formData.value[fieldName] || formData.value[fieldName] === "")) {
+	if (isFieldMandatory(field) && (!formData.value[fieldName] || formData.value[fieldName] === "" || (Array.isArray(formData.value[fieldName]) && formData.value[fieldName].length == 0))) {
 		fieldErrors.value[fieldName] = "This field is required";
 	} else {
 		delete fieldErrors.value[fieldName];
 	}
-
 	updateTabErrors();
 };
 
@@ -836,6 +833,8 @@ const updateTabErrors = () => {
 		const tabFieldNames = getTabFields(tab.name).map((f) => f.fieldname);
 		if (tabFieldNames.some((fieldName) => fieldErrors.value[fieldName])) {
 			tabErrors.value[tab.name] = true;
+		}else{
+			delete tabErrors.value[tab.name]
 		}
 	});
 };
@@ -986,8 +985,8 @@ const validateForm = () => {
 
 	docTypeMeta.value.fields.forEach((field) => {
 		if (
-			field.reqd &&
-			(!formData.value[field.fieldname] || formData.value[field.fieldname] === "")
+			isFieldMandatory(field) &&
+			(!formData.value[field.fieldname] || formData.value[field.fieldname] === "" || (Array.isArray(formData.value[field.fieldname]) && formData.value[field.fieldname].length == 0))
 		) {
 			const section = allSections.value.find((s) =>
 				s.fields.some((f) => f.fieldname === field.fieldname)
