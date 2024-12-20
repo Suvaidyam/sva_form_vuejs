@@ -2,7 +2,7 @@
   <div v-if="!field.hidden" class="flex flex-col gap-2">
 
     <span v-if="index < 1 &&   fieldParsedDescription?.qlable"
-      class="text-md font-medium text-gray-900 dark:text-gray-200 block block ">
+      class="text-md font-medium text-gray-900 dark:text-gray-200 block">
       {{  fieldParsedDescription?.qlable }}
     </span>
     <span v-if="index < 1 &&  fieldParsedDescription?.cenrieo && !props.isCard"

@@ -45,7 +45,7 @@
       {{  fieldParsedDescription?.desc }}
     </span>
 
-    <textarea :id="field.name" :value="modelValue" @input="handleInput" @blur="handleBlur" :disabled="field.read_only"
+    <textarea :id="field.name"  :value="modelValue" @input="handleInput" @blur="handleBlur" :disabled="field.read_only"
       :required="isFieldMandatory(field)" :rows="field.rows || 4" :placeholder="field.placeholder" :class="[
         'px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
         'dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 mt-2',
@@ -132,13 +132,23 @@ function getString(str) {
   return { desc, info, qlable, cenrieo };
 }
 
-
-
 const handleInput = (event) => {
-  const value = event.target.value
-  emit('update:modelValue', value)
-  validateInput(value)
-}
+  let value = event.target.value;
+  const wordArray = value.trim().split(/\s+/); // Split words by whitespace
+  const wordCount = wordArray.length;
+
+  if (wordCount > 200) {
+    error.value = `${props.field.label} cannot exceed 200 words. Currently, it has ${wordCount} words.`;
+    value = wordArray.split(/\s+/).slice(0, 200).join('') // Keep only the first 200 words
+    event.target.value = value; // Update the textarea value directly
+  } else {
+    error.value = '';
+  }
+
+  emit('update:modelValue', value);
+  validateInput(value);
+};
+
 
 const isFieldMandatory = (field) => {
   if (field.reqd) return true
@@ -169,11 +179,7 @@ const validateInput = (value) => {
   }
 
   // Check for maximum word limit
-  const wordCount = value.trim().split(/\s+/).length
-  if (wordCount > 200) {
-    error.value = `${props.field.label} cannot exceed 200 words. Currently, it has ${wordCount} words.`
-    return
-  }
+  
 }
 </script>
 
