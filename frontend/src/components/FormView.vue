@@ -796,10 +796,10 @@ const setActiveTab = async (tabName, fromMounted = false) => {
 				activeTab.value = tabName;
 			}
 			await fetchTabData(tabName);
-			// window.scrollTo({
-			// 	top: 0,
-			// 	behavior: "smooth",
-			// });
+			window.scrollTo({
+				top: 0,
+				behavior: "smooth",
+			});
 		} finally {
 			isLoading.value = false;
 		}
