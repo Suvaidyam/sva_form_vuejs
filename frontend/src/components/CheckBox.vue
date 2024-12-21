@@ -84,7 +84,7 @@
 						<label
 							v-if="isOptionVisible(option)"
 							:for="`${field.name}-${option.name}`"
-							class="ml-2 block text-[14px] break-words"
+							class="ml-2 block text-[15px] break-words"
 						>
 							<span
 								v-for="(line, index) in option.labels"
