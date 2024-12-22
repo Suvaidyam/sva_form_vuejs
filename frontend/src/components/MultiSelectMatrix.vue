@@ -86,7 +86,7 @@
 										:for="`${field.name}-${visibleOptions[0]?.name}`"
 										class="flex items-start"
 									>
-										<span class="mr-2 dark:text-gray-200 block"
+										<span class="mr-2 dark:text-gray-200 text-[15px] block"
 											>{{ field.label }}
 											<span v-if="isFieldMandatory" class="text-red-500"
 												>*</span

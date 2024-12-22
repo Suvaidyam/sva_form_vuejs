@@ -178,7 +178,7 @@
 										v-if="section?.label"
 										:id="`section-${index}`"
 										class="text-2xl font-semibold custom dark:text-white flex"
-										:class="section.label ? 'padding' : 'mb-4'"
+										:class="section.label ? 'padding' : ''"
 									>
 										{{ section.label }}
 										<SaveStatusIcon
@@ -208,13 +208,13 @@
 										>
 											<span
 												v-if="getString(section?.description).qlable"
-												class="text-md font-medium text-gray-900 dark:text-gray-200 block"
+												class="text-md font-medium text-gray-900 dark:text-gray-200 block mb-1"
 											>
 												{{ getString(section?.description)?.qlable }}
 											</span>
 											<p
 												v-if="getString(section?.description)?.cenrieo"
-												class="text-md font-medium text-gray-900 dark:text-gray-200 block"
+												class="text-md font-medium text-gray-900 dark:text-gray-200 block  mb-1"
 											>
 												{{ getString(section?.description)?.cenrieo }}
 											</p>
@@ -272,7 +272,7 @@
 											})
 										"
 										:aria-labelledby="`section-${index}`"
-										class="space-y-6 mb-6"
+										class="space-y-4 mb-4"
 									>
 										<div
 											v-if="!section.table_matrix"
@@ -313,7 +313,7 @@
 												{{ fieldErrors[field.fieldname] }}
 											</p>
 										</div>
-										<div v-if="section.table_matrix" class="flex">
+										<div v-if="section.table_matrix" class="flex ">
 											<div
 												v-for="(field, fieldIndex) in section.fields"
 												:key="field.fieldname"
@@ -1167,7 +1167,7 @@ aside {
 }
 
 .bg{
-  background:red;
+    background:red;
 }
 .matrix-overflow {
 	overflow-x: scroll !important;
@@ -1175,12 +1175,13 @@ aside {
 }
 
 .padding {
-	padding-top: 30px !important;
-	padding-bottom: 4px !important;
+	padding-top: 20px !important;
+	margin-bottom: 10px !important;
 }
 
 .matrix-overflow1 {
 	overflow-x: auto !important;
 	overflow-y: hidden;
+	
 }
 </style>
