@@ -799,7 +799,7 @@ const handleFieldUpdate = (fieldName, value) => {
 		validateField(fieldName);
 	}
 	// auto calculate
-	if (["Int", "Percent", "Float"].includes(field.fieldtype)) {
+	if (["Int", "Percent", "Float"].includes(field?.fieldtype)) {
 		let auto_cal_field = docTypeMeta.value.fields.filter(
 			(e) => "auto_calculate" in e && e.auto_calculate.includes(fieldName)
 		);
