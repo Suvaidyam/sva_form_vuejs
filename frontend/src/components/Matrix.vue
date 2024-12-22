@@ -29,7 +29,7 @@
 									class="flex items-start"
 								>
 									<span
-										class="mr-2  block"
+										class="mr-2 text-[15px]  block"
 									>
 										{{ field.label }}
 										<span v-if="isFieldMandatory" class="text-red-500">*</span>
