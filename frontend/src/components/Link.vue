@@ -115,7 +115,7 @@
 							class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600"
 						/>
 					</div>
-					<span class="flex-grow text-[14px]">{{ option.label }}</span>
+					<span class="flex-grow text-[15px]">{{ option.label }}</span>
 				</label>
 			</div>
 		</template>
