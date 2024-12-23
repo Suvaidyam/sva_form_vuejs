@@ -104,12 +104,16 @@
 												:isRow="props.isRow" @update:modelValue="
 													handleFieldUpdate(field.fieldname, $event)
 													" :class="{
-													'border-red-500':
-														showErrors && fieldErrors[field.fieldname],
-												}" />
+														'border-red-500':
+															showErrors && fieldErrors[field.fieldname],
+													}" />
 											<p v-if="showErrors && fieldErrors[field.fieldname]"
 												class="text-red-500 text-sm mt-1">
 												{{ fieldErrors[field.fieldname] }}
+											</p>
+											<p v-if="calculatedFieldErrors[field.fieldname]"
+												class="text-red-500 text-sm mt-1">
+												{{ calculatedFieldErrors[field.fieldname] }}
 											</p>
 										</div>
 									</div>
@@ -117,8 +121,8 @@
 							</template>
 							<template v-else>
 								<div v-for="(section, index) in activeFieldSections" :key="section.name" :class="section.is_matrix || section.is_multi_matrix
-										? 'matrix-overflow1'
-										: ''
+									? 'matrix-overflow1'
+									: ''
 									">
 									<h3 v-if="section?.label" :id="`section-${index}`"
 										class="text-2xl font-semibold custom dark:text-white flex"
@@ -201,12 +205,16 @@
 												:isRow="props.isRow" @update:modelValue="
 													handleFieldUpdate(field.fieldname, $event)
 													" :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname" :class="{
-													'border-red-500':
-														showErrors && fieldErrors[field.fieldname],
-												}" />
+														'border-red-500':
+															showErrors && fieldErrors[field.fieldname],
+													}" />
 											<p v-if="showErrors && fieldErrors[field.fieldname]"
 												class="text-red-500 text-sm mt-1">
 												{{ fieldErrors[field.fieldname] }}
+											</p>
+											<p v-if="calculatedFieldErrors[field.fieldname]"
+												class="text-red-500 text-sm mt-1">
+												{{ calculatedFieldErrors[field.fieldname] }}
 											</p>
 										</div>
 										<div v-if="section.table_matrix" class="flex ">
@@ -222,14 +230,18 @@
 													:isRow="props.isRow" @update:modelValue="
 														handleFieldUpdate(field.fieldname, $event)
 														" :onfieldChange="props.onfieldChange" :aria-label="field.label || field.fieldname" :class="{
-														'border-red-500':
-															showErrors &&
-															fieldErrors[field.fieldname],
-													}" />
+															'border-red-500':
+																showErrors &&
+																fieldErrors[field.fieldname],
+														}" />
 												<p v-if="
 													showErrors && fieldErrors[field.fieldname]
 												" class="text-red-500 text-sm mt-1">
 													{{ fieldErrors[field.fieldname] }}
+												</p>
+												<p v-if="calculatedFieldErrors[field.fieldname]"
+													class="text-red-500 text-sm mt-1">
+													{{ calculatedFieldErrors[field.fieldname] }}
 												</p>
 											</div>
 										</div>
@@ -379,6 +391,8 @@ const fieldErrors = ref({});
 const tabErrors = ref({});
 const showErrors = ref(false);
 const saveAsDraft = inject("saveAsDraft");
+const calculatedFieldErrors = ref({});
+const minMaxValue = ref({});
 
 function getString(str) {
 	let desc = "";
@@ -516,6 +530,9 @@ const isCurrentTabValid = computed(() => {
 		.filter((f) => !["Section Break", "Column Break"].includes(f.fieldtype))
 		.every((field) => {
 			const value = formData.value[field.fieldname];
+			if (field.fieldname == 'calculated_value' && calculatedFieldErrors.value.isValue) {
+				return false;
+			}
 			return (
 				!isFieldMandatory(field) ||
 				(value != null &&
@@ -611,6 +628,9 @@ const isTabComplete = (tabName) => {
 		.filter((f) => !["Section Break", "Column Break"].includes(f.fieldtype))
 		.every((field) => {
 			const value = formData.value[field.fieldname];
+			if (field.fieldname == 'calculated_value' && calculatedFieldErrors.value.isValue) {
+				return false;
+			}
 			return (
 				!isFieldMandatory(field) ||
 				(value !== null &&
@@ -674,27 +694,30 @@ const handleFieldUpdate = (fieldName, value) => {
 				sum = 0;
 				console.error("Error evaluating formula:", formula, error);
 			}
-			const response = await call("sva_form_vuejs.controllers.api.get_min_max_criteria", {
-				filters: { field: fieldMeta.fieldname },
-			});
-			if (sum <= (response?.max || 10000000000000) && sum >= (response?.min || 0)) {
-				formData.value[fieldMeta.fieldname] = sum;
-				saveAsDraft({ [fieldMeta.fieldname]: sum });
+			formData.value[fieldMeta.fieldname] = sum;
+			if (sum <= (minMaxValue.value?.max || 10000000000000) && sum >= (minMaxValue.value?.min || 0)) {
+				// saveAsDraft({ [fieldMeta.fieldname]: sum });
+				calculatedFieldErrors.value['calculated_value'] = "";
+				calculatedFieldErrors.value['isValue'] = false;
 			} else {
-				props.toast.error(
-					`The last input will not be accepted if the total of all options exceeds 100%.`,
-					{
-						timeout: 5000,
-						closeOnClick: true,
-					}
-				);
+				calculatedFieldErrors.value['isValue'] = true;
+				calculatedFieldErrors.value['calculated_value'] = `Sum of all options must be 100% Otherwise the value will not be accepted.`;
 			}
+			saveAsDraft({ [fieldMeta.fieldname]: sum });
 		});
 	}
-	
 };
 
-watch(() => isTabComplete(activeTab.value) ,(newVal,oldValue)=>{
+const getMinMaxValue = async () => {
+	const response = await call("sva_form_vuejs.controllers.api.get_min_max_criteria", {
+		filters: { field: 'calculated_value' },
+	});
+	if (response) {
+		minMaxValue.value = response;
+	}
+};
+
+watch(() => isTabComplete(activeTab.value), (newVal, oldValue) => {
 	if (!newVal && (newVal == oldValue)) {
 		return
 	}
@@ -705,14 +728,14 @@ watch(() => isTabComplete(activeTab.value) ,(newVal,oldValue)=>{
 			saveAsDraft({ [completed_field_name]: 1 });
 			handleFieldUpdate(completed_field_name, 1);
 		}
-	}else{
+	} else {
 		const completed_field_name = `is_${tabField?.label?.split(' ')?.join('_')?.toLowerCase()}_completed`
 		if (formData[completed_field_name] != 0) {
 			saveAsDraft({ [completed_field_name]: 0 });
 			handleFieldUpdate(completed_field_name, 0);
 		}
 	}
-},{deep:true})
+}, { deep: true })
 
 const validateField = (fieldName) => {
 	const field = docTypeMeta.value.fields.find((f) => f.fieldname === fieldName);
@@ -872,6 +895,21 @@ const onSubmit = () => {
 		if (firstErrorField) {
 			firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
 		}
+	} else if (calculatedFieldErrors.value?.isValue) {
+		
+	let	calculated_value_tab = docTypeMeta.value?.fields.filter((field) => field.fieldtype === "Tab Break")?.find((tab) => tab.label === 'Section G')?.name;
+		setActiveTab(calculated_value_tab);
+		props.toast.error(
+			`Sum of all options must be 100% Otherwise the value will not be accepted.`,
+			{
+				timeout: 5000,
+				closeOnClick: true,
+			}
+		);
+		const firstErrorField = document.querySelector(".text-red-500");
+		if (firstErrorField) {
+			firstErrorField.scrollIntoView({ behavior: "smooth", block: "end" });
+		}
 	} else {
 		props.onSubmit(formData.value);
 	}
@@ -916,10 +954,19 @@ const validateAllFields = () => {
 
 provide("saveAsDraft", props.save_as_draft);
 
-onMounted(() => {
+onMounted(async () => {
 	getMeta();
 	if (Object.keys(props.initialData).length > 0) {
 		formData.value = { ...props.initialData };
+	}
+	await getMinMaxValue();
+	if (formData.value['calculated_value'] <= (minMaxValue.value?.max || 10000000000000) && formData.value['calculated_value'] >= (minMaxValue.value?.min || 0)) {
+		calculatedFieldErrors.value['calculated_value'] = "";
+		calculatedFieldErrors.value['isValue'] = false;
+	}
+	else {
+		calculatedFieldErrors.value['isValue'] = true;
+		calculatedFieldErrors.value['calculated_value'] = `Sum of all options must be 100% Otherwise the value will not be accepted.`;
 	}
 });
 const toggleSidebar = () => {
