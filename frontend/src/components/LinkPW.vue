@@ -7,7 +7,7 @@
           {{ index + 1 }}
         </p>
         <label :for="`${field.name}-${visibleOptions[0]?.name}`"
-          :class="isCard ? 'text-sm' : 'text-md font-medium text-gray-900 dark:text-gray-200'"
+          :class="isCard ? 'text-h5' : 'text-md font-medium text-gray-900 dark:text-gray-200'"
           class="block font-medium text-gray-900 dark:text-gray-200">
           {{ field.label }} {{ field.description }}
           <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
