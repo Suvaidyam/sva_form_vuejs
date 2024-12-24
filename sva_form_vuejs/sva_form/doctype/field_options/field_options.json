@@ -9,10 +9,14 @@
  "field_order": [
   "ref_doctype",
   "field",
-  "label",
   "code",
+  "column_break_cpzy",
+  "label",
   "score",
+  "section_break_tflk",
   "group",
+  "desc",
+  "column_break_svym",
   "depends_on"
  ],
  "fields": [
@@ -60,11 +64,28 @@
    "fieldname": "depends_on",
    "fieldtype": "Small Text",
    "label": "Display Depends On"
+  },
+  {
+   "fieldname": "column_break_cpzy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_tflk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_svym",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "desc",
+   "fieldtype": "Small Text",
+   "label": "Description"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-15 10:13:42.411170",
+ "modified": "2024-12-17 12:09:33.601413",
  "modified_by": "Administrator",
  "module": "sva_form",
  "name": "Field Options",
