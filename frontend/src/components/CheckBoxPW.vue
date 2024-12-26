@@ -5,7 +5,7 @@
         class="w-7 min-w-7 min-h-7 h-7 rounded-full bg-gray-700 text-white flex justify-center items-center text-sm">
         {{ index+1 }}
       </p>
-      <label :class="!props.isCard ? 'text-md' : 'text-sm'"
+      <label :class="!props.isCard ? 'text-md' : 'text-h5'"
         class="font-medium text-black dark:text-gray-200 break-words">
         {{ field.label }} {{ field.description }}
         <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>

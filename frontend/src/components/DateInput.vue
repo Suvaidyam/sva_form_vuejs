@@ -6,11 +6,11 @@
       {{  fieldParsedDescription?.qlable }}
     </span>
     <span v-if="index < 1 &&  fieldParsedDescription?.cenrieo && !props.isCard"
-      class="text-sm text-gray-700  ">{{  fieldParsedDescription?.cenrieo }}
+      class="text-sm text-gray-900  ">{{  fieldParsedDescription?.cenrieo }}
     </span>
 
     <div class="flex items-center justify-between">
-      <label :for="field.name" class="text-md font-medium text-gray-700 dark:text-gray-200">
+      <label :for="field.name" class="text-md font-medium text-gray-900 ">
         {{ field.label }}
         <span v-if="isFieldMandatory(field)" class="text-red-500 ml-1">*</span>
       </label>
@@ -25,7 +25,7 @@
             <PopoverPanel class="absolute z-10 w-96 px-4 mt-3 transform -translate-x-full right-0 sm:px-0 lg:max-w-3xl">
               <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                 <div class="p-4 bg-white dark:bg-gray-800">
-                  <p class="text-sm text-gray-700 dark:text-gray-300">
+                  <p class="text-sm text-gray-900 dark:text-gray-300">
                     {{  fieldParsedDescription?.info }}
                   </p>
                 </div>
