@@ -69,7 +69,7 @@
 
 		<!-- Main Content -->
 		<main :class="[props.width ? 'w-full' : 'w-75', 'flex-1']" v-else>
-			<div :class="[section_hidden ? 'mx-auto pb-8 ' : 'mx-auto pb-8 px-4']">
+			<div :class="[section_hidden ? 'mx-auto pb-8 ' : 'mx-auto pb-8']">
 				<div v-if="allSections.length === 0"
 					class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
 					Assessment Not Found
@@ -724,13 +724,13 @@ watch(() => isTabComplete(activeTab.value), (newVal, oldValue) => {
 	const tabField = tabFields.value.find((f) => f.name == activeTab.value)
 	if (newVal) {
 		const completed_field_name = `is_${tabField?.label?.split(' ')?.join('_')?.toLowerCase()}_completed`
-		if (formData[completed_field_name] != 1) {
+		if (formData[completed_field_name] != 1 && saveAsDraft) {
 			saveAsDraft({ [completed_field_name]: 1 });
 			handleFieldUpdate(completed_field_name, 1);
 		}
 	} else {
 		const completed_field_name = `is_${tabField?.label?.split(' ')?.join('_')?.toLowerCase()}_completed`
-		if (formData[completed_field_name] != 0) {
+		if (formData[completed_field_name] != 0 && saveAsDraft) {
 			saveAsDraft({ [completed_field_name]: 0 });
 			handleFieldUpdate(completed_field_name, 0);
 		}
@@ -882,7 +882,7 @@ const onSubmit = () => {
 	validateAllFields();
 	const { isValid, firstErrorTab, sectionsWithErrors } = validateForm();
 
-	if (!isValid) {
+	if (!isValid && !props.section) {
 		if (firstErrorTab) {
 			setActiveTab(firstErrorTab);
 		}
@@ -895,9 +895,9 @@ const onSubmit = () => {
 		if (firstErrorField) {
 			firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
 		}
-	} else if (calculatedFieldErrors.value?.isValue) {
-		
-	let	calculated_value_tab = docTypeMeta.value?.fields.filter((field) => field.fieldtype === "Tab Break")?.find((tab) => tab.label === 'Section G')?.name;
+	} else if (calculatedFieldErrors.value?.isValue && !props.section) {
+
+		let calculated_value_tab = docTypeMeta.value?.fields.filter((field) => field.fieldtype === "Tab Break")?.find((tab) => tab.label === 'Section G')?.name;
 		setActiveTab(calculated_value_tab);
 		props.toast.error(
 			`Sum of all options must be 100% Otherwise the value will not be accepted.`,
