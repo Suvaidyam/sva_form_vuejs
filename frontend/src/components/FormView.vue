@@ -69,7 +69,7 @@
 
 		<!-- Main Content -->
 		<main :class="[props.width ? 'w-full' : 'w-75', 'flex-1']" v-else>
-			<div :class="[section_hidden ? 'mx-auto pb-8 ' : 'mx-auto pb-8']">
+			<div :class="[section_hidden ? 'mx-auto pb-8 ' : 'mx-auto pb-8 px-4']">
 				<div v-if="allSections.length === 0"
 					class="text-center text-gray-500 dark:text-gray-400 text-2xl mt-20">
 					Assessment Not Found
@@ -625,7 +625,7 @@ const isFieldMandatory = (field) => {
 const isTabComplete = (tabName) => {
 	const tabFields = getTabFields(tabName);
 	return tabFields
-		.filter((f) => !["Section Break", "Column Break"].includes(f.fieldtype))
+		.filter((f) => !["Section Break", "Column Break","Tab Break"].includes(f.fieldtype))
 		.every((field) => {
 			const value = formData.value[field.fieldname];
 			if (field.fieldname == 'calculated_value' && calculatedFieldErrors.value.isValue) {
@@ -919,7 +919,7 @@ const validateForm = () => {
 	const sectionsWithErrors = new Set();
 	let firstErrorTab = null;
 
-	docTypeMeta.value.fields.forEach((field) => {
+	docTypeMeta.value.fields.filter((f) => !['Section Break','Column Break',"Tab Break"].includes(f.fieldtype)).forEach((field) => {
 		if (
 			isFieldMandatory(field) &&
 			(!formData.value[field.fieldname] || formData.value[field.fieldname] === "" || (Array.isArray(formData.value[field.fieldname]) && formData.value[field.fieldname].length == 0))
