@@ -625,7 +625,7 @@ const isFieldMandatory = (field) => {
 const isTabComplete = (tabName) => {
 	const tabFields = getTabFields(tabName);
 	return tabFields
-		.filter((f) => !["Section Break", "Column Break"].includes(f.fieldtype))
+		.filter((f) => !["Section Break", "Column Break","Tab Break"].includes(f.fieldtype))
 		.every((field) => {
 			const value = formData.value[field.fieldname];
 			if (field.fieldname == 'calculated_value' && calculatedFieldErrors.value.isValue) {
@@ -724,13 +724,13 @@ watch(() => isTabComplete(activeTab.value), (newVal, oldValue) => {
 	const tabField = tabFields.value.find((f) => f.name == activeTab.value)
 	if (newVal) {
 		const completed_field_name = `is_${tabField?.label?.split(' ')?.join('_')?.toLowerCase()}_completed`
-		if (formData[completed_field_name] != 1) {
+		if (formData[completed_field_name] != 1 && saveAsDraft) {
 			saveAsDraft({ [completed_field_name]: 1 });
 			handleFieldUpdate(completed_field_name, 1);
 		}
 	} else {
 		const completed_field_name = `is_${tabField?.label?.split(' ')?.join('_')?.toLowerCase()}_completed`
-		if (formData[completed_field_name] != 0) {
+		if (formData[completed_field_name] != 0 && saveAsDraft) {
 			saveAsDraft({ [completed_field_name]: 0 });
 			handleFieldUpdate(completed_field_name, 0);
 		}
@@ -882,7 +882,7 @@ const onSubmit = () => {
 	validateAllFields();
 	const { isValid, firstErrorTab, sectionsWithErrors } = validateForm();
 
-	if (!isValid) {
+	if (!isValid && !props.section) {
 		if (firstErrorTab) {
 			setActiveTab(firstErrorTab);
 		}
@@ -895,9 +895,9 @@ const onSubmit = () => {
 		if (firstErrorField) {
 			firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
 		}
-	} else if (calculatedFieldErrors.value?.isValue) {
-		
-	let	calculated_value_tab = docTypeMeta.value?.fields.filter((field) => field.fieldtype === "Tab Break")?.find((tab) => tab.label === 'Section G')?.name;
+	} else if (calculatedFieldErrors.value?.isValue && !props.section) {
+
+		let calculated_value_tab = docTypeMeta.value?.fields.filter((field) => field.fieldtype === "Tab Break")?.find((tab) => tab.label === 'Section G')?.name;
 		setActiveTab(calculated_value_tab);
 		props.toast.error(
 			`Sum of all options must be 100% Otherwise the value will not be accepted.`,
@@ -919,7 +919,7 @@ const validateForm = () => {
 	const sectionsWithErrors = new Set();
 	let firstErrorTab = null;
 
-	docTypeMeta.value.fields.forEach((field) => {
+	docTypeMeta.value.fields.filter((f) => !['Section Break','Column Break',"Tab Break"].includes(f.fieldtype)).forEach((field) => {
 		if (
 			isFieldMandatory(field) &&
 			(!formData.value[field.fieldname] || formData.value[field.fieldname] === "" || (Array.isArray(formData.value[field.fieldname]) && formData.value[field.fieldname].length == 0))
