@@ -121,7 +121,7 @@
 							</template>
 							<template v-else>
 								<div v-for="(section, index) in activeFieldSections" :key="section.name" :class="section.is_matrix || section.is_multi_matrix
-									? 'matrix-overflow1'
+									? ''
 									: ''
 									">
 									<h3 v-if="section?.label" :id="`section-${index}`"
@@ -174,9 +174,9 @@
 																<p
 																	class="text-sm text-gray-700 dark:text-gray-200 block">
 																	{{
-																		getString(
-																			section?.description
-																		)?.info
+																	getString(
+																	section?.description
+																	)?.info
 																	}}
 																</p>
 															</div>
@@ -192,7 +192,10 @@
 										section.fields.some((field) => {
 											return isFieldVisible(field);
 										})
-									" :aria-labelledby="`section-${index}`" class="space-y-4 mb-4">
+									" :aria-labelledby="`section-${index}`" class="space-y-4 mb-4" :class="section.is_matrix || section.is_multi_matrix
+										? 'matrix-overflow1'
+										: ''
+										">
 										<div v-if="!section.table_matrix" v-for="(field, fieldIndex) in section.fields"
 											:key="field.fieldname" class="">
 											<component v-if="isFieldVisible(field)" :section="section.description"
@@ -1108,7 +1111,7 @@ aside {
 
 .matrix-overflow1 {
 	overflow-x: auto !important;
-	overflow-y: hidden;
+	overflow-y: auto !important;
 
 }
 </style>
