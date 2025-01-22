@@ -1,5 +1,15 @@
 {
-  "dependencies": {
-    "vue3-popper": "^1.5.0"
-  }
+  "name": "sva_form_vuejs",
+  "version": "1.0.0",
+  "description": "pwit",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "cd frontend && yarn install",
+    "dev": "cd frontend && yarn dev",
+    "build": "cd frontend && yarn build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
