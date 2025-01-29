@@ -914,6 +914,12 @@ const onSubmit = () => {
 			firstErrorField.scrollIntoView({ behavior: "smooth", block: "end" });
 		}
 	} else {
+		tabFields.value.map((r) => {
+		let	fild_name = `is_${r?.label?.split(' ')?.join('_')?.toLowerCase()}_completed`
+			if (formData.value[fild_name] != 1) {
+				formData.value[fild_name] = 1
+			}
+		})
 		props.onSubmit(formData.value);
 	}
 };
