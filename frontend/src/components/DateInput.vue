@@ -39,7 +39,7 @@
       {{  fieldParsedDescription?.desc }}
     </span>
     <div class="relative">
-      <input :id="field.name" :value="manipulateModelValue(modelValue)" @input="handleInput" @focus="openPicker"
+      <input :min="minDate" :max="maxDate" :id="field.name" :value="manipulateModelValue(modelValue)" @input="handleInput" @focus="openPicker"
         type="month" :disabled="field.read_only" :required="isFieldMandatory(field)" :placeholder="field.placeholder"
         :class="[
           'w-full h-10 px-3 border rounded-md text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200',
@@ -149,10 +149,15 @@ const isFieldMandatory = (field) => {
 
 const handleInput = (event) => {
   const value = event.target.value
-  emit('update:modelValue', value + '-01')
   validateInput(value + '-01')
-  if (props.onfieldChange) {
+  emit('update:modelValue', value + '-01')
+  if (error.value) {
+    event.target.value = ''
+    emit('update:modelValue', '')
+  } else{
+    if (props.onfieldChange) {
     saveAsDraft({ [props.field.fieldname]: value + '-01' })
+  }
   }
 }
 
@@ -166,10 +171,33 @@ const openPicker = (event) => {
   }
 }
 
+const getLatestYearMonth = () => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure two-digit format
+  return `${year}-${month}`;
+};
+
+const minDate = ref('1800-12');
+const maxDate = ref(getLatestYearMonth());
+
 const validateInput = (value) => {
   error.value = ''
+
   if (props.field.reqd && !value) {
     error.value = `${props.field.label} is required.`
   }
+
+  // Ensure value is in YYYY-MM format
+  const selectedDate = value.slice(0, 7) // Extract YYYY-MM from YYYY-MM-DD
+  const minFormatted = minDate.value.split("-").reverse().join("-");
+  const maxFormatted = maxDate.value.split("-").reverse().join("-");
+
+  if (selectedDate < minDate.value) {
+    error.value = `Date cannot be earlier than ${minFormatted}.`
+  } else if (selectedDate > maxDate.value) {
+    error.value = `Date cannot be later than ${maxFormatted}.`
+  }
 }
+
 </script>
