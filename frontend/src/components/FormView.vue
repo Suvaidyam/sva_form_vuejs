@@ -1,5 +1,5 @@
 <template>
-	<div class="flex w-full h-screen dark:bg-gray-900">
+	<div class="flex w-full dark:bg-gray-900">
 		<!-- Sidebar -->
 		<aside v-if="!props.section" :class="[
 			'sticky top-0 h-full w-20',
@@ -533,9 +533,20 @@ const isCurrentTabValid = computed(() => {
 		.filter((f) => !["Section Break", "Column Break"].includes(f.fieldtype))
 		.every((field) => {
 			const value = formData.value[field.fieldname];
+			if (['Int', 'Percent'].includes(field.fieldtype)) {
+				if (!isNaN(value) && value !== '' && value >= 0) {
+					// console.log(value, (!isNaN(value) && value !== '' && value >= 0), value >= 0, 'field.fieldname, true,true,true,true value');
+					return true;
+				} else {
+					// console.log(value, field.fieldname, 'field.fieldname,false,false,false,false,false value');
+					return false;
+				}
+			}
+
 			if (field.fieldname == 'calculated_value' && calculatedFieldErrors.value.isValue) {
 				return false;
 			}
+
 			return (
 				!isFieldMandatory(field) ||
 				(value != null &&
@@ -915,7 +926,7 @@ const onSubmit = () => {
 		}
 	} else {
 		tabFields.value.map((r) => {
-		let	fild_name = `is_${r?.label?.split(' ')?.join('_')?.toLowerCase()}_completed`
+			let fild_name = `is_${r?.label?.split(' ')?.join('_')?.toLowerCase()}_completed`
 			if (formData.value[fild_name] != 1) {
 				formData.value[fild_name] = 1
 			}
