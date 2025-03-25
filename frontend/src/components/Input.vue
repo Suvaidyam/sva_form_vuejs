@@ -9,8 +9,6 @@
       class="text-md font-medium text-gray-900 dark:text-gray-200 block ">{{ parsedDescription?.cenrieo || fieldParsedDescription?.cenrieo }}
     </span>
 
-
-
     <div class="flex items-center justify-between">
 
       <label :for="field.name" class="text-md font-medium text-gray-900 dark:text-gray-200">
@@ -208,7 +206,7 @@ const handleInput = (event) => {
 
     const numValue = parseInt(rawValue, 10);
 
-    if (isNaN(numValue) || numValue < 0) {
+    if (isFieldMandatory(props.field) && (isNaN(numValue) || numValue < 0)) {
       error.value = 'Please enter a valid non-negative integer.';
       emit('update:modelValue', '');
       event.target.value = '';
@@ -239,7 +237,7 @@ const handleBlur = (event) => {
     const inputValue = value.replace(/,/g, '');
     const numValue = parseInt(inputValue);
 
-    if (isNaN(numValue) || numValue < 0) {
+    if (isFieldMandatory(props.field) && (isNaN(numValue) || numValue < 0)) {
       error.value = 'Please enter a valid non-negative integer.';
       emit('update:modelValue', '');
       event.target.value = '';
