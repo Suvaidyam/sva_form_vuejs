@@ -535,10 +535,8 @@ const isCurrentTabValid = computed(() => {
 			const value = formData.value[field.fieldname];
 			if (['Int', 'Percent'].includes(field.fieldtype)) {
 				if (!isNaN(value) && value !== '' && value >= 0) {
-					// console.log(value, (!isNaN(value) && value !== '' && value >= 0), value >= 0, 'field.fieldname, true,true,true,true value');
 					return true;
 				} else {
-					// console.log(value, field.fieldname, 'field.fieldname,false,false,false,false,false value');
 					return false;
 				}
 			}
@@ -754,8 +752,13 @@ watch(() => isTabComplete(activeTab.value), (newVal, oldValue) => {
 const validateField = (fieldName) => {
 	const field = docTypeMeta.value.fields.find((f) => f.fieldname === fieldName);
 	if (!field) return;
-	if (isFieldMandatory(field) && (!formData.value[fieldName] || formData.value[fieldName] === "" || (Array.isArray(formData.value[fieldName]) && formData.value[fieldName].length == 0))) {
-		fieldErrors.value[fieldName] = "This field is required";
+	if (isFieldMandatory(field) && !["Int","Percent"].includes(field.fieldtype) && (!(formData.value[fieldName]) || formData.value[fieldName] === "" || (Array.isArray(formData.value[fieldName]) && formData.value[fieldName].length == 0))) {
+		// if(["Int","Percent"].includes(field.fieldtype) && (formData.value[fieldName] < 0 || formData.value[fieldName] ==='')) {
+		// 	fieldErrors.value[fieldName] = "This field is required int";
+		// 	console.log(fieldErrors.value[fieldName], 'fieldErrors.value[fieldName]');
+		// } else {
+			fieldErrors.value[fieldName] = "This field is required";
+		// }
 	} else {
 		delete fieldErrors.value[fieldName];
 	}
@@ -941,7 +944,8 @@ const validateForm = () => {
 
 	docTypeMeta.value.fields.filter((f) => !['Section Break', 'Column Break', "Tab Break"].includes(f.fieldtype)).forEach((field) => {
 		if (
-			isFieldMandatory(field) &&
+			isFieldMandatory(field) && 
+			!["Int","Percent"].includes(field.fieldtype) &&
 			(!formData.value[field.fieldname] || formData.value[field.fieldname] === "" || (Array.isArray(formData.value[field.fieldname]) && formData.value[field.fieldname].length == 0))
 		) {
 			const section = allSections.value.find((s) =>
