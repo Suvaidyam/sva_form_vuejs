@@ -310,6 +310,7 @@ import SaveStatusIcon from "./SaveStatusIcon.vue";
 import MultiSelectMatrix from "./MultiSelectMatrix.vue";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
 import { InfoIcon, CircleChevronRight, CircleChevronLeft } from "lucide-vue-next";
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
 	doctype: {
@@ -396,6 +397,8 @@ const showErrors = ref(false);
 const saveAsDraft = inject("saveAsDraft");
 const calculatedFieldErrors = ref({});
 const minMaxValue = ref({});
+const router = useRouter();
+
 
 function getString(str) {
 	let desc = "";
@@ -425,6 +428,7 @@ function getString(str) {
 
 	return { desc, info, qlable, cenrieo };
 }
+
 const tabFields = computed(
 	() => docTypeMeta.value?.fields.filter((field) => field.fieldtype === "Tab Break") || []
 );
@@ -753,12 +757,7 @@ const validateField = (fieldName) => {
 	const field = docTypeMeta.value.fields.find((f) => f.fieldname === fieldName);
 	if (!field) return;
 	if (isFieldMandatory(field) && !["Int","Percent"].includes(field.fieldtype) && (!(formData.value[fieldName]) || formData.value[fieldName] === "" || (Array.isArray(formData.value[fieldName]) && formData.value[fieldName].length == 0))) {
-		// if(["Int","Percent"].includes(field.fieldtype) && (formData.value[fieldName] < 0 || formData.value[fieldName] ==='')) {
-		// 	fieldErrors.value[fieldName] = "This field is required int";
-		// 	console.log(fieldErrors.value[fieldName], 'fieldErrors.value[fieldName]');
-		// } else {
-			fieldErrors.value[fieldName] = "This field is required";
-		// }
+		fieldErrors.value[fieldName] = "This field is required";
 	} else {
 		delete fieldErrors.value[fieldName];
 	}
@@ -898,7 +897,6 @@ const onSubmit = () => {
 	showErrors.value = true;
 	validateAllFields();
 	const { isValid, firstErrorTab, sectionsWithErrors } = validateForm();
-
 	if (!isValid && !props.section) {
 		if (firstErrorTab) {
 			setActiveTab(firstErrorTab);
