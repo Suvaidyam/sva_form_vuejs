@@ -644,6 +644,13 @@ const isTabComplete = (tabName) => {
 		.filter((f) => !["Section Break", "Column Break", "Tab Break"].includes(f.fieldtype))
 		.every((field) => {
 			const value = formData.value[field.fieldname];
+			if (['Int', 'Percent'].includes(field.fieldtype)) {
+				if (!isNaN(value) && value !== '' && value >= 0) {
+					return true;
+				} else {
+					return false;
+				}
+			}
 			if (field.fieldname == 'calculated_value' && calculatedFieldErrors.value.isValue) {
 				return false;
 			}
