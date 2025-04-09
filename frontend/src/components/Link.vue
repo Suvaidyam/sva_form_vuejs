@@ -111,7 +111,7 @@
 							:value="option.name"
 							:checked="modelValue === option.name"
 							@change="updateValue(option.name)"
-							:disabled="field.read_only || shouldDisableOption(option)"
+							:disabled="field.read_only"
 							class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600"
 						/>
 					</div>
@@ -309,16 +309,16 @@ const validateInput = (value) => {
 	}
 };
 
-const get_submitted_assessments_for_sector = async () => {
-	const sector = await call("british_asian_trust.my_client.get_submitted_assessments");
-	if (sector.length > 0) {
-		selectedProgramArea.value = sector[0].selected_program_area;
-	}
-};
+// const get_submitted_assessments_for_sector = async () => {
+// 	const sector = await call("british_asian_trust.my_client.get_submitted_assessments");
+// 	if (sector.length > 0) {
+// 		selectedProgramArea.value = sector[0].selected_program_area;
+// 	}
+// };
 
-const shouldDisableOption = (option) => {
-	return option.name === selectedProgramArea.value;
-};
+// const shouldDisableOption = (option) => {
+// 	return option.name === selectedProgramArea.value;
+// };
 
 const updateValue = (value) => {
 	if (props.allTabsUnlocked && props.field.fieldname === "selected_program_area") {
@@ -353,7 +353,7 @@ const proceedChangingProgramArea = (newValue) => {
 watch(() => props.field, getOptions, { immediate: true });
 
 onMounted(async () => {
-	await get_submitted_assessments_for_sector();
+	// await get_submitted_assessments_for_sector();
 	getOptions();
 });
 </script>

@@ -310,6 +310,7 @@ import SaveStatusIcon from "./SaveStatusIcon.vue";
 import MultiSelectMatrix from "./MultiSelectMatrix.vue";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
 import { InfoIcon, CircleChevronRight, CircleChevronLeft } from "lucide-vue-next";
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
 	doctype: {
@@ -396,6 +397,8 @@ const showErrors = ref(false);
 const saveAsDraft = inject("saveAsDraft");
 const calculatedFieldErrors = ref({});
 const minMaxValue = ref({});
+const router = useRouter();
+
 
 function getString(str) {
 	let desc = "";
@@ -425,6 +428,7 @@ function getString(str) {
 
 	return { desc, info, qlable, cenrieo };
 }
+
 const tabFields = computed(
 	() => docTypeMeta.value?.fields.filter((field) => field.fieldtype === "Tab Break") || []
 );
@@ -535,10 +539,8 @@ const isCurrentTabValid = computed(() => {
 			const value = formData.value[field.fieldname];
 			if (['Int', 'Percent'].includes(field.fieldtype)) {
 				if (!isNaN(value) && value !== '' && value >= 0) {
-					// console.log(value, (!isNaN(value) && value !== '' && value >= 0), value >= 0, 'field.fieldname, true,true,true,true value');
 					return true;
 				} else {
-					// console.log(value, field.fieldname, 'field.fieldname,false,false,false,false,false value');
 					return false;
 				}
 			}
@@ -642,6 +644,13 @@ const isTabComplete = (tabName) => {
 		.filter((f) => !["Section Break", "Column Break", "Tab Break"].includes(f.fieldtype))
 		.every((field) => {
 			const value = formData.value[field.fieldname];
+			if (['Int', 'Percent'].includes(field.fieldtype)) {
+				if (!isNaN(value) && value !== '' && value >= 0) {
+					return true;
+				} else {
+					return false;
+				}
+			}
 			if (field.fieldname == 'calculated_value' && calculatedFieldErrors.value.isValue) {
 				return false;
 			}
@@ -754,7 +763,7 @@ watch(() => isTabComplete(activeTab.value), (newVal, oldValue) => {
 const validateField = (fieldName) => {
 	const field = docTypeMeta.value.fields.find((f) => f.fieldname === fieldName);
 	if (!field) return;
-	if (isFieldMandatory(field) && (!formData.value[fieldName] || formData.value[fieldName] === "" || (Array.isArray(formData.value[fieldName]) && formData.value[fieldName].length == 0))) {
+	if (isFieldMandatory(field) && !["Int","Percent"].includes(field.fieldtype) && (!(formData.value[fieldName]) || formData.value[fieldName] === "" || (Array.isArray(formData.value[fieldName]) && formData.value[fieldName].length == 0))) {
 		fieldErrors.value[fieldName] = "This field is required";
 	} else {
 		delete fieldErrors.value[fieldName];
@@ -895,7 +904,6 @@ const onSubmit = () => {
 	showErrors.value = true;
 	validateAllFields();
 	const { isValid, firstErrorTab, sectionsWithErrors } = validateForm();
-
 	if (!isValid && !props.section) {
 		if (firstErrorTab) {
 			setActiveTab(firstErrorTab);
@@ -941,7 +949,8 @@ const validateForm = () => {
 
 	docTypeMeta.value.fields.filter((f) => !['Section Break', 'Column Break', "Tab Break"].includes(f.fieldtype)).forEach((field) => {
 		if (
-			isFieldMandatory(field) &&
+			isFieldMandatory(field) && 
+			!["Int","Percent"].includes(field.fieldtype) &&
 			(!formData.value[field.fieldname] || formData.value[field.fieldname] === "" || (Array.isArray(formData.value[field.fieldname]) && formData.value[field.fieldname].length == 0))
 		) {
 			const section = allSections.value.find((s) =>
