@@ -537,23 +537,15 @@ const isCurrentTabValid = computed(() => {
 		.filter((f) => !["Section Break", "Column Break"].includes(f.fieldtype))
 		.every((field) => {
 			const value = formData.value[field.fieldname];
-			if (['Int', 'Percent'].includes(field.fieldtype)) {
-				if (!isNaN(value) && value !== '' && value >= 0) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-
 			if (field.fieldname == 'calculated_value' && calculatedFieldErrors.value.isValue) {
 				return false;
 			}
 
 			return (
 				!isFieldMandatory(field) ||
-				(value != null &&
-					value != undefined &&
-					value != "" &&
+				(value !== null &&
+					value !== undefined &&
+					value !== "" &&
 					(!Array.isArray(value) || value.length > 0))
 			);
 		});
@@ -644,13 +636,7 @@ const isTabComplete = (tabName) => {
 		.filter((f) => !["Section Break", "Column Break", "Tab Break"].includes(f.fieldtype))
 		.every((field) => {
 			const value = formData.value[field.fieldname];
-			if (['Int', 'Percent'].includes(field.fieldtype)) {
-				if (!isNaN(value) && value !== '' && value >= 0) {
-					return true;
-				} else {
-					return false;
-				}
-			}
+
 			if (field.fieldname == 'calculated_value' && calculatedFieldErrors.value.isValue) {
 				return false;
 			}
@@ -663,25 +649,6 @@ const isTabComplete = (tabName) => {
 			);
 		});
 };
-// watch(() => activeTab.value, (newValue, oldValue) => {
-// 	if (oldValue) {
-// 		const tabField = tabFields.value.find((f) => f.name == oldValue)
-// 		const completed_field_name = `is_${tabField.label?.split(' ')?.join('_')?.toLowerCase()}_completed`
-// 		console.log(completed_field_name, 'completed_field_name');
-// 		if (isTabComplete(oldValue)) {
-// 			if (formData[completed_field_name] != 1) {
-// 				saveAsDraft({ [completed_field_name]: 1 });
-// 				handleFieldUpdate(completed_field_name, 1);
-// 			}
-// 		} else {
-// 			if (formData[completed_field_name] != 0) {
-// 				saveAsDraft({ [completed_field_name]: 0 });
-// 				handleFieldUpdate(completed_field_name, 0);
-
-// 			}
-// 		}
-// 	}
-// }, { deep: true, immediate: true })
 
 const getTabFields = (tabName) => {
 	if (!docTypeMeta.value) return [];
@@ -693,7 +660,6 @@ const getTabFields = (tabName) => {
 
 const handleFieldUpdate = (fieldName, value) => {
 	let field = docTypeMeta.value.fields.find((f) => f.fieldname === fieldName);
-
 	formData.value[fieldName] = value;
 	if (showErrors.value) {
 		validateField(fieldName);
@@ -763,7 +729,15 @@ watch(() => isTabComplete(activeTab.value), (newVal, oldValue) => {
 const validateField = (fieldName) => {
 	const field = docTypeMeta.value.fields.find((f) => f.fieldname === fieldName);
 	if (!field) return;
-	if (isFieldMandatory(field) && !["Int","Percent"].includes(field.fieldtype) && (!(formData.value[fieldName]) || formData.value[fieldName] === "" || (Array.isArray(formData.value[fieldName]) && formData.value[fieldName].length == 0))) {
+	const value = formData.value[field.fieldname];
+	if (
+		isFieldMandatory(field) && (
+			value === null ||
+			value === undefined ||
+			value === "" ||
+			(Array.isArray(value) && value.length === 0)
+		)
+	) {
 		fieldErrors.value[fieldName] = "This field is required";
 	} else {
 		delete fieldErrors.value[fieldName];
@@ -948,10 +922,14 @@ const validateForm = () => {
 	let firstErrorTab = null;
 
 	docTypeMeta.value.fields.filter((f) => !['Section Break', 'Column Break', "Tab Break"].includes(f.fieldtype)).forEach((field) => {
+		const value = formData.value[field.fieldname];
 		if (
-			isFieldMandatory(field) && 
-			!["Int","Percent"].includes(field.fieldtype) &&
-			(!formData.value[field.fieldname] || formData.value[field.fieldname] === "" || (Array.isArray(formData.value[field.fieldname]) && formData.value[field.fieldname].length == 0))
+			isFieldMandatory(field) && (
+				value === null ||
+				value === undefined ||
+				value === "" ||
+				(Array.isArray(value) && value.length === 0)
+			)
 		) {
 			const section = allSections.value.find((s) =>
 				s.fields.some((f) => f.fieldname === field.fieldname)
