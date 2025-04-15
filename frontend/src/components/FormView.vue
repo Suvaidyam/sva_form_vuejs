@@ -541,6 +541,16 @@ const isCurrentTabValid = computed(() => {
 				return false;
 			}
 
+			if (["Percent"].includes(field.fieldtype)) {
+				if (value !== null ||
+					value !== undefined ||
+					value !== "") {
+					return true;
+				} else {
+					return false;
+				}
+			}
+
 			return (
 				!isFieldMandatory(field) ||
 				(value !== null &&
@@ -636,7 +646,15 @@ const isTabComplete = (tabName) => {
 		.filter((f) => !["Section Break", "Column Break", "Tab Break"].includes(f.fieldtype))
 		.every((field) => {
 			const value = formData.value[field.fieldname];
-
+			if (["Percent"].includes(field.fieldtype)) {
+				if (value !== null ||
+					value !== undefined ||
+					value !== "") {
+					return true;
+				} else {
+					return false;
+				}
+			}
 			if (field.fieldname == 'calculated_value' && calculatedFieldErrors.value.isValue) {
 				return false;
 			}
@@ -731,7 +749,7 @@ const validateField = (fieldName) => {
 	if (!field) return;
 	const value = formData.value[field.fieldname];
 	if (
-		isFieldMandatory(field) && (
+		isFieldMandatory(field) && !["Percent"].includes(field.fieldtype) && (
 			value === null ||
 			value === undefined ||
 			value === "" ||
@@ -924,7 +942,7 @@ const validateForm = () => {
 	docTypeMeta.value.fields.filter((f) => !['Section Break', 'Column Break', "Tab Break"].includes(f.fieldtype)).forEach((field) => {
 		const value = formData.value[field.fieldname];
 		if (
-			isFieldMandatory(field) && (
+			isFieldMandatory(field) && !["Percent"].includes(field.fieldtype) && (
 				value === null ||
 				value === undefined ||
 				value === "" ||
