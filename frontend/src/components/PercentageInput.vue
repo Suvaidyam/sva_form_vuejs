@@ -1,7 +1,7 @@
 <template>
   <div v-if="!field.hidden" class="flex flex-col gap-2">
     <span v-if="index < 1 &&  fieldParsedDescription.qlable"
-      class="text-md font-medium text-gray-900 dark:text-gray-200 block  block ">
+      class="text-md font-medium text-gray-900 dark:text-gray-200 block">
       {{  fieldParsedDescription.qlable }}
     </span>
     <span v-if="index < 1 &&  fieldParsedDescription?.cenrieo && !props.isCard"
@@ -38,14 +38,14 @@
       {{ fieldParsedDescription.desc }}
     </span>
     <div class="relative flex items-center">
-      <input :id="field.name" class="custom-input-type-range" :value="modelValue || 0" @input="handleInput"
+      <input :id="field.name" class="custom-input-type-range" :value="displayValue" @input="handleInput"
         @change="handleChange" type="range" min="0" max="100"  :disabled="field.read_only"
         :required="isFieldMandatory(field)" :class="[
           'w-full h-2 bg-gray-200 rounded-lg  cursor-pointer dark:bg-gray-700',
           { 'opacity-50 cursor-not-allowed': field.read_only }
         ]" />
       <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-200">
-        {{ modelValue }}%
+        {{ displayValue }}%
       </span>
     </div>
     <p v-if="error" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ error }}</p>
@@ -83,6 +83,12 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 const saveAsDraft = inject('saveAsDraft')
 
+const displayValue = computed(() => {
+  if (props.modelValue == null || props.modelValue == undefined || props.modelValue == '') {
+    return 0
+  }
+  return parseInt(props.modelValue, 10)
+})
 const error = ref('')
 
 const parsedDescription = computed(() => {
